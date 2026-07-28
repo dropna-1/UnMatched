@@ -4,7 +4,7 @@
 
 int main() {
     ScreenManager man;
-    man.ChangeScreen(std::make_unique<MenuScreen>());
+    man.ChangeScreen(std::make_unique<MenuScreen>(&man));
     man.Run();
     return 0;
 }

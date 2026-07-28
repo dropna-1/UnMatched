@@ -1,9 +1,12 @@
 #include "Screens/MainScreen.hpp"
+#include "Screens/ScreenManager.hpp"
+#include "Screens/PlayerSetupScreen.hpp"
 #define RAYGUI_IMPLEMENTATION
 #include "raygui.h"
 #include <cstdio>
 
-MenuScreen::MenuScreen() {
+MenuScreen::MenuScreen(ScreenManager* man){
+    this->manager = man;
     background = LoadTexture("external/images/cobblefog.jpg");
     font = LoadFontEx("external/font/Griffy-Regular.ttf", 120, 0, 0);
     
@@ -58,7 +61,9 @@ void MenuScreen::Draw() {
     GuiSetStyle(BUTTON, BORDER_COLOR_NORMAL, ColorToInt(GOLD));
     GuiSetStyle(BUTTON, BORDER_COLOR_FOCUSED, ColorToInt(RAYWHITE));
 
-    if (GuiButton(btnPlay, "START")) {}
+    if (GuiButton(btnPlay, "START")) {
+        manager->ChangeScreen(std::make_unique<PlayerSetupScreen>(manager));
+    }
     if (GuiButton(btnLoad, "LOAD GAME")) {}
     if (GuiButton(btnExit, "EXIT")) {
         CloseWindow();

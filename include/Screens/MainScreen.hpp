@@ -3,6 +3,8 @@
 #include "raylib.h"
 #include <memory>
 
+class ScreenManager;
+
 class MenuScreen : public IScreen {
 private:
     Texture2D background;
@@ -11,7 +13,7 @@ private:
     Rectangle btnLoad;
     Rectangle btnExit;
 public:
-    MenuScreen();
+    explicit MenuScreen(ScreenManager* man);
     ~MenuScreen();
     void Update() override;
     void Draw() override;
