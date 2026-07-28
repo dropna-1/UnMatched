@@ -15,7 +15,7 @@ MenuScreen::MenuScreen() {
     btnLoad = {(float)screenW/2 - 200, 290, 400, 70};
     btnExit = {(float)screenW/2 - 200, 380, 400, 70};
 
-    // GuiSetFont(font);
+    GuiSetFont(font);
 }
 
 MenuScreen::~MenuScreen() {
@@ -53,8 +53,7 @@ void MenuScreen::Draw() {
     GuiSetStyle(BUTTON, TEXT_ALIGNMENT, TEXT_ALIGN_CENTER);
 
     GuiSetStyle(BUTTON, BASE_COLOR_NORMAL, ColorToInt({40, 20, 60, 255}));
-    GuiSetStyle(BUTTON, BASE_COLOR_FOCUSED, ColorToInt({70, 30, 100, 255}));
-    GuiSetStyle(BUTTON, BASE_COLOR_PRESSED, ColorToInt({90, 40, 130, 255}));
+    GuiSetStyle(BUTTON, BASE_COLOR_PRESSED, ColorToInt({0, 0, 0, 255}));
     GuiSetStyle(BUTTON, TEXT_COLOR_NORMAL, ColorToInt(GOLD));
     GuiSetStyle(BUTTON, BORDER_COLOR_NORMAL, ColorToInt(GOLD));
     GuiSetStyle(BUTTON, BORDER_COLOR_FOCUSED, ColorToInt(RAYWHITE));
