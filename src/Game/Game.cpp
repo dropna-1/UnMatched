@@ -1,9 +1,9 @@
 #include <algorithm>
-#include "Characters/SideKick.hpp"
+#include "Game/Characters/SideKick.hpp"
 #include "Game/Game.hpp"
-#include "Cards/Deck.hpp"
-#include "Pending/Pending.hpp"
-#include "Factory/CardFactory.hpp"
+#include "Game/Cards/Deck.hpp"
+#include "Game/Pending/Pending.hpp"
+#include "Game/Factory/CardFactory.hpp"
 using namespace std;
 
 

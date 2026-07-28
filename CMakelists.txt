@@ -9,12 +9,17 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 include(FetchContent)
 
 FetchContent_Declare(
-    ftxui
-    GIT_REPOSITORY https://github.com/ArthurSonzogni/FTXUI.git
-    GIT_TAG v6.1.9
+    raylib
+    GIT_REPOSITORY https://github.com/raysan5/raylib.git
+    GIT_TAG 5.5
 )
 
-FetchContent_MakeAvailable(ftxui)
+FetchContent_Declare(
+    raygui
+    GIT_REPOSITORY https://github.com/raysan5/raygui.git
+)
+
+FetchContent_MakeAvailable(raylib raygui)
 
 file(GLOB_RECURSE SOURCES
     "src/*.cpp"
@@ -29,8 +34,8 @@ target_include_directories(app PUBLIC
     include
 )
 
-target_link_libraries(app PRIVATE
-    ftxui::screen
-    ftxui::dom
-    ftxui::component
+target_link_libraries(app PRIVATE raylib)
+
+target_include_directories(app PRIVATE
+    ${raygui_SOURCE_DIR}/src
 )

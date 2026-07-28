@@ -3,13 +3,13 @@
 #include <vector>
 #include <queue>
 #include <optional>
-#include "Board/board.hpp"
-#include "Characters/Hero.hpp"
-#include "Factory/HeroFactory.hpp"
-#include "Effects/GameContext.hpp"
-#include "Player/player.hpp"
-#include "Pending/Pending.hpp"
-#include "Common/Option.hpp"
+#include "Game/Board/board.hpp"
+#include "Game/Characters/Hero.hpp"
+#include "Game/Factory/HeroFactory.hpp"
+#include "Game/Effects/GameContext.hpp"
+#include "Game/Player/player.hpp"
+#include "Game/Pending/Pending.hpp"
+#include "Game/Common/Option.hpp"
 
 class Character;
 class Card;
