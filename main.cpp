@@ -1,28 +1,10 @@
-#define RAYGUI_IMPLEMENTATION
-#include "raygui.h"
+#include "Screens/MainScreen.hpp"
+#include "Screens/ScreenManager.hpp"
 
-#include <raylib.h>
-using namespace std;
 
-int main()
-{
-    InitWindow(800, 600, "Unmatched");
-
-    SetTargetFPS(60);
-
-    while (!WindowShouldClose())
-    {
-        BeginDrawing();
-
-        ClearBackground(RAYWHITE);
-
-        if (GuiButton({50, 50, 150, 40}, "Attack"))
-        {
-            // ...
-        }
-
-        EndDrawing();
-    }
-
-    CloseWindow();
+int main() {
+    ScreenManager man;
+    man.ChangeScreen(std::make_unique<MenuScreen>());
+    man.Run();
+    return 0;
 }
