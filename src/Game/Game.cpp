@@ -33,13 +33,17 @@ void Game::setPlayer2(const string& name, const int& age){
 
 
 void Game::setupPlayers(){
-    if(player1.getAge() <= player2.getAge()){
+    if(player1.getAge() < player2.getAge()){
         currentPlayer = &player1;
         otherPlayer = &player2;
     }
-    else{
+    else if(player1.getAge() > player2.getAge()){
         otherPlayer = &player1;
         currentPlayer = &player2;
+    }
+    else{
+        rand() % 2 == 0 ? (currentPlayer = &player1, otherPlayer = &player2) :
+        (otherPlayer = &player1, currentPlayer = &player2);
     }
 }
 
@@ -64,8 +68,8 @@ void Game::setupGame(){
     otherPlayer->getHero().get()->setPosition(4);
     for(int i = 0; i < 10; i++)
         (i < 5 ? currentPlayer : otherPlayer)->getHero()->getDeck().get()->drawCard();
-    if(currentPlayer->getHero().get()->getAbility().get()->HasAbilityOnStart())
-        currentPlayer->getHero().get()->getAbility().get()->SendRequest(this);
+    // if(currentPlayer->getHero().get()->getAbility().get()->HasAbilityOnStart())
+    //     currentPlayer->getHero().get()->getAbility().get()->SendRequest(this);
 }
 
 
