@@ -34,13 +34,14 @@ void PlayerSetupScreen::Draw() {
             {0, 0, (float)background.width, (float)background.height},
             {0, 0, 890, 500}, {0, 0}, 0, WHITE);
     }
-    DrawRectangle(0, 0, 890, 500, {0, 0, 0, 160});
+    DrawRectangle(0, 0, 890, 500, {0, 0, 0, 70});
 
     GuiSetFont(font);
     GuiSetStyle(DEFAULT, TEXT_SIZE, 40);
     GuiSetStyle(LABEL, TEXT_COLOR_NORMAL, ColorToInt(SKYBLUE));
-    GuiSetStyle(TEXTBOX, TEXT_COLOR_PRESSED, ColorToInt(BLACK));
+    GuiSetStyle(TEXTBOX, TEXT_COLOR_PRESSED, ColorToInt(WHITE));
     GuiSetStyle(TEXTBOX, TEXT_COLOR_FOCUSED, ColorToInt(GOLD));
+    GuiSetStyle(TEXTBOX, BASE_COLOR_PRESSED, ColorToInt({40, 20, 60, 255}));
 
     const char* title = "PLAYER SETUP";
     Vector2 tSize = MeasureTextEx(font, title, 48, 1);
