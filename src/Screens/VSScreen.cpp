@@ -42,7 +42,7 @@ void VSScreen::Draw() {
             {0, 0, (float)background.width, (float)background.height},
             {0, 0, 890, 500}, {0, 0}, 0, WHITE);
     }
-    DrawRectangle(0, 0, 890, 500, {0, 0, 0, 120});
+    DrawRectangle(0, 0, 890, 500, {0, 0, 0, 70});
 
     GuiSetFont(font);
     GuiSetStyle(DEFAULT, TEXT_SIZE, 30);
@@ -57,9 +57,9 @@ void VSScreen::Draw() {
             id2 = hero.id;
     }
 
-    const char* title = "VS";
-    Vector2 tSize = MeasureTextEx(font, title, 120, 1);
-    DrawTextEx(font, title, {(890 - tSize.x)/2.0f, 170}, 120, 1, {120, 0, 0, 255});
+    // const char* title = "VS";
+    // Vector2 tSize = MeasureTextEx(font, title, 120, 1);
+    // DrawTextEx(font, title, {(890 - tSize.x)/2.0f, 170}, 120, 1, {120, 0, 0, 255});
 
     float leftX = 80;
     float cardY = 110;

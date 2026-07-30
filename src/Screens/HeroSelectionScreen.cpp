@@ -13,7 +13,7 @@ HeroSelectionScreen::HeroSelectionScreen(ScreenManager* mgr) {
     font2 = LoadFontEx("external/font/RubikDirt-Regular.ttf", 64, 0, 0);
     SetTextureFilter(font.texture, TEXTURE_FILTER_POINT);
 
-    background = LoadTexture("external/images/heroSelection.jpg");
+    background = LoadTexture("external/images/selection.jpg");
 
     heroes = GetAllHeroes();
 
@@ -98,7 +98,7 @@ void HeroSelectionScreen::Draw() {
             {0, 0, (float)background.width, (float)background.height},
             {0, 0, 890, 500}, {0, 0}, 0, WHITE);
     }
-    DrawRectangle(0, 0, 890, 500, {0, 0, 0, 170});
+    DrawRectangle(0, 0, 890, 500, {0, 0, 0, 70});
 
     GuiSetFont(font);
     GuiSetStyle(DEFAULT, TEXT_SIZE, 30);
