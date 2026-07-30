@@ -1,6 +1,7 @@
 #include "Screens/HeroSelectionScreen.hpp"
 #include "Screens/PlayerSetupScreen.hpp"
 #include "Screens/ScreenManager.hpp"
+#include "Screens/VSScreen.hpp"
 #include "Game/Game.hpp"
 #include "raygui.h"
 #include <iostream>
@@ -30,6 +31,7 @@ HeroSelectionScreen::HeroSelectionScreen(ScreenManager* mgr) {
 
 HeroSelectionScreen::~HeroSelectionScreen() {
     UnloadFont(font);
+    UnloadFont(font2);
     UnloadTexture(background);
 
     for (auto& hero : heroes) {
@@ -140,6 +142,7 @@ void HeroSelectionScreen::Draw() {
                 manager->GetGame()->choiceHero(
                     *manager->GetGame()->getCurrentPlayer(), heroes[selectedHero[0]].type
                 );
+                playerName = manager->GetGame()->getOtherPlayer()->getName().c_str();
             }
         }
     }
@@ -150,6 +153,7 @@ void HeroSelectionScreen::Draw() {
                     *manager->GetGame()->getOtherPlayer(), heroes[selectedHero[1]].type
                 );
                 manager->GetGame()->setupGame();
+                manager->ChangeScreen(std::make_unique<VSScreen>(manager));
             }
         }
     }
