@@ -104,6 +104,9 @@ void HeroSelectionScreen::Draw() {
     GuiSetStyle(DEFAULT, TEXT_SIZE, 30);
 
     const char* playerName = manager->GetGame()->getCurrentPlayer()->getName().c_str();
+    if(currentPlayer == 1)
+        playerName = manager->GetGame()->getOtherPlayer()->getName().c_str();
+        
     const char* title = TextFormat("%s, choose your Hero", playerName);
     Vector2 tSize = MeasureTextEx(font, title, 50, 1);
     DrawTextEx(font, title, {(890 - tSize.x)/2.0f, 15}, 50, 1, GOLD);
@@ -142,7 +145,6 @@ void HeroSelectionScreen::Draw() {
                 manager->GetGame()->choiceHero(
                     *manager->GetGame()->getCurrentPlayer(), heroes[selectedHero[0]].type
                 );
-                playerName = manager->GetGame()->getOtherPlayer()->getName().c_str();
             }
         }
     }
