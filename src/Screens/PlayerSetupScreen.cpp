@@ -11,7 +11,7 @@ PlayerSetupScreen::PlayerSetupScreen(ScreenManager* man) {
     font = LoadFontEx("external/font/Griffy-Regular.ttf", 64, 0, 0);
     SetTextureFilter(font.texture, TEXTURE_FILTER_POINT);
 
-    background = LoadTexture("external/images/player.jpg");
+    background = LoadTexture("external/images/player3.jpg");
 
     btnConfirm = {890/2.0f - 220, 400, 200, 55};
     btnBack = {890/2.0f + 20,  400, 200, 55};
@@ -43,9 +43,9 @@ void PlayerSetupScreen::Draw() {
     GuiSetStyle(TEXTBOX, TEXT_COLOR_FOCUSED, ColorToInt(GOLD));
     GuiSetStyle(TEXTBOX, BASE_COLOR_PRESSED, ColorToInt({40, 20, 60, 255}));
 
-    const char* title = "PLAYER SETUP";
-    Vector2 tSize = MeasureTextEx(font, title, 48, 1);
-    DrawTextEx(font, title, {(890 - tSize.x) / 2, 30}, 48, 1, GOLD);
+    // const char* title = "PLAYER SETUP";
+    // Vector2 tSize = MeasureTextEx(font, title, 48, 1);
+    // DrawTextEx(font, title, {(890 - tSize.x) / 2, 30}, 48, 1, GOLD);
 
     DrawTextEx(font, "Player 1", {120, 120}, 70, 1, RAYWHITE);
 

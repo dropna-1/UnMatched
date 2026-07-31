@@ -20,4 +20,5 @@ public:
     int getAge();
     string getName();
     vector<Character*> getAllCharacters();
+    friend bool operator==(const Player& p1, const Player& p2);
 };

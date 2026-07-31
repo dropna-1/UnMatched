@@ -24,9 +24,9 @@ HeroSelectionScreen::HeroSelectionScreen(ScreenManager* mgr) {
         }
     }
 
-    btnNext    = { 890/2.0f - 380, 430, 350, 50 };
-    btnConfirm = { 890/2.0f - 380, 430, 350, 50 };
-    btnBack    = { 890/2.0f + 30,  430, 350, 50 };
+    btnNext    = { 890/2.0f - 380, 410, 350, 50 };
+    btnConfirm = { 890/2.0f - 380, 410, 350, 50 };
+    btnBack    = { 890/2.0f + 30,  410, 350, 50 };
 }
 
 HeroSelectionScreen::~HeroSelectionScreen() {
@@ -52,7 +52,7 @@ void HeroSelectionScreen::DrawHeroCard(int index, Rectangle bounds) {
     Color bg = available ? Color{35, 22, 50, 230} : Color{25, 25, 25, 180};
     if (isSelectedByCurrent) bg = Color{70, 35, 100, 255};
 
-    DrawRectangleRounded(bounds, 0.05f, 10, bg);
+    DrawRectangleRounded(bounds, 0.1f, 10, bg);
     DrawRectangleRoundedLines(bounds, 0.1f, 10,
                               isSelectedByCurrent ? GOLD : (available ? GRAY : DARKGRAY));
 
@@ -134,8 +134,7 @@ void HeroSelectionScreen::Draw() {
         DrawHeroCard(i, card);
     }
 
-
-    GuiSetStyle(BUTTON, BORDER_WIDTH, 3);
+    GuiSetStyle(BUTTON, BORDER_WIDTH, 1);
     GuiSetStyle(BUTTON, TEXT_SIZE, 22);
 
     if (currentPlayer == 0){
@@ -154,7 +153,6 @@ void HeroSelectionScreen::Draw() {
                 manager->GetGame()->choiceHero(
                     *manager->GetGame()->getOtherPlayer(), heroes[selectedHero[1]].type
                 );
-                manager->GetGame()->setupGame();
                 manager->ChangeScreen(std::make_unique<VSScreen>(manager));
             }
         }

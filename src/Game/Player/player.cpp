@@ -38,3 +38,8 @@ vector<Character*> Player::getAllCharacters(){
             
     return characters;
 }
+
+
+bool operator==(const Player& p1, const Player& p2){
+    return p1.name == p2.name && p1.hero->getname() == p2.hero->getname();
+}

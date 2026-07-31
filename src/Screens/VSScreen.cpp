@@ -57,10 +57,6 @@ void VSScreen::Draw() {
             id2 = hero.id;
     }
 
-    // const char* title = "VS";
-    // Vector2 tSize = MeasureTextEx(font, title, 120, 1);
-    // DrawTextEx(font, title, {(890 - tSize.x)/2.0f, 170}, 120, 1, {120, 0, 0, 255});
-
     float leftX = 80;
     float cardY = 110;
     float imgSize = 200;
@@ -101,6 +97,7 @@ void VSScreen::Draw() {
     GuiSetStyle(BUTTON, TEXT_SIZE, 24);
 
     if (GuiButton(btnStart, "START BATTLE")) {
+        manager->GetGame()->setupGame();
         TraceLog(LOG_INFO, "Battle starting: %s vs %s",
                  heroes[id1].name.c_str(), heroes[id2].name.c_str());
     }
