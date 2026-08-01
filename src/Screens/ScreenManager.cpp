@@ -1,9 +1,7 @@
 #include "Screens/ScreenManager.hpp"
-#include "Game/Game.hpp"
 #include "raylib.h"
 
-ScreenManager::ScreenManager(Game* game) {
-    this->game = game;
+ScreenManager::ScreenManager() {
     SetConfigFlags(FLAG_MSAA_4X_HINT);
     InitWindow(890, 500, "Unmatched");
     SetTargetFPS(60);
@@ -29,6 +27,6 @@ void ScreenManager::Run() {
     }
 }
 
-Game* ScreenManager::GetGame() const {
+Game& ScreenManager::GetGame(){
     return game;
 }

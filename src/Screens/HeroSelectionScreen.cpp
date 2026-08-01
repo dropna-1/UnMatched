@@ -1,6 +1,7 @@
 #include "Screens/HeroSelectionScreen.hpp"
 #include "Screens/PlayerSetupScreen.hpp"
 #include "Screens/ScreenManager.hpp"
+#include "Screens/VSScreen.hpp"
 #include "Game/Game.hpp"
 #include "raygui.h"
 #include <iostream>
@@ -12,7 +13,7 @@ HeroSelectionScreen::HeroSelectionScreen(ScreenManager* mgr) {
     font2 = LoadFontEx("external/font/RubikDirt-Regular.ttf", 64, 0, 0);
     SetTextureFilter(font.texture, TEXTURE_FILTER_POINT);
 
-    background = LoadTexture("external/images/heroSelection.jpg");
+    background = LoadTexture("external/images/selection.jpg");
 
     heroes = GetAllHeroes();
 
@@ -23,13 +24,14 @@ HeroSelectionScreen::HeroSelectionScreen(ScreenManager* mgr) {
         }
     }
 
-    btnNext    = { 890/2.0f - 380, 430, 350, 50 };
-    btnConfirm = { 890/2.0f - 380, 430, 350, 50 };
-    btnBack    = { 890/2.0f + 30,  430, 350, 50 };
+    btnNext    = { 890/2.0f - 380, 410, 350, 50 };
+    btnConfirm = { 890/2.0f - 380, 410, 350, 50 };
+    btnBack    = { 890/2.0f + 30,  410, 350, 50 };
 }
 
 HeroSelectionScreen::~HeroSelectionScreen() {
     UnloadFont(font);
+    UnloadFont(font2);
     UnloadTexture(background);
 
     for (auto& hero : heroes) {
@@ -50,7 +52,7 @@ void HeroSelectionScreen::DrawHeroCard(int index, Rectangle bounds) {
     Color bg = available ? Color{35, 22, 50, 230} : Color{25, 25, 25, 180};
     if (isSelectedByCurrent) bg = Color{70, 35, 100, 255};
 
-    DrawRectangleRounded(bounds, 0.05f, 10, bg);
+    DrawRectangleRounded(bounds, 0.1f, 10, bg);
     DrawRectangleRoundedLines(bounds, 0.1f, 10,
                               isSelectedByCurrent ? GOLD : (available ? GRAY : DARKGRAY));
 
@@ -96,12 +98,15 @@ void HeroSelectionScreen::Draw() {
             {0, 0, (float)background.width, (float)background.height},
             {0, 0, 890, 500}, {0, 0}, 0, WHITE);
     }
-    DrawRectangle(0, 0, 890, 500, {0, 0, 0, 170});
+    DrawRectangle(0, 0, 890, 500, {0, 0, 0, 70});
 
     GuiSetFont(font);
     GuiSetStyle(DEFAULT, TEXT_SIZE, 30);
 
-    const char* playerName = manager->GetGame()->getCurrentPlayer()->getName().c_str();
+    const char* playerName = manager->GetGame().getCurrentPlayer()->getName().c_str();
+    if(currentPlayer == 1)
+        playerName = manager->GetGame().getOtherPlayer()->getName().c_str();
+        
     const char* title = TextFormat("%s, choose your Hero", playerName);
     Vector2 tSize = MeasureTextEx(font, title, 50, 1);
     DrawTextEx(font, title, {(890 - tSize.x)/2.0f, 15}, 50, 1, GOLD);
@@ -129,16 +134,15 @@ void HeroSelectionScreen::Draw() {
         DrawHeroCard(i, card);
     }
 
-
-    GuiSetStyle(BUTTON, BORDER_WIDTH, 3);
+    GuiSetStyle(BUTTON, BORDER_WIDTH, 1);
     GuiSetStyle(BUTTON, TEXT_SIZE, 22);
 
     if (currentPlayer == 0){
         if (selectedHero[0] >= 0){
             if (GuiButton(btnNext, "NEXT PLAYER")) {
                 currentPlayer = 1;
-                manager->GetGame()->choiceHero(
-                    *manager->GetGame()->getCurrentPlayer(), heroes[selectedHero[0]].type
+                manager->GetGame().choiceHero(
+                    *manager->GetGame().getCurrentPlayer(), heroes[selectedHero[0]].type
                 );
             }
         }
@@ -146,10 +150,10 @@ void HeroSelectionScreen::Draw() {
     else{
         if (selectedHero[1] >= 0){
             if (GuiButton(btnConfirm, "START GAME")) {
-                manager->GetGame()->choiceHero(
-                    *manager->GetGame()->getOtherPlayer(), heroes[selectedHero[1]].type
+                manager->GetGame().choiceHero(
+                    *manager->GetGame().getOtherPlayer(), heroes[selectedHero[1]].type
                 );
-                manager->GetGame()->setupGame();
+                manager->ChangeScreen(std::make_unique<VSScreen>(manager));
             }
         }
     }

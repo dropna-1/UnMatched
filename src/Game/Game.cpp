@@ -128,7 +128,12 @@ vector<Option> Game::getAvailableMoves(Character* character,
         if(dist == spacing)
             continue;
 
-        for(int next : board.getSpace(place).neighbors){
+        vector<int> neigh = board.getSpace(place).neighbors;
+        if(!board.getSpace(place).secret.empty())
+            for(int secret : board.getSpace(place).secret)
+                neigh.push_back(secret);
+
+        for(int next : neigh){
             bool enemy = false;
             bool dom = false;
 

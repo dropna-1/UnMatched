@@ -11,7 +11,7 @@ PlayerSetupScreen::PlayerSetupScreen(ScreenManager* man) {
     font = LoadFontEx("external/font/Griffy-Regular.ttf", 64, 0, 0);
     SetTextureFilter(font.texture, TEXTURE_FILTER_POINT);
 
-    background = LoadTexture("external/images/player.jpg");
+    background = LoadTexture("external/images/player3.jpg");
 
     btnConfirm = {890/2.0f - 220, 400, 200, 55};
     btnBack = {890/2.0f + 20,  400, 200, 55};
@@ -34,17 +34,18 @@ void PlayerSetupScreen::Draw() {
             {0, 0, (float)background.width, (float)background.height},
             {0, 0, 890, 500}, {0, 0}, 0, WHITE);
     }
-    DrawRectangle(0, 0, 890, 500, {0, 0, 0, 160});
+    DrawRectangle(0, 0, 890, 500, {0, 0, 0, 70});
 
     GuiSetFont(font);
     GuiSetStyle(DEFAULT, TEXT_SIZE, 40);
     GuiSetStyle(LABEL, TEXT_COLOR_NORMAL, ColorToInt(SKYBLUE));
-    GuiSetStyle(TEXTBOX, TEXT_COLOR_PRESSED, ColorToInt(BLACK));
+    GuiSetStyle(TEXTBOX, TEXT_COLOR_PRESSED, ColorToInt(WHITE));
     GuiSetStyle(TEXTBOX, TEXT_COLOR_FOCUSED, ColorToInt(GOLD));
+    GuiSetStyle(TEXTBOX, BASE_COLOR_PRESSED, ColorToInt({40, 20, 60, 255}));
 
-    const char* title = "PLAYER SETUP";
-    Vector2 tSize = MeasureTextEx(font, title, 48, 1);
-    DrawTextEx(font, title, {(890 - tSize.x) / 2, 30}, 48, 1, GOLD);
+    // const char* title = "PLAYER SETUP";
+    // Vector2 tSize = MeasureTextEx(font, title, 48, 1);
+    // DrawTextEx(font, title, {(890 - tSize.x) / 2, 30}, 48, 1, GOLD);
 
     DrawTextEx(font, "Player 1", {120, 120}, 70, 1, RAYWHITE);
 
@@ -71,10 +72,10 @@ void PlayerSetupScreen::Draw() {
         player1Age  = atoi(age1);
         player2Age  = atoi(age2);
 
-        manager->GetGame()->setPlayer1(player1Name, player1Age);
-        manager->GetGame()->setPlayer2(player2Name, player2Age);
+        manager->GetGame().setPlayer1(player1Name, player1Age);
+        manager->GetGame().setPlayer2(player2Name, player2Age);
 
-        manager->GetGame()->setupPlayers();
+        manager->GetGame().setupPlayers();
 
         manager->ChangeScreen(std::make_unique<HeroSelectionScreen>(manager));
         // TraceLog(LOG_INFO, "P1: %s (%d)  |  P2: %s (%d)", 
