@@ -45,10 +45,10 @@ static void DrawOutlinedText(Font font,
 static Color PanelBackground(const Hero* hero)
 {
     if(hero->getname() == "Dracula")
-        return Color{45,18,24,255};   // زرشکی خیلی تیره
+        return Color{45,18,24,255};   
     if(hero->getname() == "Sherlock")
         return Color{48,42,18,255};
-    return Color{28,32,42,255};       // آبی تیره
+    return Color{28,32,42,255};       
 }
 
 static Color AccentColor(const Hero* hero)
