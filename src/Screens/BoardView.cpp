@@ -50,7 +50,7 @@ BoardView::BoardView()
     font = LoadFontEx(
         "external/font/Cynzia Bold.ttf" , 40 , nullptr, 0 ) ;
     SetTextureFilter(node , TEXTURE_FILTER_BILINEAR) ;
-    std::cout <<node.width << endl ; 
+    //std::cout <<node.width << endl ; 
 }
 
 void BoardView::Draw(const Board& board,
