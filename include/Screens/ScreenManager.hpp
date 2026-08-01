@@ -1,17 +1,18 @@
 #pragma once
 #include <memory>
 #include "IScreen.hpp"
+#include "Game/Game.hpp"
 
 class Game;
 
 class ScreenManager {
 private:
     std::unique_ptr<IScreen> current_screen;
-    Game* game = nullptr;
+    Game game;
 public:
-    ScreenManager(Game* game);
+    ScreenManager();
     ~ScreenManager();
     void ChangeScreen(std::unique_ptr<IScreen> newScreen);
     void Run();
-    Game* GetGame() const;
+    Game& GetGame();
 };
