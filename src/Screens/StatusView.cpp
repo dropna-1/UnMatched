@@ -524,7 +524,7 @@ void StatusView::DrawPlayerPanel(Player& player,
         panel,
         0.05f,
         10,
-        Fade(BLACK,0.30f)
+        Fade(BLACK,0.18f)
     );
 
     DrawHeroSection(

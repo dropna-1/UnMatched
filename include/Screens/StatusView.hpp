@@ -15,7 +15,7 @@ class StatusView
             agatha  = LoadTexture("external/images/dracula/sis1.png");
             lucy  = LoadTexture("external/images/dracula/sis2.png");
             mina = LoadTexture("external/images/dracula/sis3.png");
-            font = LoadFontEx("external/font/PirataOne-Regular.ttf" , 32 , nullptr , 0) ;
+            font = LoadFontEx("external/font/Griffy-Regular.ttf" , 32 , nullptr , 0) ;
             draculaBackground = LoadTexture("external/images/dracula/draculatexture.png");
             sherlockBackground = LoadTexture("external/images/sherlock/sherlocktexture.png") ;
 
