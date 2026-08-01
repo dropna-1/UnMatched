@@ -7,7 +7,7 @@
 
 MenuScreen::MenuScreen(ScreenManager* man){
     this->manager = man;
-    background = LoadTexture("external/images/cobblefog.jpg");
+    background = LoadTexture("external/images/player.jpg");
     font = LoadFontEx("external/font/Griffy-Regular.ttf", 120, 0, 0);
     
     if (background.id == 0) {}

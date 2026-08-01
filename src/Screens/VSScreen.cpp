@@ -1,5 +1,6 @@
 #include "Screens/VSScreen.hpp"
 #include "Screens/ScreenManager.hpp"
+#include "Screens/MatchScreen.hpp"
 #include "Game/Game.hpp"
 #include "raygui.h"
 
@@ -100,6 +101,7 @@ void VSScreen::Draw() {
         manager->GetGame().setupGame();
         TraceLog(LOG_INFO, "Battle starting: %s vs %s",
                  heroes[id1].name.c_str(), heroes[id2].name.c_str());
+        manager->ChangeScreen(std::make_unique<MatchScreen>(manager));
     }
 
     if (GuiButton(btnBack, "BACK")) {
