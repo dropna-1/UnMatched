@@ -72,10 +72,10 @@ void PlayerSetupScreen::Draw() {
         player1Age  = atoi(age1);
         player2Age  = atoi(age2);
 
-        manager->GetGame()->setPlayer1(player1Name, player1Age);
-        manager->GetGame()->setPlayer2(player2Name, player2Age);
+        manager->GetGame().setPlayer1(player1Name, player1Age);
+        manager->GetGame().setPlayer2(player2Name, player2Age);
 
-        manager->GetGame()->setupPlayers();
+        manager->GetGame().setupPlayers();
 
         manager->ChangeScreen(std::make_unique<HeroSelectionScreen>(manager));
         // TraceLog(LOG_INFO, "P1: %s (%d)  |  P2: %s (%d)", 

@@ -47,7 +47,7 @@ void VSScreen::Draw() {
     GuiSetFont(font);
     GuiSetStyle(DEFAULT, TEXT_SIZE, 30);
 
-    Game& game = *manager->GetGame();
+    Game& game = manager->GetGame();
 
     int id1, id2;
     for(auto hero : heroes){
@@ -97,7 +97,7 @@ void VSScreen::Draw() {
     GuiSetStyle(BUTTON, TEXT_SIZE, 24);
 
     if (GuiButton(btnStart, "START BATTLE")) {
-        manager->GetGame()->setupGame();
+        manager->GetGame().setupGame();
         TraceLog(LOG_INFO, "Battle starting: %s vs %s",
                  heroes[id1].name.c_str(), heroes[id2].name.c_str());
     }

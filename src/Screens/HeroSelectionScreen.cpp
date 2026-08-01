@@ -103,9 +103,9 @@ void HeroSelectionScreen::Draw() {
     GuiSetFont(font);
     GuiSetStyle(DEFAULT, TEXT_SIZE, 30);
 
-    const char* playerName = manager->GetGame()->getCurrentPlayer()->getName().c_str();
+    const char* playerName = manager->GetGame().getCurrentPlayer()->getName().c_str();
     if(currentPlayer == 1)
-        playerName = manager->GetGame()->getOtherPlayer()->getName().c_str();
+        playerName = manager->GetGame().getOtherPlayer()->getName().c_str();
         
     const char* title = TextFormat("%s, choose your Hero", playerName);
     Vector2 tSize = MeasureTextEx(font, title, 50, 1);
@@ -141,8 +141,8 @@ void HeroSelectionScreen::Draw() {
         if (selectedHero[0] >= 0){
             if (GuiButton(btnNext, "NEXT PLAYER")) {
                 currentPlayer = 1;
-                manager->GetGame()->choiceHero(
-                    *manager->GetGame()->getCurrentPlayer(), heroes[selectedHero[0]].type
+                manager->GetGame().choiceHero(
+                    *manager->GetGame().getCurrentPlayer(), heroes[selectedHero[0]].type
                 );
             }
         }
@@ -150,8 +150,8 @@ void HeroSelectionScreen::Draw() {
     else{
         if (selectedHero[1] >= 0){
             if (GuiButton(btnConfirm, "START GAME")) {
-                manager->GetGame()->choiceHero(
-                    *manager->GetGame()->getOtherPlayer(), heroes[selectedHero[1]].type
+                manager->GetGame().choiceHero(
+                    *manager->GetGame().getOtherPlayer(), heroes[selectedHero[1]].type
                 );
                 manager->ChangeScreen(std::make_unique<VSScreen>(manager));
             }
