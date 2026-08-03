@@ -14,17 +14,16 @@ MatchScreen::MatchScreen(ScreenManager* mgr) {
     SetWindowSize(monitorWidth, monitorHeight);
     SetWindowPosition(0, 0);
 
-    font = LoadFontEx("external/font/RubikDirt-Regular.ttf", 64, 0, 0);
+    font = LoadFontEx("external/font/GermaniaOne-Regular.ttf", 64, 0, 0);
 
     float btnW = 160;
     float btnH = 50;
     btnHome = {
-        40.0f,
-        (float)GetScreenHeight() - btnH - 30.0f,
+        0.0f,
+        (float)GetScreenHeight() - btnH - 30,
         btnW,
         btnH
     };
-
 }
 
 MatchScreen::~MatchScreen() {
@@ -46,7 +45,18 @@ void MatchScreen::Draw() {
 
     GuiSetStyle(DEFAULT, TEXT_SIZE, 30);
     GuiSetFont(font);
+
     Game& game = manager->GetGame();
+
+    float x = GetScreenWidth();
+    float y = GetScreenHeight();
+    float boardW = (x*4)/6;
+    float boardH = (y*2)/3;
+    Rectangle m = {x/6, 20, boardW, boardH};
+    board.Draw(game.getBoard(), m);
+
+    status.DrawPlayerPanel(*game.getCurrentPlayer(), 0, 20, x/6, boardH);
+    status.DrawPlayerPanel(*game.getOtherPlayer(), (x*5)/6, 20, x/6, boardH);
 
     if (GuiButton(btnHome, "HOME")) {
         SetWindowSize(890, 500);
