@@ -1,7 +1,8 @@
 #include "Screens/BoardView.hpp"
 
 #include "Game/Board/Board.hpp"
-
+#include "Game/Player/player.hpp"
+#include "Game/Characters/Character.hpp"
 
 enum class ZoneColor
 {
@@ -10,6 +11,34 @@ enum class ZoneColor
     Green,
     Yellow
 };
+
+Texture2D BoardView::getCharacterPic(const Character& character) const
+{
+    if(character.getname() == "Sherlock")
+        return shertoken ;
+    /*else if(character.getname() == "Dracula")
+    {
+        return 
+    }*/
+    else if(character.getname() == "Dr.Watson")
+    {
+        return watsontoken ;
+    }
+    else if(character.getname() == "Sister 1")
+    {
+        return agathatoken ;
+    }
+    else if(character.getname() == "Sister 2")
+    {
+        return lucytoken ;
+    }
+    else if(character.getname() == "Sister 3")
+    {
+        return minatoken ;
+    }
+    return lucytoken ;
+
+}
 
 Color GetZoneColor(int zone)
 {
@@ -48,17 +77,24 @@ BoardView::BoardView()
     node = LoadTexture(
         "external/images/Board/node6.png") ;
     font = LoadFontEx(
-        "external/font/Cynzia Bold.ttf" , 40 , nullptr, 0 ) ;
+        "external/font/GermaniaOne-Regular.ttf" , 40 , nullptr, 0 ) ;
+    //dractoken = LoadTexture("external/images/dracula/")
+    watsontoken = LoadTexture("external/images/Board/watsonAa.png");
+    shertoken = LoadTexture("external/images/Board/sherlockA2.png") ;
+    agathatoken = LoadTexture("external/images/Board/sis1.png");
+    lucytoken = LoadTexture("external/images/Board/lucyA.png") ;
+    minatoken = LoadTexture("external/images/dracula/sis3.png") ;
     SetTextureFilter(node , TEXTURE_FILTER_BILINEAR) ;
     //std::cout <<node.width << endl ; 
 }
 
 void BoardView::Draw(const Board& board,
-                     Rectangle area) const
+                     Rectangle area , Player& first , Player& second) const
 {
     DrawBackground(area);
     DrawConnections(board,area);
     DrawSpaces(board,area);
+    DrawCharacters(first , second ,area) ;
     DrawFrame(area) ;
     
 }
@@ -186,11 +222,12 @@ void BoardView::DrawSpace(Vector2 pos, int id , const std::vector<Color>& colors
 
     int w = MeasureText(text.c_str(), size);
 
-    DrawText(
+    DrawTextEx(
+        font ,
         text.c_str(),
-        pos.x - w/2,
-        pos.y - size/2,
+        {pos.x - w/2, pos.y - size/2},
         size, 
+        1 ,
         WHITE);
 }
 
@@ -389,11 +426,85 @@ void BoardView::DrawConnections(const Board& board,
     }
 }
 
+Vector2 BoardView::GetSpacePosition(int id, Rectangle area) const
+{
+    return
+    {
+        area.x + spaces[id].pos.x,
+        area.y + spaces[id].pos.y
+    };
+}
+
+void BoardView::DrawCharacter(const Character& character,
+                              Rectangle area) const
+{
+    if(!character.isAlive())
+        return;
+
+    Vector2 pos =
+        GetSpacePosition(character.getPosition(), area);
+
+    const float size = 56;
+    auto charToken = getCharacterPic(character);  //token ;;
+    Rectangle source =
+    {
+        0,
+        0,
+        (float)charToken.width,
+        (float)charToken.height
+    };
+
+    Rectangle dest =
+    {
+        pos.x - size/2,
+        pos.y - size/2,
+        size,
+        size
+    };
+
+    DrawTexturePro(
+        charToken,
+        source,
+        dest,
+        {0,0},
+        0,
+        WHITE
+    );
+}
+
+void BoardView::DrawCharacters(
+    Player& first,
+    Player& second,
+    Rectangle area) const
+{
+    std::vector<Character*> characters = first.getAllCharacters();
+
+    for (Character* character : second.getAllCharacters())
+        characters.push_back(character);
+
+    for (Character* character : characters)
+    {
+        if(character == nullptr)
+            continue;
+
+        if(!character->isAlive())
+            continue;
+
+        DrawCharacter(*character, area);
+    }
+}
+
+
 BoardView::~BoardView()
 {
     UnloadTexture(background);
     UnloadTexture(node) ;
     UnloadFont(font) ;
+    UnloadTexture(shertoken) ;
+    UnloadTexture(lucytoken) ;
+    UnloadTexture(watsontoken) ;
+    UnloadTexture(minatoken); 
+    UnloadTexture(agathatoken) ;
 }
 
 

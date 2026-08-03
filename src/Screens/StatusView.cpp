@@ -5,6 +5,8 @@
 #include "Game/Characters/Hero.hpp"
 #include "raylib.h"
 
+
+
 static void DrawOutlinedText(Font font,
                              const std::string& text,
                              Vector2 position,
@@ -132,7 +134,7 @@ static std::string ShortName(const std::string& name)
 
 void StatusView::DrawHpBar(int hp,
                            int maxHp,
-                           Rectangle area) const
+                           Rectangle area , Layout layout) const
 {
     float ratio =
         (float)hp / maxHp;
@@ -171,7 +173,7 @@ void StatusView::DrawHpBar(int hp,
         font,
         TextFormat("%d / %d", hp, maxHp),
         {area.x, area.y + 12},
-        18,
+        layout.S(18),
         1,
         WHITE,
         BLACK,
@@ -180,7 +182,7 @@ void StatusView::DrawHpBar(int hp,
 }
 
 void StatusView::DrawHeroSection(Player& player,
-                                 Rectangle area) const
+                                 Layout layout) const
 {
     auto hero = player.getHero();
 
@@ -194,20 +196,20 @@ void StatusView::DrawHeroSection(Player& player,
     DrawOutlinedText(
         font,
         player.getName(),
-        {area.x+20, area.y+10},
-        34,
+        {layout.X(20) , layout.Y(10)},
+        layout.S(34),
         1,
         LIGHTGRAY,
         BLACK,
         2
     );
-
+    float portraitSize = layout.S(250) ;
     Rectangle portrait =
     {
-        area.x+16,
-        area.y+10,
-        area.width - 32,
-        area.width - 32 ,
+        layout.X(16) ,
+        layout.Y(40) ,
+        portraitSize , 
+        portraitSize 
     };
 
     const Texture2D& tex = GetPortrait(hero.get());
@@ -217,8 +219,8 @@ void StatusView::DrawHeroSection(Player& player,
         {
             0,
             0,
-            (float)tex.width,
-            (float)tex.height
+            (float)tex.width ,
+            (float)tex.height 
         },
         portrait,
         {0,0},
@@ -228,7 +230,7 @@ void StatusView::DrawHeroSection(Player& player,
 
     DrawRectangleLinesEx(
         portrait,
-        2,
+        2 ,
         AccentColor(hero.get()));
 
     /*DrawTextEx(
@@ -241,8 +243,8 @@ void StatusView::DrawHeroSection(Player& player,
     DrawOutlinedText(
         font,
         hero->getname(),
-        {area.x+25, area.y+300},
-        36,
+        {layout.X(25), layout.Y(300)},
+        layout.S(36),
         1,
         CharacterColor(hero->getname()),
         BLACK,
@@ -253,39 +255,39 @@ void StatusView::DrawHeroSection(Player& player,
         hero->getHp(),
         hero->getMaxhp(),
         {
-            area.x+25,
-            area.y+ 335,
-            area.width - 50 ,
-            4
-        });
+            layout.X(25),
+            layout.Y(335),
+            layout.W(250) , 
+            layout.H(4)
+        } , layout);
 }
 
 void StatusView::DrawCardsSection(Player& player,
-                                  Rectangle area) const
+                                  Layout layout) const
 {
     auto deck = player.getHero()->getDeck();
 
     DrawTextEx(
         font , 
         "CARDS",
-        {area.x,area.y} ,
-        32,
+        {layout.X(20) , layout.Y(380)} ,
+        layout.S(32) ,
         1, 
         LIGHTGRAY);
 
     DrawLine(
-        area.x,
-        area.y + 30,
-        area.x + area.width,
-        area.y + 30,
+        layout.X(20),
+        layout.Y(410),
+        layout.X(280),
+        layout.Y(410),
         BLACK);
 
     DrawTextEx(
         font , 
         TextFormat("Hand : %i",
                    deck->getHand().size()),
-        {area.x + 10, area.y + 45} ,
-        30,
+        {layout.X(30), layout.Y(425)} ,
+        layout.S(30) ,
         1 ,
         WHITE);
 
@@ -293,8 +295,8 @@ void StatusView::DrawCardsSection(Player& player,
         font , 
         TextFormat("Deck : %i",
                    deck->getDrawPileSize()),
-        {area.x + 10,area.y + 75},
-        30,
+        {layout.X(30) ,layout.Y(455)},
+        layout.S(30) ,
         1 , 
         WHITE);
 
@@ -302,172 +304,195 @@ void StatusView::DrawCardsSection(Player& player,
         font , 
         TextFormat("Discard : %i",
                    deck->getDiscardPileSize()),
-        {area.x + 10, area.y + 105} ,
-        30,
+        {layout.X(30), layout.Y(485)} ,
+        layout.S(30) ,
         1 , 
         WHITE);
 }
 
 void StatusView::DrawCharacterCard(const Character* character,
-                                   Rectangle area) const
+                                   Rectangle card,
+                                   const Layout& layout) const
 {
-    /*DrawRectangleRounded(
-        area,
+    DrawRectangleRounded(
+        card,
         0.12f,
         8,
-        Color{55,60,75,255});*/
-    DrawRectangleRounded(
-    area,
-    0.12f,
-    8,
-    SidekickBackground(character));
+        SidekickBackground(character));
 
     DrawRectangleRoundedLinesEx(
-        area,
+        card,
         0.12f,
         8,
         2,
         CharacterColor(character->getname()));
 
     //---------------------------------
-    // Portrait
+    // Layout
     //---------------------------------
 
-    Rectangle portrait =
+    float padding = layout.H(6);
+
+    float hpHeight = layout.H(4);
+
+    float bottomPadding = layout.H(8);
+
+    int fontSize = layout.S(18);
+
+    float nameHeight = (float)fontSize;
+
+    float gap = layout.H(6);
+
+    //---------------------------------
+    // Portrait Height
+    //---------------------------------
+
+    float portraitHeight =
+        card.height
+        - padding
+        - gap
+        - nameHeight
+        - gap
+        - hpHeight
+        - bottomPadding;
+
+    if (portraitHeight < 40)
+        portraitHeight = 40;
+
+    Rectangle portrait
     {
-        area.x + 6,
-        area.y + 6,
-        area.width - 12,
-        78
-    };    
-    
+        card.x + layout.W(6),
+        card.y + padding,
+        card.width - layout.W(12),
+        portraitHeight
+    };
+
     const Texture2D& tex = GetPortrait(character);
 
-        if(tex.id != 0)
-        {
-            DrawRectangleRounded(
+    if(tex.id != 0)
+    {
+        DrawRectangleRounded(
             portrait,
             0.08f,
             8,
             SidekickPortraitBackground(character));
-            DrawTexturePro(
-                tex,
-                {
-                    0,
-                    0,
-                    (float)tex.width,
-                    (float)tex.height
-                },
-                portrait,
-                {0,0},
+
+        DrawTexturePro(
+            tex,
+            {
                 0,
-                WHITE
-            );
-                    DrawLineEx(
-            {portrait.x, portrait.y + portrait.height},
-            {portrait.x + portrait.width, portrait.y + portrait.height},
-            2,
-            Fade(WHITE,0.15f));
-        }
+                0,
+                (float)tex.width,
+                (float)tex.height
+            },
+            portrait,
+            {0,0},
+            0,
+            WHITE);
+    }
+
     //---------------------------------
     // Name
     //---------------------------------
 
     std::string name = ShortName(character->getname());
 
-    int fontSize = 20;
+    Vector2 size =
+        MeasureTextEx(
+            font,
+            name.c_str(),
+            fontSize,
+            1);
 
-    Vector2 size = MeasureTextEx(
-        font,
-        name.c_str(),
-        fontSize,
-        1
-    );
-
-    float textWidth = size.x;
-
-    /*DrawTextEx(
-        font , 
-        name.c_str(),
-        {area.x + (area.width-textWidth)/2, portrait.y + portrait.height + 6}, 
-        fontSize,
-        1 ,
-        WHITE);*/
-    
     DrawOutlinedText(
         font,
         name,
         {
-            area.x + (area.width-textWidth)/2,
-            portrait.y + portrait.height + 6
+            card.x + (card.width-size.x)/2,
+            portrait.y + portrait.height + gap
         },
         fontSize,
         1,
         WHITE,
         BLACK,
-        1
-    );
+        1);
 
     //---------------------------------
-    // HP Bar
+    // HP
     //---------------------------------
+
+    Rectangle hpBar
+    {
+        card.x + layout.W(8),
+        card.y + card.height - bottomPadding - hpHeight,
+        card.width - layout.W(16),
+        hpHeight
+    };
 
     DrawHpBar(
         character->getHp(),
         character->getMaxhp(),
-        {
-            area.x + 8,
-            portrait.y + portrait.height + 28,
-            area.width - 16,
-            4
-        });
+        hpBar,
+        layout);
 }
-
 void StatusView::DrawSidekickSection(Player& player,
-                                     Rectangle area) const
+                                     Layout layout) const
 {
     DrawTextEx(
-        font ,
+        font,
         "COMPANIONS",
-        {area.x, area.y} ,
-        32,
-        1 ,
+        { layout.X(20), layout.Y(520) },
+        layout.S(32),
+        1,
         LIGHTGRAY);
 
     DrawLine(
-        area.x,
-        area.y + 30,
-        area.x + area.width,
-        area.y + 30,
+        layout.X(20),
+        layout.Y(550),
+        layout.X(280),
+        layout.Y(550),
         BLACK);
 
-    auto& sidekicks =
-        player.getHero()->getSidekicks();
+    auto& sidekicks = player.getHero()->getSidekicks();
 
-    float cardWidth = 82;
-    float gap = 15;
+    if(sidekicks.empty())
+        return;
+
+    //---------------------------------
+    // Card Layout
+    //---------------------------------
+
+    float cardWidth  = layout.W(68);
+    float cardHeight = layout.H(120) ;
+
+    float gap = layout.W(8);
 
     float totalWidth =
-        sidekicks.size()*cardWidth +
-        (sidekicks.size()-1)*gap;
+        sidekicks.size() * cardWidth +
+        (sidekicks.size() - 1) * gap;
 
     float startX =
-        area.x +
-        (area.width-totalWidth)/2;
+        layout.X(20) +
+        (layout.W(260) - totalWidth) / 2;
+
+    //---------------------------------
+    // Draw Cards
+    //---------------------------------
 
     for(auto& sidekick : sidekicks)
     {
         Rectangle card =
         {
             startX,
-            area.y + 45,
+            layout.Y(565),
             cardWidth,
-            145
+            cardHeight
         };
 
         DrawCharacterCard(
             sidekick.get(),
-            card);
+            card,
+            layout);
 
         startX += cardWidth + gap;
     }
@@ -488,6 +513,15 @@ void StatusView::DrawPlayerPanel(Player& player,
         (float)width,
         (float)height
     };
+
+    Layout layout;
+
+    layout.panel = panel;
+
+    layout.sx = panel.width  / DESIGN_WIDTH;
+    layout.sy = panel.height / DESIGN_HEIGHT;
+
+    layout.s = std::min(layout.sx, layout.sy);
 
     DrawRectangleRounded(
         panel,
@@ -528,35 +562,17 @@ void StatusView::DrawPlayerPanel(Player& player,
     );
 
     DrawHeroSection(
-        player,
-        {
-            panel.x,
-            panel.y,
-            panel.width,
-            360
-        });
+        player,layout);
 
     //---------------------------------
 
     DrawCardsSection(
-        player,
-        {
-            panel.x + 20,
-            panel.y + 380   ,
-            panel.width - 40,
-            140
-        });
+        player, layout);
 
     //---------------------------------
 
     DrawSidekickSection(
-        player,
-        {
-            panel.x + 20,
-            panel.y + 520,
-            panel.width - 40,
-            170
-        });
+        player, layout);
 }
 const Texture2D& StatusView::GetPortrait(const Character* character) const
 {
