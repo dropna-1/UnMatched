@@ -12,6 +12,7 @@ enum class ZoneColor
     Yellow
 };
 
+
 Texture2D BoardView::getCharacterPic(const Character& character) const
 {
     if(character.getname() == "Sherlock")
@@ -91,15 +92,24 @@ BoardView::BoardView()
 void BoardView::Draw(const Board& board,
                      Rectangle area , Player& first , Player& second) const
 {
-    DrawBackground(area);
-    DrawConnections(board,area);
-    DrawSpaces(board,area);
-    DrawCharacters(first , second ,area) ;
-    DrawFrame(area) ;
+    Layout layout;
+
+    layout.panel = area;
+
+    layout.sx = area.width  / DESIGN_BOARD_WIDTH;
+    layout.sy = area.height / DESIGN_BOARD_HEIGHT;
+
+    layout.s  = std::min(layout.sx, layout.sy);
+
+    DrawBackground(layout);
+    DrawConnections(board, layout);
+    DrawSpaces(board, layout);
+    DrawCharacters(first, second, layout);
+    DrawFrame(layout);
     
 }
 
-void BoardView::DrawBackground(Rectangle area) const
+void BoardView::DrawBackground(const Layout&  layout) const
 {
     DrawTexturePro(
         background,
@@ -109,15 +119,15 @@ void BoardView::DrawBackground(Rectangle area) const
             (float)background.width,
             (float)background.height
         },
-        area,
+        layout.panel,
         {0,0},
         0,
         WHITE);
 }
 
-void BoardView::DrawNode(Vector2 pos, const std::vector<Color>& colors, Direction direct) const
+void BoardView::DrawNode(Vector2 pos, const std::vector<Color>& colors, Direction direct  ,const Layout& layout) const
 {
-    float size = 70;
+    float size = layout.S(70);
 
     float radius = size * 0.34f;
     if(colors.empty())
@@ -212,23 +222,31 @@ void BoardView::DrawNode(Vector2 pos, const std::vector<Color>& colors, Directio
     }
 }
 
-void BoardView::DrawSpace(Vector2 pos, int id , const std::vector<Color>& colors , Direction direct) const
+void BoardView::DrawSpace(Vector2 pos, int id , const std::vector<Color>& colors , Direction direct ,const Layout& layout) const
 {
-    DrawNode(pos , colors, direct);
+    DrawNode(pos , colors, direct , layout);
 
     std::string text = std::to_string(id);
 
-    int size = 30;
-
-    int w = MeasureText(text.c_str(), size);
+    int size = layout.S(30);
+    Vector2 textSize =
+    MeasureTextEx(
+        font,
+        text.c_str(),
+        size,
+        1);
 
     DrawTextEx(
-        font ,
+        font,
         text.c_str(),
-        {pos.x - w/2, pos.y - size/2},
-        size, 
-        1 ,
-        WHITE);
+        {
+            pos.x - textSize.x / 2,
+            pos.y - textSize.y / 2
+        },
+        size,
+        1,
+        WHITE
+    );
 }
 
 struct spacePosition
@@ -306,14 +324,14 @@ static const spacePosition spaces[] =
 };
 
 void BoardView::DrawSpaces(const Board& board,
-                           Rectangle area) const
+                           const Layout& layout) const
 {
     for(const auto& s : spaces)
     {
         Vector2 screenPos =
         {
-            area.x + s.pos.x,
-            area.y + s.pos.y
+            layout.X(s.pos.x),
+            layout.Y(s.pos.y)
         };
 
         const Space& space = board.getSpace(s.id);
@@ -329,25 +347,26 @@ void BoardView::DrawSpaces(const Board& board,
             screenPos,
             s.id + 1,
             colors,
-            s.direct
+            s.direct , 
+            layout
         );
     }
 }
 
-void BoardView::DrawFrame(Rectangle area) const
+void BoardView::DrawFrame( const Layout& layout ) const
 {
-    const float border = 4;
+    const float border = layout.S(4);
 
     // Border
-    DrawRectangleLinesEx(area, border, DARKBROWN);
+    DrawRectangleLinesEx(layout.panel, border, DARKBROWN);
 
     // Inner Border
     Rectangle inner =
     {
-        area.x + 6,
-        area.y + 6,
-        area.width - 12,
-        area.height - 12
+        layout.panel.x + layout.S(6),
+        layout.panel.y + layout.S(6),
+        layout.panel.width - layout.S(6),
+        layout.panel.height - layout.S(6)
     };
 
     DrawRectangleLinesEx(inner, 2, BROWN);
@@ -358,21 +377,21 @@ void BoardView::DrawFrame(Rectangle area) const
 
     std::string title = "Baskervile manor";
 
-    int fontSize = 40;
-    int padding = 18;
+    int fontSize = layout.S(40);
+    int padding = layout.S(18);
     Vector2 size = MeasureTextEx(
     font,
     title.c_str(),
-    40,
+    layout.S(40),
     1
     );
     float titleWidth = size.x + padding * 2;
     Rectangle titleRect =
     {
-        area.x + (area.width - titleWidth) / 2.0f,
-        area.y - 18,
+        layout.panel.x + (layout.panel.width - titleWidth) / 2.0f,
+        layout.panel.y - layout.S(18),
         titleWidth,
-        52
+        layout.S(52)
     };
 
     DrawRectangleRounded(titleRect, 0.25f, 8, BROWN);
@@ -393,14 +412,14 @@ void BoardView::DrawFrame(Rectangle area) const
 }
 
 void BoardView::DrawConnections(const Board& board,
-                                Rectangle area) const
+                                const Layout& layout) const
 {
     for(int i = 0; i < board.size(); i++)
     {
         Vector2 start =
         {
-            area.x + spaces[i].pos.x,
-            area.y + spaces[i].pos.y
+            layout.X(spaces[i].pos.x),
+            layout.Y(spaces[i].pos.y)
         };
 
         const Space& space = board.getSpace(i);
@@ -412,39 +431,39 @@ void BoardView::DrawConnections(const Board& board,
 
             Vector2 end =
             {
-                area.x + spaces[neighbor].pos.x,
-                area.y + spaces[neighbor].pos.y
+                layout.X(spaces[neighbor].pos.x),
+                layout.Y(spaces[neighbor].pos.y)
             };
 
             DrawLineEx(
                 start,
                 end,
-                6,
+                layout.S(6),
                 BROWN
             );
         }
     }
 }
 
-Vector2 BoardView::GetSpacePosition(int id, Rectangle area) const
+Vector2 BoardView::GetSpacePosition(int id, const Layout& layout) const
 {
     return
     {
-        area.x + spaces[id].pos.x,
-        area.y + spaces[id].pos.y
+        layout.X(spaces[id].pos.x),
+        layout.Y(spaces[id].pos.y)
     };
 }
 
 void BoardView::DrawCharacter(const Character& character,
-                              Rectangle area) const
+                              const Layout& layout) const
 {
     if(!character.isAlive())
         return;
 
     Vector2 pos =
-        GetSpacePosition(character.getPosition(), area);
+        GetSpacePosition(character.getPosition(), layout);
 
-    const float size = 56;
+    const float size = layout.S(56);
     auto charToken = getCharacterPic(character);  //token ;;
     Rectangle source =
     {
@@ -475,7 +494,7 @@ void BoardView::DrawCharacter(const Character& character,
 void BoardView::DrawCharacters(
     Player& first,
     Player& second,
-    Rectangle area) const
+    const Layout& layout) const
 {
     std::vector<Character*> characters = first.getAllCharacters();
 
@@ -490,7 +509,7 @@ void BoardView::DrawCharacters(
         if(!character->isAlive())
             continue;
 
-        DrawCharacter(*character, area);
+        DrawCharacter(*character, layout);
     }
 }
 

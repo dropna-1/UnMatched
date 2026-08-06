@@ -8,14 +8,16 @@ Card::Card(const string& name,
            TriggerType trigger ,
            int value,
            int boost,
-           const string& description)
+           const string& description ,
+           const string& pathId)
     : name(name),
       type(type),
       fighter(fighter),
       trigger(trigger) ,
       value(value),
       boost(boost),
-      description(description) 
+      description(description) , 
+      pathID(pathId) 
 {
 }
 
@@ -96,4 +98,9 @@ void Card::execute(TriggerType trigger , GameContext& context)
         auto targets = context.getTargets(entry.target) ;
         entry.effect->execute(context , targets) ;
     }
+}
+
+string Card::getId() const
+{
+    return pathID ;
 }

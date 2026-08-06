@@ -10,7 +10,8 @@ shared_ptr<Card> CardFactory::createCard(
     TriggerType trigger ,
     int value , 
     int boost , 
-    const string& description
+    const string& description, 
+    const string& pathID
 )
 {
     return make_shared<Card>(
@@ -20,7 +21,8 @@ shared_ptr<Card> CardFactory::createCard(
         trigger,
         value,
         boost,
-        description
+        description, 
+        pathID
     );
 }
 
@@ -47,7 +49,8 @@ shared_ptr<Deck> CardFactory::createSherlockDeck()
         TriggerType::None , 
         0 , 
         2 ,
-        "Place Dr.Watson in a space adjacent to Holmes. Holmes recovers 1 Health. Draw 1 Card." 
+        "Place Dr.Watson in a space adjacent to Holmes. Holmes recovers 1 Health. Draw 1 Card." , 
+        "external/images/cards/holms/administer-aid.png"
     ) ;
     AdministerAid->addEffect(
         TriggerType::None , EffectTarget::FriendlyHero , nullptr , make_shared<HealEffect>(1)
@@ -65,7 +68,8 @@ shared_ptr<Deck> CardFactory::createSherlockDeck()
         TriggerType::None ,  
         5 , 
         3 ,
-        "No description."
+        "No description.", 
+        "external/images/cards/holms/service-revolver.png"
     ) ;
     addCopies(deck , 2 , ServiceRevolver) ;
 
@@ -76,7 +80,8 @@ shared_ptr<Deck> CardFactory::createSherlockDeck()
         TriggerType::AfterCombat , 
         3 , 
         1 ,
-        "AFTER COMBAT: If Dr.watson is adjacent to Holmes, they each recover 1 health."
+        "AFTER COMBAT: If Dr.watson is adjacent to Holmes, they each recover 1 health." , 
+        "external/images/cards/holms/fixed-point-in-a-changing-age.png"
     );
     FPIACA->addEffect(
         TriggerType::AfterCombat , EffectTarget::FriendlyCharacters , make_shared<AdjacentCondition>(
@@ -90,7 +95,8 @@ shared_ptr<Deck> CardFactory::createSherlockDeck()
         TriggerType::AfterCombat , 
         3 , 
         1 , 
-        "AFTER COMBAT: If Holmes is Adjacent to the opsing fighter, deal 2 Damage to that Fighter."
+        "AFTER COMBAT: If Holmes is Adjacent to the opsing fighter, deal 2 Damage to that Fighter.", 
+        "external/images/cards/holms/counterpunch.png"
     );
     CounterPunch->addEffect(TriggerType::AfterCombat , EffectTarget::EnemyHero , 
         make_shared<AdjacentCondition>(ConditionTarget::FriendlyHero , ConditionTarget::EnemyHero) , make_shared<DamageEffect>(2));
@@ -103,7 +109,8 @@ shared_ptr<Deck> CardFactory::createSherlockDeck()
         TriggerType::AfterCombat , 
         3 , 
         1 , 
-        "AFTER COMBAT: If you won the combat your opponet draws 1 card, if you lost thecombat you draw 2 cards."
+        "AFTER COMBAT: If you won the combat your opponet draws 1 card, if you lost thecombat you draw 2 cards.", 
+        "external/images/cards/holms/education-never-ends.png"
     );
     EducationNeverEnds->addEffect(TriggerType::AfterCombat , EffectTarget::EnemyHero , 
         make_shared<WonBattleCondition>(ConditionTarget::FriendlyHero) , make_shared<DrawCardEffect>(1) ) ;
@@ -118,7 +125,8 @@ shared_ptr<Deck> CardFactory::createSherlockDeck()
         TriggerType::None , 
         0 , 
         2 ,
-        "Choose one opponet, look at their card hand and choose 1 card for them to discard." 
+        "Choose one opponet, look at their card hand and choose 1 card for them to discard." ,
+        "external/images/cards/holms/eliminate-the-impossible.png"
     );
     //EliminateTheImpossible->addRequest({RequestType::Card , EffectTarget::EnemyPlayer});
     EliminateTheImpossible->addEffect(TriggerType::None , EffectTarget::EnemyHero ,
@@ -132,7 +140,8 @@ shared_ptr<Deck> CardFactory::createSherlockDeck()
         TriggerType::Immediately , 
         2 ,
         1 ,
-        "IMMEDIATELY: Cancel all effects on your opponet's card."
+        "IMMEDIATELY: Cancel all effects on your opponet's card." ,
+        "external/images/cards/holms/feintS.png"
     );
     Feint->addEffect(TriggerType::Immediately , EffectTarget::EnemyHero , nullptr , make_shared<CancelEffectsEffect>());
     addCopies(deck , 3 , Feint); 
@@ -144,7 +153,8 @@ shared_ptr<Deck> CardFactory::createSherlockDeck()
         TriggerType::None ,
         0 , 
         2 , 
-        "Choose an Opponet, Holmes Swaps to"
+        "Choose an Opponet, Holmes Swaps to", 
+        "external/images/cards/holms/master-of-disguise.png"
     );
     MasterOfDisguise->addEffect(TriggerType::None , EffectTarget::FriendlyHero , nullptr , make_shared<SwapEffect>()) ;
     addCopies(deck , 2 , MasterOfDisguise); 
@@ -157,7 +167,8 @@ shared_ptr<Deck> CardFactory::createSherlockDeck()
         TriggerType::AfterCombat ,
         5 , 
         2 ,
-        "AFTER COMBAT: Move Holmes up to 3 spaces."
+        "AFTER COMBAT: Move Holmes up to 3 spaces." , 
+        "external/images/cards/holms/the-game-is-afoot.png"
     );
     TheGameIsAfoot->addEffect(TriggerType::AfterCombat , EffectTarget::FriendlyHero, nullptr , make_shared<MoveEffect>(3));
     addCopies(deck , 2 , TheGameIsAfoot);
@@ -169,7 +180,8 @@ shared_ptr<Deck> CardFactory::createSherlockDeck()
         TriggerType::DuringCombat , 
         3 , 
         1 , 
-        "DURING COMBAT: You may change the printed value of the opponet's card to its BOOST value.(if a card does not have a BOOST value, it is treated as 0)"
+        "DURING COMBAT: You may change the printed value of the opponet's card to its BOOST value.(if a card does not have a BOOST value, it is treated as 0)", 
+        "external/images/cards/holms/deduce-strategy.png"
     );
     DeduceStrategy->addEffect(TriggerType::DuringCombat, EffectTarget::EnemyHero, nullptr, make_shared<DeduceEffect>()); 
     addCopies(deck , 3 , DeduceStrategy) ;
@@ -181,7 +193,8 @@ shared_ptr<Deck> CardFactory::createSherlockDeck()
         TriggerType::AfterCombat , 
         3 , 
         2 , 
-        "AFTER COMBAT: If you won the combat, look at your opponet's hand."
+        "AFTER COMBAT: If you won the combat, look at your opponet's hand." , 
+        "external/images/cards/holms/study-methods.png"
     );
     StudyMethods->addEffect(TriggerType::AfterCombat, EffectTarget::EnemyHero, make_shared<WonBattleCondition>(
         ConditionTarget::FriendlyHero) ,
@@ -203,7 +216,8 @@ shared_ptr<Deck> CardFactory::createDraculaDeck()
         TriggerType::DuringCombat , 
         2 , 
         3 ,
-        "DURING COMBAT: This card's value +1 for each Sister in the same zone as the opposing fighter."
+        "DURING COMBAT: This card's value +1 for each Sister in the same zone as the opposing fighter." , 
+        "external/images/cards/dracula/feeding-frenzy.png"
     );
     FeedingFrenzy->addEffect(TriggerType::DuringCombat, EffectTarget::FriendlySidekicks, nullptr, 
         make_shared<FeedingFrenzyEffect>());
@@ -216,7 +230,8 @@ shared_ptr<Deck> CardFactory::createDraculaDeck()
         TriggerType::Immediately , 
         2 ,
         2 ,
-        "IMMEDIATELY: Cancel all effects on your opponet's card."
+        "IMMEDIATELY: Cancel all effects on your opponet's card.", 
+        "external/images/cards/dracula/feint (1).png"
     );
     Feint->addEffect(TriggerType::Immediately , EffectTarget::EnemyHero , nullptr , make_shared<CancelEffectsEffect>());
     addCopies(deck , 3 , Feint); 
@@ -228,7 +243,8 @@ shared_ptr<Deck> CardFactory::createDraculaDeck()
         TriggerType::AfterCombat ,
         3 , 
         1 ,
-        "AFTER COMBAT: Move your fighter up to 3 spaces."
+        "AFTER COMBAT: Move your fighter up to 3 spaces.", 
+        "external/images/cards/dracula/dash.png"
     );
     Dash->addEffect(TriggerType::AfterCombat , EffectTarget::FriendlyCharacters , nullptr , make_shared<MoveEffect>(3));
     addCopies(deck , 2 , Dash);
@@ -240,7 +256,8 @@ shared_ptr<Deck> CardFactory::createDraculaDeck()
         TriggerType::AfterCombat ,
         3 ,
         3 , 
-        "AFTER COMBAT: If you won the combat, place Dracula in any space Adjacent to the Opposing Fighter" 
+        "AFTER COMBAT: If you won the combat, place Dracula in any space Adjacent to the Opposing Fighter" , 
+        "external/images/cards/dracula/thirst-for-sustenance.png"
     );
     ThirstForSustenance->addEffect(TriggerType::AfterCombat, EffectTarget::FriendlyHero, 
         make_shared<WonBattleCondition>(ConditionTarget::FriendlyHero),make_shared<ThirstEffect>());
@@ -253,7 +270,8 @@ shared_ptr<Deck> CardFactory::createDraculaDeck()
         TriggerType::AfterCombat ,
         4 , 
         1 , 
-        "AFTER COMBAT: Draw 1 card." 
+        "AFTER COMBAT: Draw 1 card." , 
+        "external/images/cards/dracula/exploit.png"
     ); 
     Exploit->addEffect(TriggerType::AfterCombat, EffectTarget::FriendlyHero, nullptr , make_shared<DrawCardEffect>(1) );
     addCopies(deck ,3 , Exploit);
@@ -265,7 +283,8 @@ shared_ptr<Deck> CardFactory::createDraculaDeck()
         TriggerType::None ,
         0 , 
         2 , 
-        "Recover 2 health. Return any defeated Sister(if any) to any space in Dracula zone."
+        "Recover 2 health. Return any defeated Sister(if any) to any space in Dracula zone.", 
+        "external/images/cards/dracula/baptism-of-blood.png"
     );
     BaptismOfBlood->addEffect(TriggerType::None, EffectTarget::FriendlyHero, nullptr , make_shared<HealEffect>(2)) ;
     BaptismOfBlood->addEffect(TriggerType::None, EffectTarget::FriendlySidekicks, nullptr, make_shared<ReviveSister>()) ;
@@ -278,7 +297,8 @@ shared_ptr<Deck> CardFactory::createDraculaDeck()
         TriggerType::DuringCombat , 
         2 , 
         2 , 
-        "DURING COMBAT: Your opponet discards 1 random card. add its BOOST's value to this card's attacks value." 
+        "DURING COMBAT: Your opponet discards 1 random card. add its BOOST's value to this card's attacks value." , 
+        "external/images/cards/dracula/ambush.png"
     );
     Ambush->addEffect(TriggerType::DuringCombat, EffectTarget::FriendlyHero, nullptr, make_shared<AmbushEffect>()) ;
     addCopies(deck, 2 , Ambush) ;
@@ -290,7 +310,8 @@ shared_ptr<Deck> CardFactory::createDraculaDeck()
         TriggerType::None,
         0,
         2,
-        "Place Dracula in any space. Gain 1 action."
+        "Place Dracula in any space. Gain 1 action." , 
+        "external/images/cards/dracula/mistform.png"
     );
     Mistform->addEffect(TriggerType::None, EffectTarget::FriendlyHero, nullptr , make_shared<MoveEffect>(-1)) ;
     Mistform->addEffect(TriggerType::None, EffectTarget::FriendlyHero, nullptr , make_shared<GainActionEffect>()) ;
@@ -303,7 +324,8 @@ shared_ptr<Deck> CardFactory::createDraculaDeck()
         TriggerType::None,
         0 , 
         4 , 
-        "Deal 1 Damage to all opposing fighters adjacent to Dracula, Dracula recover 1 health fo reach damage dealt" 
+        "Deal 1 Damage to all opposing fighters adjacent to Dracula, Dracula recover 1 health fo reach damage dealt" ,
+        "external/images/cards/dracula/prey-upon.png"
     );
     PreyUpon->addEffect(TriggerType::None, EffectTarget::EnemyCharacters,nullptr , make_shared<PreyUponEffect>()) ;
     addCopies(deck , 2 , PreyUpon) ;
@@ -315,7 +337,8 @@ shared_ptr<Deck> CardFactory::createDraculaDeck()
         TriggerType::DuringCombat, 
         1 ,
         2 ,
-        "DURING COMBAT: Add the BOOSt value from your opponet's card to the defense value of this card" 
+        "DURING COMBAT: Add the BOOSt value from your opponet's card to the defense value of this card" ,
+        "external/images/cards/dracula/look-into-my-eyes.png"
     );
     LookIntoMyEyes->addEffect(TriggerType::DuringCombat, EffectTarget::FriendlyHero, nullptr , make_shared<LookIntoMyEyesEffect>());
     addCopies(deck , 3 , LookIntoMyEyes) ; 
@@ -327,7 +350,8 @@ shared_ptr<Deck> CardFactory::createDraculaDeck()
         TriggerType::None ,
         0 , 
         2 , 
-        "Move any Fighter up to 2 spaces.After Moving deal 1 damage to the moved fighter for each sister adjacent to them."
+        "Move any Fighter up to 2 spaces.After Moving deal 1 damage to the moved fighter for each sister adjacent to them." ,
+        "external/images/cards/dracula/ravening-seduction.png"
     );
     RaveningSeduction->addEffect(TriggerType::None , EffectTarget::FriendlySidekicks , nullptr , make_shared<RaveningEffect>()) ;
     addCopies(deck , 3 , RaveningSeduction) ;
@@ -339,7 +363,8 @@ shared_ptr<Deck> CardFactory::createDraculaDeck()
         TriggerType::DuringCombat , 
         6 , 
         4 ,
-        "DURING COMBAT: You may discard any number of your cards from your hand. This card's value is +1 for each card you discard."
+        "DURING COMBAT: You may discard any number of your cards from your hand. This card's value is +1 for each card you discard.", 
+        "external/images/cards/dracula/beastform.png"
     );
     BeastForm->addEffect(TriggerType::DuringCombat, EffectTarget::currentPlayer, nullptr, make_shared<BeastFormEffect>()) ;
     addCopies(deck ,2 , BeastForm) ;

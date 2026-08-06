@@ -15,7 +15,8 @@ class CardFactory
         TriggerType trigger ,
         int value,
         int boost,
-        const std::string& description
+        const std::string& description , 
+        const string& pathID
         );
         static void addCopies(
         std::shared_ptr<Deck> deck,

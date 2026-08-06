@@ -1,5 +1,5 @@
 #pragma once
-#include "raylib.h"
+#include "layout.hpp"
 #include <vector>
 
 class Board;
@@ -10,6 +10,9 @@ enum class Direction
     UpDown ,
     None 
 }; 
+
+constexpr float DESIGN_BOARD_WIDTH = 900.0f ; 
+constexpr float DESIGN_BOARD_HEIGHT = 680.0f ;
 
 class Character ;
 class Player ;
@@ -32,16 +35,15 @@ class BoardView
         Texture2D agathatoken ;
         Texture2D lucytoken ;
         Texture2D minatoken ;
-        void DrawBackground(Rectangle area) const;
-        void DrawConnections(const Board& board,
-                            Rectangle area) const;
-        void DrawSpace(Vector2 pos, int id , const std::vector<Color>& colors, Direction direct) const ;
-        void DrawNode(Vector2 pos , const std::vector<Color>& colors, Direction direct) const ;
-        void DrawSpaces(const Board& board ,Rectangle area) const ;
-        void DrawFrame(Rectangle area) const;
+        void DrawBackground(const Layout& layout) const;
+        void DrawConnections(const Board&, const Layout& layout) const;
+        void DrawSpace(Vector2 pos, int id , const std::vector<Color>& colors, Direction direct ,const Layout& layout) const ;
+        void DrawNode(Vector2 pos , const std::vector<Color>& colors, Direction direct , const Layout& layout) const ;
+        void DrawSpaces(const Board&, const Layout& layout) const ;
+        void DrawFrame(const Layout& layout ) const;
         Font font ;
-        void DrawCharacter(const Character& character, Rectangle area) const;
-        Vector2 GetSpacePosition(int id, Rectangle area) const;
-        void DrawCharacters(Player& first,Player& second,Rectangle area) const;
+        void DrawCharacter(const Character&, const Layout& layout) const;
+        Vector2 GetSpacePosition(int id, const Layout& layout) const;
+        void DrawCharacters(Player&,Player&,const Layout& layout) const;
         Texture2D getCharacterPic(const Character& character) const;
 };

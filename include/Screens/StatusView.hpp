@@ -1,45 +1,13 @@
 #pragma once
 #include "Game/Player/player.hpp"
-#include "raylib.h"
+#include "layout.hpp"
 
 class Character ;
 
 constexpr float DESIGN_WIDTH  = 300.0f;
 constexpr float DESIGN_HEIGHT = 700.0f;
 
-struct Layout
-{
-    Rectangle panel;
 
-    float sx;
-    float sy;
-    float s;
-
-    float X(float x) const
-    {
-        return panel.x + x * sx;
-    }
-
-    float Y(float y) const
-    {
-        return panel.y + y * sy;
-    }
-
-    float W(float w) const
-    {
-        return w * sx;
-    }
-
-    float H(float h) const
-    {
-        return h * sy;
-    }
-
-    float S(float value) const
-    {
-        return value * s;
-    }
-};
 
 
 class StatusView

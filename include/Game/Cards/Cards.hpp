@@ -29,6 +29,7 @@ class Card
         int boost ;
         std::string description ;
         std::vector<EffectEntry> effects ;
+        std::string pathID;
     public :
         Card(const std::string& name,
             CardType type,
@@ -36,7 +37,8 @@ class Card
             TriggerType trigger , 
             int value,
             int boost ,
-            const std::string& description);
+            const std::string& description, 
+            const std::string& pathID);
         void addEffect(TriggerType , EffectTarget , std::shared_ptr<IConditions> , std::shared_ptr<IEffect>) ;
         const std::string& getName() const;
         int getValue() const;
@@ -50,7 +52,7 @@ class Card
         void execute(TriggerType , GameContext&) ;
         void setBoost(int) ;
         void setValue(int) ;
-            
+        std::string getId() const ;
 };
 
 
