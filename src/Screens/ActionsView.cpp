@@ -20,27 +20,47 @@ void ActionsView::Draw(Rectangle m) {
     // }
     // DrawRectangle(0, 0, 890, 500, {0, 0, 0, 150});
 
-    DrawRectangleRounded(m, 0.1f, 1, WHITE);
-    DrawRectangleRoundedLines(m, 0.1f, 1, WHITE);
-
     btnCombat = {
         m.x + m.width/13,
-        (m.height - m.width*3/13)/2,
+        m.y+(m.height - m.height/3)/2,
         m.width*3/13,
         m.height/3
     };
+
+    btnManeuver = {
+        m.x + m.width*5/13,
+        m.y+(m.height - m.height/3)/2,
+        m.width*3/13,
+        m.height/3
+    };
+
+    btnScheme = {
+        m.x + m.width*9/13,
+        m.y+(m.height - m.height/3)/2,
+        m.width*3/13,
+        m.height/3
+    };
+
+    GuiSetStyle(BUTTON, BORDER_COLOR_NORMAL, ColorToInt(WHITE));
+    GuiSetStyle(BUTTON, BASE_COLOR_NORMAL, ColorToInt({124,0,0,255}));
+    GuiSetStyle(BUTTON, TEXT_COLOR_NORMAL, ColorToInt(BLACK));
 
     if (GuiButton(btnCombat, "Combat")) {
         return;
     }
 
+    if (GuiButton(btnManeuver, "Maneuver")) {
+        return;
+    }
+
+    if (GuiButton(btnScheme, "Scheme")) {
+        return;
+    }
+
     // GuiSetStyle(DEFAULT, TEXT_SIZE, 40);
-    // GuiSetStyle(BUTTON, BORDER_WIDTH, 4);
     // GuiSetStyle(BUTTON, TEXT_ALIGNMENT, TEXT_ALIGN_CENTER);
 
-    // GuiSetStyle(BUTTON, BASE_COLOR_NORMAL, ColorToInt({40, 20, 60, 255}));
     // GuiSetStyle(BUTTON, BASE_COLOR_PRESSED, ColorToInt({0, 0, 0, 255}));
-    // GuiSetStyle(BUTTON, TEXT_COLOR_NORMAL, ColorToInt(GOLD));
     // GuiSetStyle(BUTTON, BORDER_COLOR_NORMAL, ColorToInt(GOLD));
     // GuiSetStyle(BUTTON, BORDER_COLOR_FOCUSED, ColorToInt(RAYWHITE));
 

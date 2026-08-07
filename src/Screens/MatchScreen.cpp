@@ -64,8 +64,8 @@ void MatchScreen::Draw() {
     Rectangle h = {(x*2)/3, boardH+20, x/3, y/3-30-20};
     hand.Draw(*game.getCurrentPlayer()->getHero()->getDeck(), h);
 
-    // Rectangle b = {2, boardH+20, x/3, y/3-30-20-50};
-    // actions.Draw(b);
+    Rectangle b = {2, boardH+20, x/3, y/3-30-20-50};
+    actions.Draw(b);
 
     if (GuiButton(btnHome, "HOME")) {
         SetWindowSize(890, 500);
