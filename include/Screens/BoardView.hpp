@@ -16,6 +16,13 @@ enum class Direction
 constexpr float DESIGN_BOARD_WIDTH = 900.0f ; 
 constexpr float DESIGN_BOARD_HEIGHT = 680.0f ;
 
+struct ClickZone
+{
+    int id;
+    Vector2 center;
+    float radius;
+};
+
 class Character ;
 class Player ;
 class BoardView
@@ -29,6 +36,7 @@ class BoardView
 
         void HighlightSpaces(const std::vector<int>& spaces , HighlightType type);
         void ClearHighlightedSpaces();
+        int GetClickedSpace() const;
 
     private:
         Texture2D background;
@@ -56,4 +64,6 @@ class BoardView
         std::unordered_map<int, HighlightType> highlightedSpaces;
         bool IsHighlighted(int id) const;
         HighlightType GetHighlightType(int id) const;
+        mutable std::vector<ClickZone> clickZones;
+        
 };  

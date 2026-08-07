@@ -75,11 +75,11 @@ BoardView::BoardView()
     font = LoadFontEx(
         "external/font/GermaniaOne-Regular.ttf" , 40 , nullptr, 0 ) ;
     //dractoken = LoadTexture("external/images/dracula/")
-    watsontoken = LoadTexture("external/images/Board/watsonAa.png");
-    shertoken = LoadTexture("external/images/Board/sherlockA2.png") ;
-    agathatoken = LoadTexture("external/images/Board/sis1.png");
-    lucytoken = LoadTexture("external/images/Board/lucyA.png") ;
-    minatoken = LoadTexture("external/images/dracula/sis3.png") ;
+    watsontoken = LoadTexture("external/images/Board/watsono (1).png");
+    shertoken = LoadTexture("external/images/Board/sherlocko (1).png") ;
+    agathatoken = LoadTexture("external/images/Board/agathao (1).png");
+    lucytoken = LoadTexture("external/images/Board/lucyo (1).png") ;
+    minatoken = LoadTexture("external/images/dracula/minao (1).png") ;
     SetTextureFilter(node , TEXTURE_FILTER_BILINEAR) ;
 }
 
@@ -406,8 +406,11 @@ static const spacePosition spaces[] =
 };
 
 void BoardView::DrawSpaces(const Board& board,
-                           const Layout& layout) const
+const Layout& layout) const
 {
+    clickZones.clear();
+
+
     for(const auto& s : spaces)
     {
         Vector2 screenPos =
@@ -415,6 +418,13 @@ void BoardView::DrawSpaces(const Board& board,
             layout.X(s.pos.x),
             layout.Y(s.pos.y)
         };
+
+        clickZones.push_back(
+        {
+            s.id,
+            screenPos,
+            layout.S(90) * 0.34f
+        });
 
         const Space& space = board.getSpace(s.id);
 
@@ -424,8 +434,11 @@ void BoardView::DrawSpaces(const Board& board,
         {
             colors.push_back(GetZoneColor(zone));
         }
+
+
         bool highlighted = IsHighlighted(s.id);
         HighlightType type = GetHighlightType(s.id);
+
 
         DrawSpace(
             screenPos,
@@ -599,6 +612,30 @@ void BoardView::DrawCharacters(
     }
 }
 
+int BoardView::GetClickedSpace() const
+{
+    if(!IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
+        return -1;
+
+
+    Vector2 mouse = GetMousePosition();
+
+
+    for(const auto& zone : clickZones)
+    {
+        if(CheckCollisionPointCircle(
+            mouse,
+            zone.center,
+            zone.radius
+        ))
+        {
+            return zone.id;
+        }
+    }
+
+
+    return -1;
+}
 
 BoardView::~BoardView()
 {
