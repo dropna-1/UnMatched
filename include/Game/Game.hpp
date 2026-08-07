@@ -91,7 +91,7 @@ public:
     Player* getOtherPlayer();
     void setupPlayers();
     void choiceHero(Player& player, HeroType choice);
-    std::vector<Option> getSidekickPlacement(Character* character);
+    std::vector<int> getSidekickPlacement(Character* character);
     const std::vector<std::shared_ptr<Card>>& showOtherHand();
     /*-----------------------------------------------------------------*/
     std::vector<Option> getAvailableMoves(Character* character, const int& spacing);

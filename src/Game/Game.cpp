@@ -338,9 +338,9 @@ vector<Option> Game::getSchemeCards(Character* character)
 }
 
 
-vector<Option> Game::getSidekickPlacement(Character* character)
+vector<int> Game::getSidekickPlacement(Character* character)
 {
-    vector<Option> reachable;
+    vector<int> reachable;
     for(int zone : board.getSpace(character->getPosition()).zone)
         for(int i = 0; i < 32; i++)
         {
@@ -348,7 +348,7 @@ vector<Option> Game::getSidekickPlacement(Character* character)
                 continue;
             vector<int> zones = board.getSpace(i).zone;
             if(find(zones.begin(), zones.end(), zone) != zones.end())
-                reachable.push_back({"House", i});
+                reachable.push_back(i);
         }
     return reachable;
 }

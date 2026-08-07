@@ -23,10 +23,10 @@ vector<Option> MoveAction::getOption(Game& game){
         spaces = game.getAllSpaces();
         return spaces;
     }
-    if(mode == MoveMode::Zone){
-        spaces = game.getSidekickPlacement(currentCharacter);
-        return spaces;
-    }
+    // if(mode == MoveMode::Zone){
+    //     spaces = game.getSidekickPlacement(currentCharacter);
+    //     return spaces;
+    // }
     spaces = game.getFreeSpacesNearby(otherCharacter);
     return spaces;
 }

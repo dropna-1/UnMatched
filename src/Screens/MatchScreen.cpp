@@ -3,6 +3,7 @@
 #include "screens/MainScreen.hpp"
 #include "Game/Game.hpp"
 #include "Game/Cards/Deck.hpp"
+#include "Game/Enums/TypeEnums.hpp"
 #include "raygui.h"
 
 MatchScreen::MatchScreen(ScreenManager* mgr) {
@@ -19,14 +20,22 @@ MatchScreen::MatchScreen(ScreenManager* mgr) {
 
     font = LoadFontEx("external/font/GermaniaOne-Regular.ttf", 64, 0, 0);
 
-    float btnW = 160;
-    float btnH = 50;
+    float btnW = GetScreenWidth()/12;
+    float btnH = 40;
     btnHome = {
-        0.0f,
-        (float)GetScreenHeight() - btnH - 30,
+        2.0f,
+        2.0f,
         btnW,
         btnH
     };
+    btnSave = {
+        btnW*11-2,
+        2.0f,
+        btnW,
+        btnH
+    };
+
+    FillMessage();
 }
 
 MatchScreen::~MatchScreen() {
@@ -46,9 +55,6 @@ void MatchScreen::Draw() {
     }
     DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), {0, 0, 0, 255});
 
-    GuiSetStyle(DEFAULT, TEXT_SIZE, 30);
-    GuiSetFont(font);
-
     Game& game = manager->GetGame();
 
     float x = GetScreenWidth();
@@ -58,14 +64,32 @@ void MatchScreen::Draw() {
     Rectangle m = {x/6+10, 20, boardW-20, boardH};
     board.Draw(game.getBoard(), m, *game.getCurrentPlayer(), *game.getOtherPlayer());
 
-    status.DrawPlayerPanel(*game.getCurrentPlayer(), 2, 2, x/6, boardH+18);
-    status.DrawPlayerPanel(*game.getOtherPlayer(), (x*5)/6-2, 2, x/6, boardH+18);
+    if(stage == Stage::SideKickPlacementP1 || stage == Stage::SideKickPlacementP2){
+        board.HighlightSpaces(
+            game.getSidekickPlacement(game.getCurrentPlayer()->getHero().get()), 
+            HighlightType::Selected
+        );
+        HandleSidekickPlacement(game);
+    }
+        
+    status.DrawPlayerPanel(*game.getCurrentPlayer(), 2, 46, x/6, boardH-26);
+    status.DrawPlayerPanel(*game.getOtherPlayer(), (x*5)/6-2, 46, x/6, boardH-26);
 
     Rectangle h = {(x*2)/3, boardH+20, x/3, y/3-30-20};
     hand.Draw(*game.getCurrentPlayer()->getHero()->getDeck(), h);
 
-    Rectangle b = {2, boardH+20, x/3, y/3-30-20-50};
+    Rectangle b = {2, y-40-(y/4-70), x/4-2, y/4-30-30-10};
     actions.Draw(b);
+
+    DrawRectangleRoundedLines({x/4+10, y-70, x/3, 30}, 0.1f, 1, WHITE);
+    DrawTextEx(font, message[stage].c_str(), (Vector2){x/4+17, y-30-40}, 30, 0.7f, GOLD);
+
+    GuiSetStyle(DEFAULT, TEXT_SIZE, 24);
+    GuiSetFont(font);
+
+    GuiSetStyle(BUTTON, BASE_COLOR_NORMAL, ColorToInt(BLACK));
+    GuiSetStyle(BUTTON, TEXT_COLOR_NORMAL, ColorToInt(GOLD));
+    GuiSetStyle(BUTTON, BORDER_WIDTH, 1);
 
     if (GuiButton(btnHome, "HOME")) {
         SetWindowSize(890, 500);
@@ -74,7 +98,41 @@ void MatchScreen::Draw() {
     SetWindowPosition(
         (GetMonitorWidth(monitor) - 890) / 2,
         (GetMonitorHeight(monitor) - 500) / 2
-);
+    );
         manager->ChangeScreen(std::make_unique<MenuScreen>(manager));
     }
+    if(GuiButton(btnSave, "Save")){
+        return;
+    }
+}
+
+void MatchScreen::HandleSidekickPlacement(Game& game){
+    int space = board.GetClickedSpace(); 
+    if(space != -1)
+        for(auto& side : game.getCurrentPlayer()->getHero()->getSidekicks())
+            if(side->getPosition() == -1){
+                side->setPosition(space); 
+                break;
+            }
+        bool canChange = true;
+        for(auto& side : game.getCurrentPlayer()->getHero()->getSidekicks())
+            if(side->getPosition() == -1){canChange = false; break;}
+
+        if(canChange == true){
+            if(stage == Stage::SideKickPlacementP1)
+                stage = Stage::SideKickPlacementP2;
+            else
+                stage = Stage::None;
+            board.ClearHighlightedSpaces();
+            game.changeTurn();
+        }
+}
+
+void MatchScreen::FillMessage(){
+    message.insert({Stage::SideKickPlacementP1, 
+        manager->GetGame().getCurrentPlayer()->getName() + ", Set a Location for your sidekick/s"});
+    message.insert({Stage::SideKickPlacementP2, 
+        manager->GetGame().getOtherPlayer()->getName() + ", Set a Location for your sidekick/s"});
+    message.insert({Stage::None, 
+        manager->GetGame().getCurrentPlayer()->getName() + ", Make your move"});
 }
