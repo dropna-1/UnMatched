@@ -15,6 +15,7 @@ public:
     void HandleInput() override;
     void Update() override;
     void Draw() override;
+    const char* ValidateInput();
 
     std::string player1Name;
     std::string player2Name;
@@ -34,6 +35,8 @@ private:
     bool editName2 = false;
     bool editAge1  = false;
     bool editAge2  = false;
+
+    const char* Error = nullptr;
 
     Rectangle btnConfirm;
     Rectangle btnBack;

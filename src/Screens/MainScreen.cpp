@@ -51,7 +51,7 @@ void MenuScreen::Draw() {
     DrawTextEx(font, "TACTICAL DUEL", (Vector2){(890 - subTitleSize.x) / 2, 140}, 
     40, 1.0f, GOLD);
 
-    GuiSetStyle(DEFAULT, TEXT_SIZE, 28);
+    GuiSetStyle(DEFAULT, TEXT_SIZE, 40);
     GuiSetStyle(BUTTON, BORDER_WIDTH, 4);
     GuiSetStyle(BUTTON, TEXT_ALIGNMENT, TEXT_ALIGN_CENTER);
 
@@ -63,6 +63,7 @@ void MenuScreen::Draw() {
 
     if (GuiButton(btnPlay, "START")) {
         manager->ChangeScreen(std::make_unique<PlayerSetupScreen>(manager));
+        return;
     }
     if (GuiButton(btnLoad, "LOAD GAME")) {}
     if (GuiButton(btnExit, "EXIT")) {

@@ -46,24 +46,19 @@ Color GetZoneColor(int zone)
     switch(zone)
     {
         case 1:
-            return {120,165,190,255} ;
+            return {0,0,0,255};
         case 2:
-            return {103,66,40,255};
-
+            return {124,0,140,255};
         case 3:
-            return {184,163,107,255};
-
+            return {0,120,0,255};
         case 4:
-            return {34,86,118,255};
-
+            return {220,120,0,255};
         case 5:
-            return {142,108,170,255};
-
+            return {160,130,0,255};
         case 6:
-            return {98,150,104,255};
-
+            return {124,0,0,255};
         case 7:
-            return {160,164,170,255};
+            return {0,0,210,255};
 
         default:
             return WHITE;
@@ -127,7 +122,7 @@ void BoardView::DrawBackground(const Layout&  layout) const
 
 void BoardView::DrawNode(Vector2 pos, const std::vector<Color>& colors, Direction direct  ,const Layout& layout) const
 {
-    float size = layout.S(70);
+    float size = layout.S(100);
 
     float radius = size * 0.34f;
     if(colors.empty())
@@ -358,7 +353,7 @@ void BoardView::DrawFrame( const Layout& layout ) const
     const float border = layout.S(4);
 
     // Border
-    DrawRectangleLinesEx(layout.panel, border, DARKBROWN);
+    DrawRectangleLinesEx(layout.panel, border, BLACK);
 
     // Inner Border
     Rectangle inner =
@@ -369,7 +364,7 @@ void BoardView::DrawFrame( const Layout& layout ) const
         layout.panel.height - layout.S(6)
     };
 
-    DrawRectangleLinesEx(inner, 2, BROWN);
+    DrawRectangleLinesEx(inner, 2, BLACK);
 
     //-----------------------------
     // Title
@@ -394,7 +389,7 @@ void BoardView::DrawFrame( const Layout& layout ) const
         layout.S(52)
     };
 
-    DrawRectangleRounded(titleRect, 0.25f, 8, BROWN);
+    DrawRectangleRounded(titleRect, 0.25f, 8, BLACK);
 
     DrawRectangleRoundedLines(titleRect, 0.25f, 8, DARKBROWN);
 
@@ -438,8 +433,8 @@ void BoardView::DrawConnections(const Board& board,
             DrawLineEx(
                 start,
                 end,
-                layout.S(6),
-                BROWN
+                layout.S(3),
+                GRAY
             );
         }
     }

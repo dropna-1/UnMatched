@@ -20,7 +20,7 @@ void HandView::Draw(
 
     layout.s = std::min(layout.sx, layout.sy);
 
-    DrawRectangleLinesEx(layout.panel, layout.S(3), YELLOW);
+    DrawRectangleLinesEx(layout.panel, layout.S(3), BLACK);
 
     const auto& hand = deck.getHand();
 

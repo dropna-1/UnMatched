@@ -6,17 +6,28 @@
 
 VSScreen::VSScreen(ScreenManager* mgr) {
     this->manager = mgr;
+    cout << "1" << endl;
 
     font = LoadFontEx("external/font/Griffy-Regular.ttf", 120, 0, 0);
+    cout << "2" << endl;
+
     font2 = LoadFontEx("external/font/RubikDirt-Regular.ttf", 64, 0, 0);
+    cout << "3" << endl;
+
     SetTextureFilter(font.texture, TEXTURE_FILTER_POINT);
+    cout << "4" << endl;
+
     background = LoadTexture("external/images/vs.jpg");
+    cout << "5" << endl;
 
     heroes = GetAllHeroes();
+    cout << "6" << endl;
 
     for (auto& hero : heroes) {
+        cout << "7" << endl;
         hero.texture = LoadTexture(hero.imagePath.c_str());
         if (hero.texture.id != 0) {
+            cout << "8" << endl;
             SetTextureFilter(hero.texture, TEXTURE_FILTER_BILINEAR);
         }
     }
@@ -50,12 +61,30 @@ void VSScreen::Draw() {
 
     Game& game = manager->GetGame();
 
-    int id1, id2;
-    for(auto hero : heroes){
-        if(hero.type == game.getCurrentPlayer()->getHero()->getHeroType())
-            id1 = hero.id;
-        else if(hero.type == game.getOtherPlayer()->getHero()->getHeroType())
-            id2 = hero.id;
+    int id1 = -1;
+    int id2 = -1;
+
+    auto* currentPlayer = game.getCurrentPlayer();
+    auto* otherPlayer   = game.getOtherPlayer();
+
+    if (currentPlayer && currentPlayer->getHero()) {
+        auto type1 = currentPlayer->getHero()->getHeroType();
+        for (const auto& hero : heroes) {
+            if (hero.type == type1) {
+                id1 = hero.id;
+                break;
+            }
+        }
+    }
+
+    if (otherPlayer && otherPlayer->getHero()) {
+        auto type2 = otherPlayer->getHero()->getHeroType();
+        for (const auto& hero : heroes) {
+            if (hero.type == type2) {
+                id2 = hero.id;
+                break;
+            }
+        }
     }
 
     float leftX = 80;
@@ -102,6 +131,7 @@ void VSScreen::Draw() {
         TraceLog(LOG_INFO, "Battle starting: %s vs %s",
                  heroes[id1].name.c_str(), heroes[id2].name.c_str());
         manager->ChangeScreen(std::make_unique<MatchScreen>(manager));
+        return;
     }
 
     if (GuiButton(btnBack, "BACK")) {

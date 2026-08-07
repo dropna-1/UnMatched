@@ -42,8 +42,14 @@ void Game::setupPlayers(){
         currentPlayer = &player2;
     }
     else{
-        rand() % 2 == 0 ? (currentPlayer = &player1, otherPlayer = &player2) :
-        (otherPlayer = &player1, currentPlayer = &player2);
+        std::uniform_int_distribution<int> dist(0, 1);
+        if (dist(rng) == 0) {
+            currentPlayer = &player1;
+            otherPlayer = &player2;
+        } else {
+            currentPlayer = &player2;
+            otherPlayer = &player1;
+        }
     }
 }
 
@@ -66,8 +72,10 @@ void Game::choiceHero(Player& player, HeroType choice){
 void Game::setupGame(){
     currentPlayer->getHero().get()->setPosition(18);
     otherPlayer->getHero().get()->setPosition(4);
-    for(int i = 0; i < 10; i++)
-        (i < 5 ? currentPlayer : otherPlayer)->getHero()->getDeck().get()->drawCard();
+    for (int i = 0; i < 5; i++) {
+        currentPlayer->getHero()->getDeck()->drawCard();
+        otherPlayer->getHero()->getDeck()->drawCard();
+    }
     // if(currentPlayer->getHero().get()->getAbility().get()->HasAbilityOnStart())
     //     currentPlayer->getHero().get()->getAbility().get()->SendRequest(this);
 }

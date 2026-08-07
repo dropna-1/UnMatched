@@ -34,9 +34,11 @@ HeroSelectionScreen::~HeroSelectionScreen() {
     UnloadFont(font2);
     UnloadTexture(background);
 
-    for (auto& hero : heroes) {
-        if (hero.texture.id != 0) UnloadTexture(hero.texture);
-    }
+    for (auto& hero : heroes)
+        if (hero.texture.id != 0){
+            UnloadTexture(hero.texture);
+            hero.texture = {0};
+        }
 }
 
 void HeroSelectionScreen::HandleInput() {}
@@ -141,19 +143,17 @@ void HeroSelectionScreen::Draw() {
         if (selectedHero[0] >= 0){
             if (GuiButton(btnNext, "NEXT PLAYER")) {
                 currentPlayer = 1;
-                manager->GetGame().choiceHero(
-                    *manager->GetGame().getCurrentPlayer(), heroes[selectedHero[0]].type
-                );
             }
         }
     }
     else{
         if (selectedHero[1] >= 0){
             if (GuiButton(btnConfirm, "START GAME")) {
-                manager->GetGame().choiceHero(
-                    *manager->GetGame().getOtherPlayer(), heroes[selectedHero[1]].type
-                );
+                Game& game = manager->GetGame();
+                game.choiceHero(*game.getCurrentPlayer(), heroes[selectedHero[0]].type);
+                game.choiceHero(*game.getOtherPlayer(), heroes[selectedHero[1]].type);
                 manager->ChangeScreen(std::make_unique<VSScreen>(manager));
+                return;
             }
         }
     }

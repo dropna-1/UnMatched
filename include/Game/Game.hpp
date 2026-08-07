@@ -3,6 +3,7 @@
 #include <vector>
 #include <queue>
 #include <optional>
+#include <random>
 #include "Game/Board/board.hpp"
 #include "Game/Characters/Hero.hpp"
 #include "Game/Factory/HeroFactory.hpp"
@@ -71,6 +72,8 @@ class Game {
     std::queue<unique_ptr<PendingAction>> pendingActions;
     std::unique_ptr<PendingCombat> pendingCombat;
 
+    std::mt19937 rng{std::random_device{}()};
+    
 public:
 
     Game();

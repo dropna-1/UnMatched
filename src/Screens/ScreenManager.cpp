@@ -1,5 +1,6 @@
 #include "Screens/ScreenManager.hpp"
 #include "raylib.h"
+#include <typeinfo>
 
 ScreenManager::ScreenManager() {
     SetConfigFlags(FLAG_MSAA_4X_HINT);

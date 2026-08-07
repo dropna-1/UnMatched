@@ -2,10 +2,13 @@
 #include "Screens/ScreenManager.hpp"
 #include "screens/MainScreen.hpp"
 #include "Game/Game.hpp"
+#include "Game/Cards/Deck.hpp"
 #include "raygui.h"
 
 MatchScreen::MatchScreen(ScreenManager* mgr) {
     this->manager = mgr;
+
+    actions.setGame(&mgr->GetGame());
 
     int monitor = GetCurrentMonitor();
     int monitorWidth  = GetMonitorWidth(monitor);
@@ -41,7 +44,7 @@ void MatchScreen::Draw() {
             {0, 0, (float)background.width, (float)background.height},
             {0, 0, (float)GetScreenWidth(), (float)GetScreenHeight()}, {0, 0}, 0, WHITE);
     }
-    DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), {0, 0, 0, 70});
+    DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), {0, 0, 0, 255});
 
     GuiSetStyle(DEFAULT, TEXT_SIZE, 30);
     GuiSetFont(font);
@@ -52,11 +55,17 @@ void MatchScreen::Draw() {
     float y = GetScreenHeight();
     float boardW = (x*4)/6;
     float boardH = (y*2)/3;
-    Rectangle m = {x/6, 20, boardW, boardH};
-    board.Draw(game.getBoard(), m);
+    Rectangle m = {x/6+10, 20, boardW-20, boardH};
+    board.Draw(game.getBoard(), m, *game.getCurrentPlayer(), *game.getOtherPlayer());
 
-    status.DrawPlayerPanel(*game.getCurrentPlayer(), 0, 20, x/6, boardH);
-    status.DrawPlayerPanel(*game.getOtherPlayer(), (x*5)/6, 20, x/6, boardH);
+    status.DrawPlayerPanel(*game.getCurrentPlayer(), 2, 2, x/6, boardH+18);
+    status.DrawPlayerPanel(*game.getOtherPlayer(), (x*5)/6-2, 2, x/6, boardH+18);
+
+    Rectangle h = {(x*2)/3, boardH+20, x/3, y/3-30-20};
+    hand.Draw(*game.getCurrentPlayer()->getHero()->getDeck(), h);
+
+    // Rectangle b = {2, boardH+20, x/3, y/3-30-20-50};
+    // actions.Draw(b);
 
     if (GuiButton(btnHome, "HOME")) {
         SetWindowSize(890, 500);

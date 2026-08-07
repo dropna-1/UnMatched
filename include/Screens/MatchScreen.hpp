@@ -4,6 +4,8 @@
 #include <memory>
 #include "BoardView.hpp"
 #include "StatusView.hpp"
+#include "HandView.hpp"
+#include "ActionsView.hpp"
 
 class ScreenManager;
 
@@ -14,6 +16,8 @@ private:
     Rectangle btnHome;
     BoardView board;
     StatusView status;
+    HandView hand;
+    ActionsView actions;
 
     // Rectangle btnLoad;
     // Rectangle btnExit;

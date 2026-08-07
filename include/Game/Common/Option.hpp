@@ -26,6 +26,6 @@ struct SaveData {
     int player2Age;
     int player2Health; 
 
-    int currentPlayer;
+    int currentPlayerIndex;
     int remainingAction;
 };

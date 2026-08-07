@@ -25,7 +25,6 @@ PlayerSetupScreen::~PlayerSetupScreen() {
 }
 
 void PlayerSetupScreen::HandleInput() {}
-
 void PlayerSetupScreen::Update() {}
 
 void PlayerSetupScreen::Draw() {
@@ -63,10 +62,19 @@ void PlayerSetupScreen::Draw() {
     GuiLabel({400, 330, 100, 40}, "Age:");
     if (GuiTextBox({510, 330, 100, 40}, age2, 8, editAge2)) editAge2 = !editAge2;
 
+    if(Error != nullptr){
+        Vector2 tSize = MeasureTextEx(font, Error, 30, 1);
+        DrawTextEx(font, Error, {(890 - tSize.x) / 2, 460}, 30, 1, GOLD);
+    }
+
     GuiSetStyle(BUTTON, TEXT_SIZE, 24);
     GuiSetStyle(BUTTON, BORDER_WIDTH, 3);
 
     if (GuiButton(btnConfirm, "CONFIRM")) {
+        Error = ValidateInput();
+        if(Error != nullptr){
+            return;
+        }
         player1Name = name1;
         player2Name = name2;
         player1Age  = atoi(age1);
@@ -78,6 +86,7 @@ void PlayerSetupScreen::Draw() {
         manager->GetGame().setupPlayers();
 
         manager->ChangeScreen(std::make_unique<HeroSelectionScreen>(manager));
+        return;
         // TraceLog(LOG_INFO, "P1: %s (%d)  |  P2: %s (%d)", 
         //          player1Name.c_str(), player1Age, 
         //          player2Name.c_str(), player2Age);
@@ -86,4 +95,36 @@ void PlayerSetupScreen::Draw() {
     if (GuiButton(btnBack, "BACK")) {
         manager->ChangeScreen(std::make_unique<MenuScreen>(manager));
     }
+}
+
+const char* PlayerSetupScreen::ValidateInput()
+{
+    if(strlen(name1) == 0)
+        return "Player 1 name is empty";
+    if(strlen(name2) == 0)
+        return "Player 2 name is empty";
+
+    if(strlen(age1) == 0 || strlen(age2) == 0)
+        return "Age cannot be empty";
+
+    for(int i = 0; age1[i] != '\0'; i++)
+    {
+        if(!isdigit(age1[i]))
+            return "Age must contain only numbers";
+    }
+    for(int i = 0; age2[i] != '\0'; i++)
+    {
+        if(!isdigit(age2[i]))
+            return "Age must contain only numbers";
+    }
+
+    int a1 = atoi(age1);
+    int a2 = atoi(age2);
+
+    if(a1 < 1 || a1 > 120)
+        return "Player 1 age is invalid";
+    if(a2 < 1 || a2 > 120)
+        return "Player 2 age is invalid";
+
+    return nullptr;
 }
