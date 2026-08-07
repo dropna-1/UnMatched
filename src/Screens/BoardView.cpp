@@ -3,7 +3,7 @@
 #include "Game/Board/Board.hpp"
 #include "Game/Player/player.hpp"
 #include "Game/Characters/Character.hpp"
-
+#include "Game/Enums/TypeEnums.hpp"
 enum class ZoneColor
 {
     Red,
@@ -81,8 +81,36 @@ BoardView::BoardView()
     lucytoken = LoadTexture("external/images/Board/lucyA.png") ;
     minatoken = LoadTexture("external/images/dracula/sis3.png") ;
     SetTextureFilter(node , TEXTURE_FILTER_BILINEAR) ;
-    //std::cout <<node.width << endl ; 
 }
+
+void BoardView::HighlightSpaces(
+    const std::vector<int>& spaces,
+    HighlightType type)
+{
+    for(int id : spaces)
+        highlightedSpaces[id] = type;
+}
+
+void BoardView::ClearHighlightedSpaces()
+{
+    highlightedSpaces.clear();
+}
+
+bool BoardView::IsHighlighted(int id) const
+{
+    return highlightedSpaces.find(id) != highlightedSpaces.end();
+}
+
+HighlightType BoardView::GetHighlightType(int id) const
+{
+    auto it = highlightedSpaces.find(id);
+
+    if (it == highlightedSpaces.end())
+        return HighlightType::None;
+
+    return it->second;
+}
+
 
 void BoardView::Draw(const Board& board,
                      Rectangle area , Player& first , Player& second) const
@@ -98,7 +126,7 @@ void BoardView::Draw(const Board& board,
 
     DrawBackground(layout);
     DrawConnections(board, layout);
-    DrawSpaces(board, layout);
+    DrawSpaces(board,layout);
     DrawCharacters(first, second, layout);
     DrawFrame(layout);
     
@@ -120,11 +148,29 @@ void BoardView::DrawBackground(const Layout&  layout) const
         WHITE);
 }
 
-void BoardView::DrawNode(Vector2 pos, const std::vector<Color>& colors, Direction direct  ,const Layout& layout) const
+void BoardView::DrawNode(Vector2 pos, const std::vector<Color>& colors, Direction direct , bool highlighted,
+    HighlightType type, const Layout& layout) const
 {
-    float size = layout.S(100);
+    float size = layout.S(90);
 
     float radius = size * 0.34f;
+
+    bool hovered = false;
+
+    if(highlighted)
+    {
+        hovered = CheckCollisionPointCircle(
+            GetMousePosition(),
+            pos,
+            radius
+        );
+
+        if(hovered)
+        {
+            size *= 1.10f;
+            radius *= 1.10f;
+        }
+    }
     if(colors.empty())
         return;
 
@@ -144,6 +190,44 @@ void BoardView::DrawNode(Vector2 pos, const std::vector<Color>& colors, Directio
         size
     };
 
+    if(highlighted)
+    {
+        Color glowColor;
+        switch(type)
+        {
+        case HighlightType::Move:
+            glowColor = SKYBLUE;
+            break;
+
+        case HighlightType::Attack:
+            glowColor = RED;
+            break;
+
+        case HighlightType::Ability:
+            glowColor = PURPLE;
+            break;
+
+        case HighlightType::Selected:
+            glowColor= GOLD;
+            break;
+
+        default:
+            glowColor = YELLOW;
+            break;
+        }
+        Color glow =
+        hovered ?
+        Fade(glowColor, 0.70f)
+        :
+        Fade(glowColor, 0.55f);
+
+
+        DrawCircleV(
+            pos,
+            radius * 1.40f,
+            glow
+        );
+    }
     DrawTexturePro(
         node,
         source,
@@ -151,13 +235,15 @@ void BoardView::DrawNode(Vector2 pos, const std::vector<Color>& colors, Directio
         {0,0},
         0,
         WHITE);
+    
+    float alpha = hovered ? 1.0f : 0.8f;
 
     if(colors.size()==1)
     {
         DrawCircleV(
             pos,
             radius,
-            Fade(colors[0],0.8f));
+            Fade(colors[0],alpha));
     }
     else if(colors.size()==2)
     {
@@ -169,7 +255,7 @@ void BoardView::DrawNode(Vector2 pos, const std::vector<Color>& colors, Directio
                 0,
                 180,
                 40,
-                Fade(colors[1],0.8f));
+                Fade(colors[1],alpha));
 
             DrawCircleSector(
                 pos,
@@ -177,7 +263,7 @@ void BoardView::DrawNode(Vector2 pos, const std::vector<Color>& colors, Directio
                 180,
                 360,
                 40,
-                Fade(colors[0],0.8f));
+                Fade(colors[0],alpha));
         }
         else 
         {
@@ -187,7 +273,7 @@ void BoardView::DrawNode(Vector2 pos, const std::vector<Color>& colors, Directio
                 -90,
                 90,
                 40,
-                Fade(colors[1],0.8f));
+                Fade(colors[1],alpha));
 
             DrawCircleSector(
                 pos,
@@ -195,7 +281,7 @@ void BoardView::DrawNode(Vector2 pos, const std::vector<Color>& colors, Directio
                 90,
                 270,
                 40,
-                Fade(colors[0],0.8f));
+                Fade(colors[0],alpha));
         }
     }
     else if(colors.size()==3)
@@ -210,16 +296,17 @@ void BoardView::DrawNode(Vector2 pos, const std::vector<Color>& colors, Directio
                 angle,
                 angle+120,
                 40,
-                Fade(colors[i],0.80f));
+                Fade(colors[i],alpha));
 
             angle+=120;
         }
     }
 }
 
-void BoardView::DrawSpace(Vector2 pos, int id , const std::vector<Color>& colors , Direction direct ,const Layout& layout) const
+void BoardView::DrawSpace(Vector2 pos, int id , const std::vector<Color>& colors , Direction direct , bool highlighted ,
+    HighlightType type,const Layout& layout) const
 {
-    DrawNode(pos , colors, direct , layout);
+    DrawNode(pos , colors, direct ,highlighted, type , layout);
 
     std::string text = std::to_string(id);
 
@@ -261,7 +348,7 @@ static const spacePosition spaces[] =
 
     {{180,210},3},
 
-    {{270,250},4},
+    {{270,240},4},
 
     {{350,90},5},
 
@@ -305,7 +392,7 @@ static const spacePosition spaces[] =
 
     {{330,565},25},
 
-    {{430,510},26},
+    {{430,510},26 , Direction::UpDown},
 
     {{400,630},27},
 
@@ -337,12 +424,16 @@ void BoardView::DrawSpaces(const Board& board,
         {
             colors.push_back(GetZoneColor(zone));
         }
+        bool highlighted = IsHighlighted(s.id);
+        HighlightType type = GetHighlightType(s.id);
 
         DrawSpace(
             screenPos,
             s.id + 1,
             colors,
-            s.direct , 
+            s.direct,
+            highlighted,
+            type,
             layout
         );
     }
@@ -353,7 +444,7 @@ void BoardView::DrawFrame( const Layout& layout ) const
     const float border = layout.S(4);
 
     // Border
-    DrawRectangleLinesEx(layout.panel, border, BLACK);
+    DrawRectangleLinesEx(layout.panel, border, GRAY);
 
     // Inner Border
     Rectangle inner =
@@ -364,7 +455,7 @@ void BoardView::DrawFrame( const Layout& layout ) const
         layout.panel.height - layout.S(6)
     };
 
-    DrawRectangleLinesEx(inner, 2, BLACK);
+    DrawRectangleLinesEx(inner, 2, GRAY);
 
     //-----------------------------
     // Title
@@ -391,7 +482,7 @@ void BoardView::DrawFrame( const Layout& layout ) const
 
     DrawRectangleRounded(titleRect, 0.25f, 8, BLACK);
 
-    DrawRectangleRoundedLines(titleRect, 0.25f, 8, DARKBROWN);
+    DrawRectangleRoundedLines(titleRect, 0.25f, 8, GRAY);
 
     DrawTextEx(
         font,

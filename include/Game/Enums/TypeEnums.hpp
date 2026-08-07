@@ -70,3 +70,12 @@ enum class RequestType
     Ravening , 
     None ,
 };
+
+enum class HighlightType
+{
+    None,
+    Move,
+    Attack,
+    Ability,
+    Selected
+};
