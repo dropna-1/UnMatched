@@ -34,7 +34,7 @@ void ActionsView::Draw(Rectangle m, Stage* stage) {
     DrawRectangleRoundedLines(m, 0.1f, 1, WHITE);
     GuiSetStyle(BUTTON, BASE_COLOR_DISABLED, ColorToInt({25, 25, 25, 180}));
 
-    if(!game->canManever() || *stage != Stage::None)
+    if(*stage != Stage::None || !game->canManever())
         GuiSetState(STATE_DISABLED);
     else{
         GuiSetStyle(DEFAULT, TEXT_SIZE, 40);
@@ -50,7 +50,7 @@ void ActionsView::Draw(Rectangle m, Stage* stage) {
 
     GuiSetState(STATE_NORMAL);
 
-    if(!game->canAttack() || *stage != Stage::None)
+    if(*stage != Stage::None || !game->canAttack())
         GuiSetState(STATE_DISABLED);
     else{
         GuiSetStyle(BUTTON, BASE_COLOR_NORMAL, ColorToInt({90,0,0,255}));
@@ -58,12 +58,12 @@ void ActionsView::Draw(Rectangle m, Stage* stage) {
     }
 
     if (GuiButton(btnCombat, "Combat")) {
-        return;
+        *stage = Stage::SelectAttackCharacter;
     }
 
     GuiSetState(STATE_NORMAL);
 
-    if(!game->canPlayScheme() || *stage != Stage::None)
+    if(*stage != Stage::None || !game->canPlayScheme())
         GuiSetState(STATE_DISABLED);
     else{
         GuiSetStyle(BUTTON, BASE_COLOR_NORMAL, ColorToInt({140,140,0,255}));
@@ -71,7 +71,7 @@ void ActionsView::Draw(Rectangle m, Stage* stage) {
     }
 
     if (GuiButton(btnScheme, "Scheme")) {
-        return;
+        *stage = Stage::SelectSchemeCard;
     }
 
     GuiSetState(STATE_NORMAL);

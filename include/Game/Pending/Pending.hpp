@@ -18,33 +18,33 @@ class PendingAction {
 protected:
     bool finished = false;
 public:
-    virtual std::vector<Option> getOption(Game& game) = 0;
+    virtual std::vector<int> getOption(Game& game) = 0;
     virtual void submit(Game& game, int choice) = 0;
     bool isFinished() const;
 };
 /*-----------------------------------------------------------------*/
 class MoveAction : public PendingAction {
 private:
-    std::vector<Option> spaces;
+    std::vector<int> spaces;
     Character* currentCharacter;
     Character* otherCharacter;
     MoveMode mode;
     int range = 0;
 public:
     MoveAction(Character* current, Character* other, MoveMode mode, int value);
-    std::vector<Option> getOption(Game& game) override;
+    std::vector<int> getOption(Game& game) override;
     void submit(Game& game, int choice) override;
 };
 /*-----------------------------------------------------------------*/
 class RaveningAction : public PendingAction {
 private:
     std::vector<Character*> allCharacters;
-    std::vector<Option> spaces;
+    std::vector<int> spaces;
     Character* selected = nullptr;
     int stage = 0;
 public:
     RaveningAction(Game& game);
-    std::vector<Option> getOption(Game& game) override;
+    std::vector<int> getOption(Game& game) override;
     void submit(Game& game, int choice) override;
 };
 /*-----------------------------------------------------------------*/
@@ -56,7 +56,7 @@ private:
     int maxCards;
 public:
     ChooseCardAction(Player* player, int min, int max);
-    std::vector<Option> getOption(Game& game) override;
+    std::vector<int> getOption(Game& game) override;
     void submit(Game& game, int choice) override;
 };
 /*-----------------------------------------------------------------*/
@@ -65,13 +65,13 @@ private:
     Player* selected = nullptr;
 public:
     ShowCardAction(Player* player);
-    std::vector<Option> getOption(Game& game) override;
+    std::vector<int> getOption(Game& game) override;
     void submit(Game& game, int choice) override;
 };
 /*-----------------------------------------------------------------*/
 class DraculaAction : public PendingAction {
     std::vector<Character*> neighboors;
 public:
-    std::vector<Option> getOption(Game& game) override;
+    std::vector<int> getOption(Game& game) override;
     void submit(Game& game, int choice) override;
 };

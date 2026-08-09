@@ -76,8 +76,8 @@ void Game::setupGame(){
         currentPlayer->getHero()->getDeck()->drawCard();
         otherPlayer->getHero()->getDeck()->drawCard();
     }
-    // if(currentPlayer->getHero().get()->getAbility().get()->HasAbilityOnStart())
-    //     currentPlayer->getHero().get()->getAbility().get()->SendRequest(this);
+    if(currentPlayer->getHero().get()->getAbility().get()->HasAbilityOnStart())
+        currentPlayer->getHero().get()->getAbility().get()->SendRequest(this);
 }
 
 
@@ -175,13 +175,11 @@ vector<int> Game::getAvailableMoves(Character* character,
 }
 
 
-vector<Option> Game::getAllSpaces(){
-    vector<Option> allSpaces;
-
+vector<int> Game::getAllSpaces(){
+    vector<int> allSpaces;
     for(int space = 0; space < 32; space++)
         if(canMove(space))
-            allSpaces.push_back({"House", space});
-
+            allSpaces.push_back(space); 
     return allSpaces;
 }
 
@@ -271,33 +269,30 @@ vector<Character*> Game::getEnemiesNearby(){
     return enemies;
 }
 
-vector<Option> Game::getPlayableAttackCard(Character* attacker)
+vector<int> Game::getPlayableAttackCard(Character* attacker)
 {
-    vector<Option> playableCards;
+    vector<int> playableCards;
     bool ishero = attacker->isHero();
-    auto ahand =currentPlayer->getHero().get()->getDeck().get()->getHand();
+    auto ahand = currentPlayer->getHero().get()->getDeck().get()->getHand();
     for(int card = 0; card < ahand.size(); card++)
 
         if(ahand.at(card)->getType() == CardType::Attack || 
         ahand.at(card)->getType() == CardType::Versalite)
         {
             if(ahand.at(card)->getFighter() == FighterType::Any)
-                playableCards.push_back({ahand.at(card).get()->getName()+" | "+
-                    ahand.at(card).get()->getDescription(), card});
+                playableCards.push_back(card);
             else if(ishero && ahand.at(card)->getFighter() == FighterType::Hero)
-                playableCards.push_back({ahand.at(card).get()->getName()+" | "+
-                    ahand.at(card).get()->getDescription(), card});
+                playableCards.push_back(card);
             else if(!ishero && ahand.at(card)->getFighter() == FighterType::Sidekick)
-                playableCards.push_back({ahand.at(card).get()->getName()+" | "+
-                    ahand.at(card).get()->getDescription(), card}); 
+                playableCards.push_back(card); 
         }
     return playableCards;
 }
 
 
-vector<Option> Game::getPlayableDefenseCard(Character* defender)
+vector<int> Game::getPlayableDefenseCard(Character* defender)
 {
-    vector<Option> playableCards;
+    vector<int> playableCards;
     bool ishero = defender->isHero();
     auto dhand = otherPlayer->getHero().get()->getDeck().get()->getHand();
     for(int card = 0; card < dhand.size(); card++)
@@ -306,33 +301,28 @@ vector<Option> Game::getPlayableDefenseCard(Character* defender)
         dhand.at(card)->getType() == CardType::Versalite)
         {
             if(dhand.at(card)->getFighter() == FighterType::Any)
-                playableCards.push_back({dhand.at(card).get()->getName()+" | "+
-                    dhand.at(card).get()->getDescription(), card});
+                playableCards.push_back(card);
             else if(ishero && dhand.at(card)->getFighter() == FighterType::Hero)
-                playableCards.push_back({dhand.at(card).get()->getName()+" | "+
-                    dhand.at(card).get()->getDescription(), card});
+                playableCards.push_back(card);
             else if(!ishero && dhand.at(card)->getFighter() == FighterType::Sidekick)
-                playableCards.push_back({dhand.at(card).get()->getName()+" | "+
-                    dhand.at(card).get()->getDescription(), card});
+                playableCards.push_back(card);
         }
     return playableCards;
 }
 
 
-vector<Option> Game::getSchemeCards(Character* character)
+vector<int> Game::getSchemeCards(Character* character)
 {
-    vector<Option> playableCards;
+    vector<int> playableCards;
     bool ishero = character->isHero();
     auto ahand = otherPlayer->getHero().get()->getDeck().get()->getHand();
     for(int card = 0; card < ahand.size(); card++)
         if(ahand.at(card).get()->getType() == CardType::Scheme)
         {
             if(ishero && ahand.at(card).get()->getFighter() == FighterType::Hero)
-                playableCards.push_back({ahand.at(card).get()->getName()+" | "+
-                    ahand.at(card).get()->getDescription(), card});
+                playableCards.push_back(card);
             else if(!ishero && ahand.at(card).get()->getFighter() == FighterType::Sidekick)
-                playableCards.push_back({ahand.at(card).get()->getName()+" | "+
-                    ahand.at(card).get()->getDescription(), card});
+                playableCards.push_back(card);
         }
     return playableCards;
 }

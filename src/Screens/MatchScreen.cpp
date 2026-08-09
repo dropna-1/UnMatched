@@ -4,6 +4,7 @@
 #include "Game/Game.hpp"
 #include "Game/Cards/Deck.hpp"
 #include "Game/Enums/TypeEnums.hpp"
+#include "Game/Pending/Pending.hpp"
 #include "raygui.h"
 
 MatchScreen::MatchScreen(ScreenManager* mgr) {
@@ -71,7 +72,20 @@ void MatchScreen::Draw() {
         );
         HandleSidekickPlacement(game);
     }
-    else if(stage == Stage::SelectManeuverCharacter){
+    if(stage == Stage::None){
+        if(game.hasPendingAction()){
+            if(dynamic_cast<DraculaAction*>(game.currentPendingAction()) != nullptr)
+                stage = Stage::ChoiceNeighboor;
+        }
+    }
+    if(stage == Stage::ChoiceNeighboor){
+        std::vector<int> neighboors = game.currentPendingAction()->getOption(game);
+        if(!neighboors.empty()){
+            board.HighlightSpaces(neighboors, HighlightType::None);
+            HandleAbility(game);
+        } else {stage = Stage::None;}
+    }
+    if(stage == Stage::SelectManeuverCharacter){
         std::vector<int> characterPlaces;
         for(auto c : game.getCurrentPlayer()->getAllCharacters())
             if(!game.getFreeSpacesNearby(c).empty())
@@ -79,7 +93,7 @@ void MatchScreen::Draw() {
         board.HighlightSpaces(characterPlaces, HighlightType::None);
         HandleCharacterSelect(game);
     }
-    else if(stage == Stage::ChoiceNode){
+    if(stage == Stage::ChoiceNode){
         board.HighlightSpaces(
             game.getAvailableMoves(selected, selected->getMovement()), 
             HighlightType::Move
@@ -136,8 +150,9 @@ void MatchScreen::HandleSidekickPlacement(Game& game){
         if(canChange == true){
             if(stage == Stage::SideKickPlacementP1)
                 stage = Stage::SideKickPlacementP2;
-            else
+            else{
                 stage = Stage::None;
+            }
             board.ClearHighlightedSpaces();
             game.changeTurn();
         }
@@ -159,12 +174,27 @@ void MatchScreen::HandleCharacterSelect(Game& game){
 
 void MatchScreen::HandleMove(Game& game){
     int space = board.GetClickedSpace(); 
-        if(space != -1){
-            game.performManeuver(selected, space);
-            board.ClearHighlightedSpaces();
-            selected = nullptr;
-            stage = Stage::None;
-        }
+    if(space != -1){
+        game.performManeuver(selected, space);
+        board.ClearHighlightedSpaces();
+        selected = nullptr;
+        stage = Stage::None;
+    }
+}
+
+void MatchScreen::HandleAbility(Game& game){
+    int space = board.GetClickedSpace(); 
+    if(space != -1){
+        for(const auto& c : game.getEnemiesNearby())
+            if(c->getPosition() == space){
+                PendingAction* action = game.currentPendingAction();
+                action->submit(game, space);
+                game.completePendingAction();
+                break;
+            }
+        board.ClearHighlightedSpaces();
+        stage = Stage::None;
+    }
 }
 
 

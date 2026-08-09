@@ -95,7 +95,7 @@ public:
     const std::vector<std::shared_ptr<Card>>& showOtherHand();
     /*-----------------------------------------------------------------*/
     std::vector<int> getAvailableMoves(Character* character, const int& spacing);
-    std::vector<Option> getAllSpaces();
+    std::vector<int> getAllSpaces();
     bool canMove(int to) const;
     void move(Character* character, const int& pos);
     int boost(Character* self, const int& cardIndex);
@@ -114,14 +114,14 @@ public:
     void resetAction();
     /*------------------------------------------------------------------*/
     std::vector<AttackOption> getAttackableTargets();
-    std::vector<Option> getPlayableAttackCard(Character* attacker);
-    std::vector<Option> getPlayableDefenseCard(Character* defender);
+    std::vector<int> getPlayableAttackCard(Character* attacker);
+    std::vector<int> getPlayableDefenseCard(Character* defender);
     bool canDefense(Character* character);
     bool canAttack();
     std::vector<Character*> getEnemiesNearby();
     /*------------------------------------------------------------------*/
     void playScheme(Character* source, const int& schemeCardIndex);
-    std::vector<Option> getSchemeCards(Character* character);
+    std::vector<int> getSchemeCards(Character* character);
     bool canPlayScheme();
     /*------------------------------------------------------------------*/
     int calculateDamage(Card* attack, Card* defense);

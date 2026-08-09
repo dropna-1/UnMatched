@@ -27,6 +27,7 @@ private:
     void HandleSidekickPlacement(Game& game);
     void HandleCharacterSelect(Game& game);
     void HandleMove(Game& game);
+    void HandleAbility(Game& game);
     void FillMessage();
 
 public:

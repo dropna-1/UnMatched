@@ -14,26 +14,26 @@ currentCharacter(current), otherCharacter(other),
 mode(mode), range(value) {}
 
 
-vector<Option> MoveAction::getOption(Game& game){
-    // if(mode == MoveMode::Range){
-    //     spaces = game.getAvailableMoves(currentCharacter, range);
-    //     return spaces;
-    // }
+vector<int> MoveAction::getOption(Game& game){
+    if(mode == MoveMode::Range){
+        spaces = game.getAvailableMoves(currentCharacter, range);
+        return spaces;
+    }
     if(mode == MoveMode::AnySpace){
         spaces = game.getAllSpaces();
         return spaces;
     }
-    // if(mode == MoveMode::Zone){
-    //     spaces = game.getSidekickPlacement(currentCharacter);
-    //     return spaces;
-    // }
-    // spaces = game.getFreeSpacesNearby(otherCharacter);
+    if(mode == MoveMode::Zone){
+        spaces = game.getSidekickPlacement(currentCharacter);
+        return spaces;
+    }
+    spaces = game.getFreeSpacesNearby(otherCharacter);
     return spaces;
 }
 
 
 void MoveAction::submit(Game& game, int choice){
-    game.getPendingCombat().get()->selection.destination = spaces.at(choice).id;
+    game.getPendingCombat().get()->selection.destination = spaces.at(choice);
     finished = true;
 }
 /*-----------------------------------------------------------------*/
@@ -46,14 +46,14 @@ RaveningAction::RaveningAction(Game& game){
     }
 }
 
-std::vector<Option> RaveningAction::getOption(Game& game){
+std::vector<int> RaveningAction::getOption(Game& game){
     if(stage == 0){
-        vector<Option> options;
+        vector<int> options;
         for(int id = 0; id < allCharacters.size(); id++)
-            options.push_back({allCharacters.at(id)->getname(), id});
+            options.push_back(id);
         return options;
     }
-    // spaces = game.getAvailableMoves(selected, 2);
+    spaces = game.getAvailableMoves(selected, 2);
     return spaces;
 }
 
@@ -65,7 +65,7 @@ void RaveningAction::submit(Game& game, int choice){
     }
     else{
         game.getPendingCombat().get()->selection.character = selected;
-        game.getPendingCombat().get()->selection.destination = spaces.at(choice).id;
+        game.getPendingCombat().get()->selection.destination = spaces.at(choice);
         finished = true;
     }
 }
@@ -73,8 +73,8 @@ void RaveningAction::submit(Game& game, int choice){
 ChooseCardAction::ChooseCardAction(Player* player, int min, int max) : 
 selected(player), minCards(min), maxCards(max) {}
 
-std::vector<Option> ChooseCardAction::getOption(Game& game){
-    vector<Option> options;
+std::vector<int> ChooseCardAction::getOption(Game& game){
+    vector<int> options;
 
     auto hand = selected->getHero().get()->getDeck().get()->getHand();
     for(int id = 0; id < hand.size(); id++){
@@ -84,10 +84,10 @@ std::vector<Option> ChooseCardAction::getOption(Game& game){
             if(card == id){selected = true; break;}
         }
         if(!selected)
-            options.push_back({hand.at(id).get()->getName(), id});
+            options.push_back(id);
     }
     if(selectedCards.size() >= minCards)
-        options.push_back({"Done", -1});
+        options.push_back(-1);
 
     return options;
 }
@@ -108,14 +108,14 @@ void ChooseCardAction::submit(Game& game, int choice=-1){
 /*-----------------------------------------------------------------*/
 ShowCardAction::ShowCardAction(Player* player) : selected(player) {}
 
-std::vector<Option> ShowCardAction::getOption(Game& game){
-    vector<Option> options;
+std::vector<int> ShowCardAction::getOption(Game& game){
+    vector<int> options;
 
     auto hand = selected->getHero().get()->getDeck().get()->getHand();
     for(int id = 0; id < hand.size(); id++)
-        options.push_back({hand.at(id).get()->getName(), id});
+        options.push_back(id);
 
-    options.push_back({"Continue", -1});
+    options.push_back(-1);
     return options;
 }
 
@@ -124,20 +124,24 @@ void ShowCardAction::submit(Game& game, int choice){
     finished = true;
 }
 /*-----------------------------------------------------------------*/
-std::vector<Option> DraculaAction::getOption(Game& game){
-    vector<Option> options;
+std::vector<int> DraculaAction::getOption(Game& game){
+    vector<int> options;
     neighboors = game.getEnemiesNearby();
-    for(int c = 0; c < neighboors.size(); c++)
-        options.push_back({neighboors.at(c)->getname(), c});
-    options.push_back({"Continue", -1});
+    for(Character* c : neighboors)
+        options.push_back(c->getPosition());
     return options;
 }
 
 void DraculaAction::submit(Game& game, int choice){
-    if(choice != -1)
-        game.getDracula().get()->getAbility().get()->execute(
-            neighboors.at(choice), game.getDracula().get()
-        );
+    if(choice != -1){
+        for(Character* c : neighboors)
+            if(c->getPosition() == choice){
+                game.getDracula().get()->getAbility().get()->execute(
+                    c, game.getDracula().get()
+                );
+                break;
+            }
+    }
     finished = true;
 }
 
