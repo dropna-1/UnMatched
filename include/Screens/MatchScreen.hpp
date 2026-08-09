@@ -21,9 +21,13 @@ private:
     HandView hand;
     ActionsView actions;
     Stage stage = Stage::SideKickPlacementP1;
-    void HandleSidekickPlacement(Game& game);
-    void FillMessage();
     map<Stage, std::string> message;
+    Character* selected = nullptr;
+
+    void HandleSidekickPlacement(Game& game);
+    void HandleCharacterSelect(Game& game);
+    void HandleMove(Game& game);
+    void FillMessage();
 
 public:
     explicit MatchScreen(ScreenManager* man);

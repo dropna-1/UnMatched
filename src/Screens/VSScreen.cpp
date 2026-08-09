@@ -6,28 +6,19 @@
 
 VSScreen::VSScreen(ScreenManager* mgr) {
     this->manager = mgr;
-    cout << "1" << endl;
 
     font = LoadFontEx("external/font/Griffy-Regular.ttf", 120, 0, 0);
-    cout << "2" << endl;
-
     font2 = LoadFontEx("external/font/RubikDirt-Regular.ttf", 64, 0, 0);
-    cout << "3" << endl;
 
     SetTextureFilter(font.texture, TEXTURE_FILTER_POINT);
-    cout << "4" << endl;
 
     background = LoadTexture("external/images/vs.jpg");
-    cout << "5" << endl;
 
     heroes = GetAllHeroes();
-    cout << "6" << endl;
 
     for (auto& hero : heroes) {
-        cout << "7" << endl;
         hero.texture = LoadTexture(hero.imagePath.c_str());
         if (hero.texture.id != 0) {
-            cout << "8" << endl;
             SetTextureFilter(hero.texture, TEXTURE_FILTER_BILINEAR);
         }
     }

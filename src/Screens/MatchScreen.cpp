@@ -71,11 +71,21 @@ void MatchScreen::Draw() {
         );
         HandleSidekickPlacement(game);
     }
-    // else if(stage == Stage::SelectManeuverCharacter){
-    //     std::vector<int> characterPlaces;
-    //     for(auto c : game.getOtherPlayer()->getAllCharacters())
-    //         characterPlaces.push_back(c->getPosition());
-    // }
+    else if(stage == Stage::SelectManeuverCharacter){
+        std::vector<int> characterPlaces;
+        for(auto c : game.getCurrentPlayer()->getAllCharacters())
+            if(!game.getFreeSpacesNearby(c).empty())
+                characterPlaces.push_back(c->getPosition());
+        board.HighlightSpaces(characterPlaces, HighlightType::None);
+        HandleCharacterSelect(game);
+    }
+    else if(stage == Stage::ChoiceNode){
+        board.HighlightSpaces(
+            game.getAvailableMoves(selected, selected->getMovement()), 
+            HighlightType::Move
+        );
+        HandleMove(game);
+    }
         
     status.DrawPlayerPanel(*game.getCurrentPlayer(), 2, 46, x/6, boardH-26);
     status.DrawPlayerPanel(*game.getOtherPlayer(), (x*5)/6-2, 46, x/6, boardH-26);
@@ -144,6 +154,31 @@ void MatchScreen::HandleSidekickPlacement(Game& game){
         }
 }
 
+void MatchScreen::HandleCharacterSelect(Game& game){
+    int space = board.GetClickedSpace(); 
+    if(space != -1){
+        for(const auto& c : game.getCurrentPlayer()->getAllCharacters()){
+            if(c->getPosition() == space){
+                selected = c;
+                board.ClearHighlightedSpaces();
+                stage = Stage::ChoiceNode;
+                break;
+            }
+        }
+    }
+}
+
+void MatchScreen::HandleMove(Game& game){
+    int space = board.GetClickedSpace(); 
+        if(space != -1){
+            game.performManeuver(selected, space);
+            board.ClearHighlightedSpaces();
+            selected = nullptr;
+            stage = Stage::None;
+        }
+}
+
+
 void MatchScreen::FillMessage(){
     message.insert({Stage::SideKickPlacementP1, 
         manager->GetGame().getCurrentPlayer()->getName() + ", Set a Location for your sidekick/s"});
@@ -153,4 +188,6 @@ void MatchScreen::FillMessage(){
         manager->GetGame().getCurrentPlayer()->getName() + ", Make your move"});
     message.insert({Stage::SelectManeuverCharacter,
         manager->GetGame().getCurrentPlayer()->getName() + ", Choose the character you want to move"});
+    message.insert({Stage::ChoiceNode,
+        manager->GetGame().getCurrentPlayer()->getName() + ", Choose the place you want to go"});
 }
