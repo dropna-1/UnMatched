@@ -1,6 +1,8 @@
 #pragma once
 
 #include "layout.hpp"
+#include <vector>
+#include <unordered_set>
 #include "Screens/CardView.hpp"
 
 class Deck;
@@ -32,16 +34,22 @@ class HandView
             const Deck& deck,
             const Layout& layout
         ) const ;
-        int GetClickedCard(const Deck& deck, Rectangle area) const ;
+        void HighlightCards(const std::vector<int>& indices);
+
         void ClearHighlightedCards();
-        void HighlightCards(const std::vector<int>& indices, HighlightType type);
+
         bool IsHighlighted(int index) const;
 
+        int GetClickedCard(
+            const Deck& deck,
+            Rectangle area
+        ) const;
     private:
 
         void DrawCard(
             const Card& card,
-            const CardTransform& transform
+            const CardTransform& t,
+            bool playable
         ) const;
 
 
@@ -56,7 +64,7 @@ class HandView
             const Layout&,
             bool hovered
         ) const;
-        std::unordered_map<int, HighlightType> highlightedCards;
+        std::unordered_set<int> highlightedCards;
         
 
 };

@@ -20,7 +20,11 @@ void HandView::Draw(
 
     layout.s = std::min(layout.sx, layout.sy);
 
-    DrawRectangleLinesEx(layout.panel, layout.S(3), BLACK);
+    DrawRectangleLinesEx(
+        layout.panel,
+        layout.S(3),
+        BLACK
+    );
 
     const auto& hand = deck.getHand();
 
@@ -28,10 +32,12 @@ void HandView::Draw(
 
     int hovered = GetHoveredCard(deck, layout);
 
-    for (int i = 0; i < count; i++)
+
+    for(int i = 0; i < count; i++)
     {
-        if (i == hovered)
+        if(i == hovered)
             continue;
+
 
         DrawCard(
             *hand[i],
@@ -40,11 +46,13 @@ void HandView::Draw(
                 count,
                 layout,
                 false
-            )
+            ),
+            IsHighlighted(i)
         );
     }
 
-    if (hovered != -1)
+
+    if(hovered != -1)
     {
         DrawCard(
             *hand[hovered],
@@ -53,7 +61,8 @@ void HandView::Draw(
                 count,
                 layout,
                 true
-            )
+            ),
+            IsHighlighted(hovered)
         );
     }
 }
@@ -115,8 +124,8 @@ int HandView::GetHoveredCard(
 
 void HandView::DrawCard(
     const Card& card,
-    const CardTransform& t
-) const
+    const CardTransform& t,
+    bool playable) const
 {
     Texture2D tex = cardView.getCardView(card);
 
@@ -142,13 +151,17 @@ void HandView::DrawCard(
         t.height
     };
 
+    Color tint = playable
+        ? WHITE
+        : Fade(WHITE, 0.55f);
+
     DrawTexturePro(
         tex,
         src,
         dst,
         origin,
         t.rotation,
-        WHITE
+        tint
     );
 }
 
@@ -214,10 +227,10 @@ CardTransform HandView::GetCardTransform(
     return t;
 }
 
-void HandView::HighlightCards(const std::vector<int>& indices, HighlightType type)
+void HandView::HighlightCards(const std::vector<int>& indices)
 {
-    for (int i : indices)
-        highlightedCards[i] = type;
+    for(int i : indices)
+        highlightedCards.insert(i);
 }
 
 void HandView::ClearHighlightedCards()
@@ -230,26 +243,30 @@ bool HandView::IsHighlighted(int index) const
     return highlightedCards.find(index) != highlightedCards.end();
 }
 
-int HandView::GetClickedCard(const Deck& deck, Rectangle area) const
+int HandView::GetClickedCard(
+    const Deck& deck,
+    Rectangle area
+) const
 {
-    if (!IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
+    if(!IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
         return -1;
 
     Layout layout;
+
     layout.panel = area;
-    layout.sx = area.width  / DESIGN_HAND_WIDTH;
+
+    layout.sx = area.width / DESIGN_HAND_WIDTH;
     layout.sy = area.height / DESIGN_HAND_HEIGHT;
-    layout.s  = std::min(layout.sx, layout.sy);
+
+    layout.s = std::min(layout.sx, layout.sy);
 
     int hovered = GetHoveredCard(deck, layout);
 
-    if (hovered == -1)
+    if(hovered == -1)
         return -1;
 
-    // فقط کارت‌های هایلایت‌شده رو قبول کن
-    if (IsHighlighted(hovered))
+    if(IsHighlighted(hovered))
         return hovered;
 
     return -1;
 }
-
