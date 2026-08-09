@@ -15,10 +15,10 @@ mode(mode), range(value) {}
 
 
 vector<Option> MoveAction::getOption(Game& game){
-    if(mode == MoveMode::Range){
-        spaces = game.getAvailableMoves(currentCharacter, range);
-        return spaces;
-    }
+    // if(mode == MoveMode::Range){
+    //     spaces = game.getAvailableMoves(currentCharacter, range);
+    //     return spaces;
+    // }
     if(mode == MoveMode::AnySpace){
         spaces = game.getAllSpaces();
         return spaces;
@@ -27,7 +27,7 @@ vector<Option> MoveAction::getOption(Game& game){
     //     spaces = game.getSidekickPlacement(currentCharacter);
     //     return spaces;
     // }
-    spaces = game.getFreeSpacesNearby(otherCharacter);
+    // spaces = game.getFreeSpacesNearby(otherCharacter);
     return spaces;
 }
 
@@ -53,7 +53,7 @@ std::vector<Option> RaveningAction::getOption(Game& game){
             options.push_back({allCharacters.at(id)->getname(), id});
         return options;
     }
-    spaces = game.getAvailableMoves(selected, 2);
+    // spaces = game.getAvailableMoves(selected, 2);
     return spaces;
 }
 

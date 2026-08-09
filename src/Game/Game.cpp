@@ -115,10 +115,10 @@ int Game::getRemainingActions() const{
 }
 
 
-vector<Option> Game::getAvailableMoves(Character* character, 
+vector<int> Game::getAvailableMoves(Character* character, 
     const int& spacing)
 {
-    vector<Option> reachable;
+    vector<int> reachable;
     queue<pair<int, int>> q;
     vector<bool> visited(board.size(), false);
 
@@ -167,7 +167,7 @@ vector<Option> Game::getAvailableMoves(Character* character,
             q.push({next, dist+1});
   
             if(!dom)
-                reachable.push_back({"House", next});
+                reachable.push_back(next);
         }
     }
     sort(reachable.begin(), reachable.end());
@@ -185,11 +185,11 @@ vector<Option> Game::getAllSpaces(){
     return allSpaces;
 }
 
-vector<Option> Game::getFreeSpacesNearby(Character* character){
-    vector<Option> freeSpaces;
+vector<int> Game::getFreeSpacesNearby(Character* character){
+    vector<int> freeSpaces;
     for(int neigh : board.getSpace(character->getPosition()).neighbors)
         if(canMove(neigh))
-            freeSpaces.push_back({"House", neigh});
+            freeSpaces.push_back(neigh);
     return freeSpaces;
 }
 
