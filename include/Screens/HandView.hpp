@@ -32,7 +32,10 @@ class HandView
             const Deck& deck,
             const Layout& layout
         ) const ;
-        
+        int GetClickedCard(const Deck& deck, Rectangle area) const ;
+        void ClearHighlightedCards();
+        void HighlightCards(const std::vector<int>& indices, HighlightType type);
+        bool IsHighlighted(int index) const;
 
     private:
 
@@ -53,4 +56,7 @@ class HandView
             const Layout&,
             bool hovered
         ) const;
+        std::unordered_map<int, HighlightType> highlightedCards;
+        
+
 };

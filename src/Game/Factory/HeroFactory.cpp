@@ -25,3 +25,9 @@ shared_ptr<Hero> HeroFactory::createDracula()
     hero->addSidekick(make_shared<SideKick>("Sister 3" , 1 , 2 , AttackType::Ranged)) ;
     return hero ;
 }
+
+shared_ptr<Hero> HeroFactory::createInvisibleMan()
+{
+    auto hero = make_shared<Hero>("Invisible Man" , 15 , 2 , AttackType::Melee , HeroType::InvisibleMan);
+    return hero ; 
+}

@@ -213,3 +213,43 @@ CardTransform HandView::GetCardTransform(
 
     return t;
 }
+
+void HandView::HighlightCards(const std::vector<int>& indices, HighlightType type)
+{
+    for (int i : indices)
+        highlightedCards[i] = type;
+}
+
+void HandView::ClearHighlightedCards()
+{
+    highlightedCards.clear();
+}
+
+bool HandView::IsHighlighted(int index) const
+{
+    return highlightedCards.find(index) != highlightedCards.end();
+}
+
+int HandView::GetClickedCard(const Deck& deck, Rectangle area) const
+{
+    if (!IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
+        return -1;
+
+    Layout layout;
+    layout.panel = area;
+    layout.sx = area.width  / DESIGN_HAND_WIDTH;
+    layout.sy = area.height / DESIGN_HAND_HEIGHT;
+    layout.s  = std::min(layout.sx, layout.sy);
+
+    int hovered = GetHoveredCard(deck, layout);
+
+    if (hovered == -1)
+        return -1;
+
+    // فقط کارت‌های هایلایت‌شده رو قبول کن
+    if (IsHighlighted(hovered))
+        return hovered;
+
+    return -1;
+}
+

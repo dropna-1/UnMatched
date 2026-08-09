@@ -82,6 +82,17 @@ void MatchScreen::Draw() {
 
     Rectangle h = {(x*2)/3, boardH+20, x/3, y/3-30-20};
     hand.Draw(*game.getCurrentPlayer()->getHero()->getDeck(), h);
+    // وقتی می‌خوای کارت‌ها رو قابل کلیک کنی:
+    hand.HighlightCards({0, 2, 4}, HighlightType::Move);   // مثال
+
+    // تو حلقه‌ی اصلی بازی:
+    int clickedIndex = hand.GetClickedCard(*game.getCurrentPlayer()->getHero()->getDeck(), h);
+
+    if (clickedIndex != -1)
+    {
+        // فقط وقتی وارد می‌شه که روی کارت هایلایت‌شده کلیک شده باشه
+        // ...
+}
 
     Rectangle b = {2, y*7/9, x/4-2, y/4-30-30-10};
     actions.Draw(b, &stage);
