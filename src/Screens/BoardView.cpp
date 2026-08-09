@@ -17,10 +17,10 @@ Texture2D BoardView::getCharacterPic(const Character& character) const
 {
     if(character.getname() == "Sherlock")
         return shertoken ;
-    /*else if(character.getname() == "Dracula")
+    else if(character.getname() == "Dracula")
     {
-        return 
-    }*/
+        return dractoken ;
+    }
     else if(character.getname() == "Dr.Watson")
     {
         return watsontoken ;
@@ -69,17 +69,16 @@ BoardView::BoardView()
 {
     background = LoadTexture(
         "external/images/Board/BoardBack.png");
-    
     node = LoadTexture(
         "external/images/Board/node6.png") ;
     font = LoadFontEx(
         "external/font/GermaniaOne-Regular.ttf" , 40 , nullptr, 0 ) ;
-    //dractoken = LoadTexture("external/images/dracula/")
+    dractoken = LoadTexture("external/images/Board/draculao.png") ;
     watsontoken = LoadTexture("external/images/Board/watsono (1).png");
     shertoken = LoadTexture("external/images/Board/sherlocko (1).png") ;
     agathatoken = LoadTexture("external/images/Board/agathao (1).png");
     lucytoken = LoadTexture("external/images/Board/lucyo (1).png") ;
-    minatoken = LoadTexture("external/images/dracula/minao (1).png") ;
+    minatoken = LoadTexture("external/images/Board/minao (1).png") ;
     SetTextureFilter(node , TEXTURE_FILTER_BILINEAR) ;
 }
 
@@ -558,11 +557,15 @@ void BoardView::DrawCharacter(const Character& character,
 {
     if(!character.isAlive())
         return;
-
+    int charpos = character.getPosition() ; 
+    if(charpos < 0 || charpos > 31)
+    {
+        return ;
+    }
     Vector2 pos =
         GetSpacePosition(character.getPosition(), layout);
 
-    const float size = layout.S(56);
+    const float size = layout.S(80);
     auto charToken = getCharacterPic(character);  //token ;;
     Rectangle source =
     {
@@ -607,7 +610,6 @@ void BoardView::DrawCharacters(
 
         if(!character->isAlive())
             continue;
-
         DrawCharacter(*character, layout);
     }
 }
@@ -629,7 +631,11 @@ int BoardView::GetClickedSpace() const
             zone.radius
         ))
         {
-            return zone.id;
+            if(IsHighlighted(zone.id))
+            {
+                            return zone.id;
+            }
+            return -1 ;
         }
     }
 
