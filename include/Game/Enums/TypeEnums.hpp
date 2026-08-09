@@ -79,3 +79,15 @@ enum class HighlightType
     Ability,
     Selected
 };
+
+enum class Stage {
+    SideKickPlacementP1,
+    SideKickPlacementP2,
+    SelectManeuverCharacter,
+    ChoiceNode,
+    SelectAttackCharacter,
+    SelectAttackCard,
+    SelectDefenseCard,
+    SelectSchemeCard,
+    None
+};

@@ -71,6 +71,11 @@ void MatchScreen::Draw() {
         );
         HandleSidekickPlacement(game);
     }
+    // else if(stage == Stage::SelectManeuverCharacter){
+    //     std::vector<int> characterPlaces;
+    //     for(auto c : game.getOtherPlayer()->getAllCharacters())
+    //         characterPlaces.push_back(c->getPosition());
+    // }
         
     status.DrawPlayerPanel(*game.getCurrentPlayer(), 2, 46, x/6, boardH-26);
     status.DrawPlayerPanel(*game.getOtherPlayer(), (x*5)/6-2, 46, x/6, boardH-26);
@@ -78,11 +83,11 @@ void MatchScreen::Draw() {
     Rectangle h = {(x*2)/3, boardH+20, x/3, y/3-30-20};
     hand.Draw(*game.getCurrentPlayer()->getHero()->getDeck(), h);
 
-    Rectangle b = {2, y-40-(y/4-70), x/4-2, y/4-30-30-10};
-    actions.Draw(b);
+    Rectangle b = {2, y*7/9, x/4-2, y/4-30-30-10};
+    actions.Draw(b, &stage);
 
-    DrawRectangleRoundedLines({x/4+10, y-70, x/3, 30}, 0.1f, 1, WHITE);
-    DrawTextEx(font, message[stage].c_str(), (Vector2){x/4+17, y-30-40}, 30, 0.7f, GOLD);
+    DrawRectangleRoundedLines({x/4+10, (y*7/9) + (y/4-30-30-10) - (30), x/3, 30}, 0.1f, 1, WHITE);
+    DrawTextEx(font, message[stage].c_str(), (Vector2){x/4+17, (y*7/9) + (y/4-100)}, 30, 0.7f, GOLD);
 
     GuiSetStyle(DEFAULT, TEXT_SIZE, 24);
     GuiSetFont(font);
@@ -135,4 +140,6 @@ void MatchScreen::FillMessage(){
         manager->GetGame().getOtherPlayer()->getName() + ", Set a Location for your sidekick/s"});
     message.insert({Stage::None, 
         manager->GetGame().getCurrentPlayer()->getName() + ", Make your move"});
+    message.insert({Stage::SelectManeuverCharacter,
+        manager->GetGame().getCurrentPlayer()->getName() + ", Choose the character you want to move"});
 }

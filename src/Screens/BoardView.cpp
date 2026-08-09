@@ -556,7 +556,7 @@ Vector2 BoardView::GetSpacePosition(int id, const Layout& layout) const
 void BoardView::DrawCharacter(const Character& character,
                               const Layout& layout) const
 {
-    if(!character.isAlive())
+    if(!character.isAlive() || character.getPosition() < 0)
         return;
 
     Vector2 pos =

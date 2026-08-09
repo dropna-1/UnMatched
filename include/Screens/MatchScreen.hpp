@@ -8,18 +8,6 @@
 #include "HandView.hpp"
 #include "ActionsView.hpp"
 
-enum class Stage {
-    SideKickPlacementP1,
-    SideKickPlacementP2,
-    SelectManeuverCharacter,
-    ChoiceNode,
-    SelectAttackCharacter,
-    SelectAttackCard,
-    SelectDefenseCard,
-    SelectSchemeCard,
-    None
-};
-
 class ScreenManager;
 
 class MatchScreen : public IScreen {
