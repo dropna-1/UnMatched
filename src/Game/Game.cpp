@@ -377,10 +377,11 @@ vector<AttackOption> Game::getAttackableTargets()
 {
     vector<AttackOption> targets;
     for(Character* self : currentPlayer->getAllCharacters())
-        for(int neighbor : board.getSpace(self->getPosition()).neighbors)
-            for(Character* enemy : otherPlayer->getAllCharacters())
-                if(neighbor == enemy->getPosition())
-                    targets.push_back({self, enemy});
+        if(self->getPosition() != -1)
+            for(int neighbor : board.getSpace(self->getPosition()).neighbors)
+                for(Character* enemy : otherPlayer->getAllCharacters())
+                    if(neighbor == enemy->getPosition())
+                        targets.push_back({self, enemy});
     return targets;
 }
 

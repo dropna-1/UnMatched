@@ -1,5 +1,6 @@
 #pragma once
 #include "raylib.h"
+#include "Game/Enums/TypeEnums.hpp"
 #include <memory>
 
 class Game;
@@ -16,5 +17,5 @@ public:
     // explicit ActionsView();
     void setGame(Game* game);
     // ~ActionsView();
-    void Draw(Rectangle m);
+    void Draw(Rectangle m, Stage* stage);
 };
