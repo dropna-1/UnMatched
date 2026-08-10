@@ -20,10 +20,12 @@ void HandView::Draw(
 
     layout.s = std::min(layout.sx, layout.sy);
 
+    currentLayout = layout ;
+
     DrawRectangleLinesEx(
         layout.panel,
         layout.S(3),
-        BLACK
+        RED
     );
 
     const auto& hand = deck.getHand();
@@ -151,18 +153,34 @@ void HandView::DrawCard(
         t.height
     };
 
-    Color tint = playable
-        ? WHITE
-        : Fade(WHITE, 0.55f);
-
+    // خود کارت کاملاً عادی رسم می‌شود
     DrawTexturePro(
         tex,
         src,
         dst,
         origin,
         t.rotation,
-        tint
+        WHITE
     );
+
+    // کارت غیرقابل بازی → لایه مشکی
+    if(!playable)
+    {
+        DrawRectanglePro(
+            {
+                t.pivot.x,
+                t.pivot.y,
+                t.width,
+                t.height
+            },
+            {
+                t.width / 2,
+                t.height
+            },
+            t.rotation,
+            Fade(BLACK, 0.45f)
+        );
+    }
 }
 
 
@@ -244,23 +262,16 @@ bool HandView::IsHighlighted(int index) const
 }
 
 int HandView::GetClickedCard(
-    const Deck& deck,
-    Rectangle area
+    const Deck& deck
 ) const
 {
     if(!IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
         return -1;
 
-    Layout layout;
-
-    layout.panel = area;
-
-    layout.sx = area.width / DESIGN_HAND_WIDTH;
-    layout.sy = area.height / DESIGN_HAND_HEIGHT;
-
-    layout.s = std::min(layout.sx, layout.sy);
-
-    int hovered = GetHoveredCard(deck, layout);
+    int hovered = GetHoveredCard(
+        deck,
+        currentLayout
+    );
 
     if(hovered == -1)
         return -1;

@@ -41,11 +41,10 @@ class HandView
         bool IsHighlighted(int index) const;
 
         int GetClickedCard(
-            const Deck& deck,
-            Rectangle area
+            const Deck& deck
         ) const;
     private:
-
+        mutable Layout currentLayout;
         void DrawCard(
             const Card& card,
             const CardTransform& t,
