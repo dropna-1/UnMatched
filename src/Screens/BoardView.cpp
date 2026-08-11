@@ -80,6 +80,8 @@ BoardView::BoardView()
     lucytoken = LoadTexture("external/images/Board/lucyo (1).png") ;
     minatoken = LoadTexture("external/images/Board/minao (1).png") ;
     SetTextureFilter(node , TEXTURE_FILTER_BILINEAR) ;
+    secretIcon = LoadTexture("external/images/Board/secret1.png");
+    SetTextureFilter( secretIcon, TEXTURE_FILTER_BILINEAR);
 }
 
 void BoardView::HighlightSpaces(
@@ -127,6 +129,7 @@ void BoardView::Draw(const Board& board,
     DrawConnections(board, layout);
     DrawSpaces(board,layout);
     DrawCharacters(first, second, layout);
+    DrawSecretPassages(board, layout);
     DrawFrame(layout);
     
 }
@@ -643,6 +646,70 @@ int BoardView::GetClickedSpace() const
     return -1;
 }
 
+void BoardView::DrawSecretPassages(
+    const Board& board,
+    const Layout& layout
+) const
+{
+    for(const auto& s : spaces)
+    {
+        const Space& space = board.getSpace(s.id);
+
+        // این خانه Secret Passage ندارد
+        if(space.secret.empty())
+            continue;
+
+        Vector2 pos =
+        {
+            layout.X(s.pos.x),
+            layout.Y(s.pos.y)
+        };
+
+        // اندازه Node
+        float nodeSize = layout.S(90);
+        float radius = nodeSize * 0.34f;
+
+        // اندازه آیکون
+        float iconSize = layout.S(22);
+
+        // مرکز آیکون:
+        // بخشی داخل Node و بخشی خارج آن
+        Vector2 iconPos =
+        {
+            pos.x + radius * 0.15f,
+            pos.y - radius * 0.75f
+        };
+
+        Rectangle source =
+        {
+            0,
+            0,
+            (float)secretIcon.width,
+            (float)secretIcon.height
+        };
+
+        Rectangle dest =
+        {
+            iconPos.x - iconSize / 2,
+            iconPos.y - iconSize / 2,
+            iconSize,
+            iconSize
+        };
+
+        DrawTexturePro(
+            secretIcon,
+            source,
+            dest,
+            {
+                iconSize / 2,
+                iconSize / 2
+            },
+            0,
+            WHITE
+        );
+    }
+}
+
 BoardView::~BoardView()
 {
     UnloadTexture(background);
@@ -653,6 +720,7 @@ BoardView::~BoardView()
     UnloadTexture(watsontoken) ;
     UnloadTexture(minatoken); 
     UnloadTexture(agathatoken) ;
+    UnloadTexture(secretIcon) ;
 }
 
 

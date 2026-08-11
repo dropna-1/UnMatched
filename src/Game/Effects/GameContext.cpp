@@ -5,7 +5,7 @@ GameContext::GameContext(
 Player* currentPlayer, Player* enemyPlayer, Character* attacker , Character* defender , Board* board , Card* attackerCard, 
 Card* defenderCard , Game* game) :
     currentPlayer(currentPlayer) , enemyPlayer(enemyPlayer) , attacker(attacker) , defender(defender) , board(board) ,
-    attackerCard(attackerCard) , defenderCard(defenderCard) , game(game)
+    attackerCard(attackerCard) , defenderCard(defenderCard) , game(game) , Winner(nullptr) , selectedCharacter(nullptr) ,currentCard(nullptr)
 {
 }
 

@@ -158,7 +158,7 @@ void MatchScreen::HandlePendingActionInput(){
     {
         std::vector<int> neighboors = game->currentPendingAction()->getOption(*game);
         if(!neighboors.empty()){
-            board.HighlightSpaces(neighboors, HighlightType::None);
+            board.HighlightSpaces(neighboors, HighlightType::Ability);
             HandleAbility();
         } else {game->completePendingAction();}
         break;
