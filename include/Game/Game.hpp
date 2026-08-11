@@ -78,6 +78,7 @@ public:
     Board& getBoard();
     std::shared_ptr<Hero>& getDracula();
     std::unique_ptr<PendingCombat>& getPendingCombat();
+    void clearPendingCombat();
     /*-----------------------------------------------------------------*/
     void setPlayer1(const string& name, const int& age);
     void setPlayer2(const string& name, const int& age);
@@ -115,6 +116,7 @@ public:
     std::vector<Character*> getEnemiesNearby();
     /*------------------------------------------------------------------*/
     void playScheme(Character* source, const int& schemeCardIndex);
+    void continuePlayScheme();
     std::vector<int> getSchemeCards(Character* character);
     bool canPlayScheme();
     /*------------------------------------------------------------------*/

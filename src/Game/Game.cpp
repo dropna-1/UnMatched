@@ -19,6 +19,15 @@ unique_ptr<PendingCombat>& Game::getPendingCombat(){
     return pendingCombat;
 }
 
+void Game::clearPendingCombat(){
+    auto& s = pendingCombat->selection;
+    s.cards.clear();
+    s.character = nullptr;
+    s.destination = -1;
+    s.showHand = false;
+    pendingCombat.reset();
+}
+
 
 void Game::setPlayer1(const string& name, const int& age){
     player1.setName(name);
@@ -424,7 +433,7 @@ void Game::playScheme(Character* source, const int& schemeCardIndex)
         this
     );
     auto schemeCard = currentPlayer->getHero().get()->getDeck()
-    .get()->getHand().at(schemeCardIndex);
+    ->playCard(schemeCardIndex);
 
     AttackOption option{
         currentPlayer->getHero().get(), otherPlayer->getHero().get()
@@ -434,26 +443,21 @@ void Game::playScheme(Character* source, const int& schemeCardIndex)
         option, schemeCard, nullptr, context
     );
 
-    schemeCard.get()->execute(TriggerType::None, context);
+    useAction();
+    continuePlayScheme();
+}
 
-    cout << "before\n";
+
+void Game::continuePlayScheme(){
+    pendingCombat->attackCard.get()->execute(TriggerType::None, pendingCombat->context);
 
     if(hasPendingAction())
         return;
 
     currentPlayer->getHero().get()->getDeck()
-    .get()->discardFromHand(schemeCardIndex);
+    .get()->discardCard(pendingCombat->attackCard);
 
-    auto& s = pendingCombat->selection;
-    s.cards.clear();
-    s.character = nullptr;
-    s.destination = -1;
-    s.showHand = false;
-    pendingCombat.reset();
-
-    cout << "after\n";
-
-    useAction();
+    clearPendingCombat();
 }
 
 
@@ -591,12 +595,7 @@ void Game::continueCombat()
         /*---------------------------finish---------------------------*/
         case CombatStage::Finished:
         {
-            auto& s = pendingCombat->selection;
-            s.cards.clear();
-            s.character = nullptr;
-            s.destination = -1;
-            s.showHand = false;
-            pendingCombat.reset();
+            clearPendingCombat();
             return;
         }
         }

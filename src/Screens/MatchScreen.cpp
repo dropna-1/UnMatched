@@ -266,15 +266,15 @@ void MatchScreen::HandlePlaycard(){
 }
 // ------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------
 void MatchScreen::HandlePendingMove(){
     int space = board.GetClickedSpace(); 
     if(space != -1){
         game->currentPendingAction()->submit(*game, space);
         if(!game->hasPendingAction()){
-            cout << "Why\n";
-            game->playScheme(selected, selectedCardIndex);
-            stage = Stage::None;
+            game->continuePlayScheme();
             board.ClearHighlightedSpaces();
+            stage = Stage::None;
         }
     }
 }
@@ -284,9 +284,9 @@ void MatchScreen::HandlePendingChooseCharacter(){
     if(space != -1){
         game->currentPendingAction()->submit(*game, space);
         if(!game->hasPendingAction()){
-            game->playScheme(selected, selectedCardIndex);
-            stage = Stage::None;
+            game->continuePlayScheme();
             board.ClearHighlightedSpaces();
+            stage = Stage::None;
         }
     }
 }
