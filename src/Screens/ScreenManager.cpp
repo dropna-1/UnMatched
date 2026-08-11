@@ -28,6 +28,16 @@ void ScreenManager::Run() {
     }
 }
 
+void ScreenManager::BackToHome(const int& width, const int& height){
+    SetWindowSize(width, height);
+
+    int monitor = GetCurrentMonitor();
+    SetWindowPosition(
+        (GetMonitorWidth(monitor) - width) / 2,
+        (GetMonitorHeight(monitor) - height) / 2
+    );
+}
+
 Game& ScreenManager::GetGame(){
     return game;
 }

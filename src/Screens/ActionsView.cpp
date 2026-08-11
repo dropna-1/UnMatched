@@ -71,7 +71,7 @@ void ActionsView::Draw(Rectangle m, Stage* stage) {
     }
 
     if (GuiButton(btnScheme, "Scheme")) {
-        *stage = Stage::SelectSchemeCard;
+        *stage = Stage::SelectSchemeCharacter;
     }
 
     GuiSetState(STATE_NORMAL);

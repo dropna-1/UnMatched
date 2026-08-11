@@ -35,6 +35,7 @@ vector<int> MoveAction::getOption(Game& game){
 void MoveAction::submit(Game& game, int choice){
     game.getPendingCombat().get()->selection.destination = spaces.at(choice);
     finished = true;
+    game.completePendingAction();
 }
 /*-----------------------------------------------------------------*/
 RaveningAction::RaveningAction(Game& game){
@@ -67,6 +68,7 @@ void RaveningAction::submit(Game& game, int choice){
         game.getPendingCombat().get()->selection.character = selected;
         game.getPendingCombat().get()->selection.destination = spaces.at(choice);
         finished = true;
+        game.completePendingAction();
     }
 }
 /*-----------------------------------------------------------------*/
@@ -86,8 +88,8 @@ std::vector<int> ChooseCardAction::getOption(Game& game){
         if(!selected)
             options.push_back(id);
     }
-    if(selectedCards.size() >= minCards)
-        options.push_back(-1);
+    // if(selectedCards.size() >= minCards)
+    //     options.push_back(-1);
 
     return options;
 }
@@ -103,6 +105,7 @@ void ChooseCardAction::submit(Game& game, int choice=-1){
     if(selectedCards.size() == maxCards){
         finished = true;
         game.getPendingCombat().get()->selection.cards = selectedCards;
+        game.completePendingAction();
     }
 }
 /*-----------------------------------------------------------------*/
@@ -122,6 +125,7 @@ std::vector<int> ShowCardAction::getOption(Game& game){
 void ShowCardAction::submit(Game& game, int choice){
     game.getPendingCombat()->selection.showHand = true;
     finished = true;
+    game.completePendingAction();
 }
 /*-----------------------------------------------------------------*/
 std::vector<int> DraculaAction::getOption(Game& game){
@@ -143,5 +147,6 @@ void DraculaAction::submit(Game& game, int choice){
             }
     }
     finished = true;
+    game.completePendingAction();
 }
 

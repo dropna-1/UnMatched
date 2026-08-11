@@ -3,7 +3,8 @@
 enum HeroType
 {
     Sherlock , 
-    Dracula 
+    Dracula , 
+    InvisibleMan
 };
 
 enum CardType
@@ -87,8 +88,17 @@ enum class Stage {
     ChoiceNode,
     ChoiceNeighboor,
     SelectAttackCharacter,
+    SelectSchemeCharacter,
     SelectAttackCard,
     SelectDefenseCard,
     SelectSchemeCard,
+    None
+};
+
+enum class PendingStage {
+    Move,
+    SelectCard,
+    ShowCard,
+    SelectCharacter,
     None
 };

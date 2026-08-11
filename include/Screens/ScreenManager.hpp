@@ -14,5 +14,6 @@ public:
     ~ScreenManager();
     void ChangeScreen(std::unique_ptr<IScreen> newScreen);
     void Run();
+    void BackToHome(const int& width, const int& height);
     Game& GetGame();
 };

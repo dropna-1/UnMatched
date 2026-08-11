@@ -6,12 +6,15 @@
 #include "BoardView.hpp"
 #include "StatusView.hpp"
 #include "HandView.hpp"
+#include "TipView.hpp"
 #include "ActionsView.hpp"
 
 class ScreenManager;
+class Game;
 
 class MatchScreen : public IScreen {
 private:
+    Game* game = nullptr;
     Texture2D background;
     Font font;
     Rectangle btnSave;
@@ -20,15 +23,20 @@ private:
     StatusView status;
     HandView hand;
     ActionsView actions;
+    TipView tip;
+
     Stage stage = Stage::SideKickPlacementP1;
-    map<Stage, std::string> message;
+    PendingStage pStage = PendingStage::None;
     Character* selected = nullptr;
 
-    void HandleSidekickPlacement(Game& game);
-    void HandleCharacterSelect(Game& game);
-    void HandleMove(Game& game);
-    void HandleAbility(Game& game);
-    void FillMessage();
+    void HandleStage(Rectangle h);
+    void DrawStageHighlight();
+    void HandleSidekickPlacement();
+    void HandleCharacterSelect();
+    void HandleMove();
+    void HandleAbility();
+    void HandlePlaycard(Rectangle& h);
+    void HandlePendingAction();
 
 public:
     explicit MatchScreen(ScreenManager* man);
