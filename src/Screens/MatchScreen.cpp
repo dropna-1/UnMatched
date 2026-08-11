@@ -37,13 +37,6 @@ MatchScreen::MatchScreen(ScreenManager* mgr) {
         btnW,
         btnH
     };
-
-    GuiSetStyle(DEFAULT, TEXT_SIZE, 24);
-    GuiSetFont(font);
-
-    GuiSetStyle(BUTTON, BASE_COLOR_NORMAL, ColorToInt(BLACK));
-    GuiSetStyle(BUTTON, TEXT_COLOR_NORMAL, ColorToInt(GOLD));
-    GuiSetStyle(BUTTON, BORDER_WIDTH, 1);
 }
 
 MatchScreen::~MatchScreen() {
@@ -53,7 +46,7 @@ MatchScreen::~MatchScreen() {
 }
 
 void MatchScreen::HandleInput() {}
-void MatchScreen::Update() {HandleStage();}
+void MatchScreen::Update() {}
 
 void MatchScreen::Draw() {
     if (background.id != 0) {
@@ -82,7 +75,14 @@ void MatchScreen::Draw() {
     Rectangle t = {x/4+4, y*7/9, x/4-2, y/8};
     tip.Draw(t, &stage, font);
 
-    HandleStage(h);
+    HandleStage();
+
+    GuiSetStyle(DEFAULT, TEXT_SIZE, 24);
+    GuiSetFont(font);
+
+    GuiSetStyle(BUTTON, BASE_COLOR_NORMAL, ColorToInt(BLACK));
+    GuiSetStyle(BUTTON, TEXT_COLOR_NORMAL, ColorToInt(GOLD));
+    GuiSetStyle(BUTTON, BORDER_WIDTH, 1);
 
     if (GuiButton(btnHome, "HOME")) {
         manager->BackToHome(890, 500);
@@ -93,46 +93,7 @@ void MatchScreen::Draw() {
     }
 }
 // ------------------------------------------------------------------------------------------
-void MatchScreen::HandleStage(Rectangle h){
-    switch (stage)
-    {
-    case Stage::SideKickPlacementP1:
-    case Stage::SideKickPlacementP2:
-    {
-        HandleSidekickPlacement();
-        break;
-    }
-    case Stage::ChoiceNeighboor:
-    {
-        HandleAbility();
-        break;
-    }
-    case Stage::SelectManeuverCharacter:
-    {
-        HandleCharacterSelect();
-        break;
-    }
-    case Stage::ChoiceNode:
-    {
-        HandleMove();
-        break;
-    }
-    case Stage::SelectSchemeCharacter:
-    {
-        HandleCharacterSelect();
-        break;
-    }
-    case Stage::SelectSchemeCard:
-    {
-        HandlePlaycard(h);
-        break;
-    }
-    default:
-        break;
-    }
-}
-// ------------------------------------------------------------------------------------------
-void MatchScreen::DrawStageHighlight(){
+void MatchScreen::HandleStage(){
     switch (stage)
     {
     case Stage::SideKickPlacementP1:
@@ -142,6 +103,8 @@ void MatchScreen::DrawStageHighlight(){
             game->getSidekickPlacement(game->getCurrentPlayer()->getHero().get()), 
             HighlightType::Selected
         );
+        HandleSidekickPlacement();
+        break;
     }
     case Stage::None:
     {
@@ -156,8 +119,8 @@ void MatchScreen::DrawStageHighlight(){
         std::vector<int> neighboors = game->currentPendingAction()->getOption(*game);
         if(!neighboors.empty()){
             board.HighlightSpaces(neighboors, HighlightType::None);
-        } 
-        else {stage = Stage::None;}
+            HandleAbility();
+        } else {stage = Stage::None;}
         break;
     }
     case Stage::SelectManeuverCharacter:
@@ -167,6 +130,7 @@ void MatchScreen::DrawStageHighlight(){
             if(!game->getFreeSpacesNearby(c).empty())
                 characterPlaces.push_back(c->getPosition());
         board.HighlightSpaces(characterPlaces, HighlightType::None);
+        HandleCharacterSelect();
         break;
     }
     case Stage::ChoiceNode:
@@ -175,6 +139,7 @@ void MatchScreen::DrawStageHighlight(){
             game->getAvailableMoves(selected, selected->getMovement()), 
             HighlightType::Move
         );
+        HandleMove();
         break;
     }
     case Stage::SelectSchemeCharacter:
@@ -183,11 +148,17 @@ void MatchScreen::DrawStageHighlight(){
         for(auto c : game->getCurrentPlayer()->getAllCharacters())
             characterPlaces.push_back(c->getPosition());
         board.HighlightSpaces(characterPlaces, HighlightType::None);
+        HandleCharacterSelect();
         break;
     }
     case Stage::SelectSchemeCard:
     {
-        hand.HighlightCards(game->getSchemeCards(selected), HighlightType::Selected);
+        auto z = game->getSchemeCards(selected);
+        hand.HighlightCards(z);
+        for(int i : z){
+            cout << i << endl;
+        }
+        HandlePlaycard();
         break;
     }
     default:
@@ -263,14 +234,13 @@ void MatchScreen::HandleAbility(){
     }
 }
 // ------------------------------------------------------------------------------------------
-void MatchScreen::HandlePlaycard(Rectangle& h){
-    int handIndex = hand.GetClickedCard(*game->getCurrentPlayer()->getHero()->getDeck(), h);
+void MatchScreen::HandlePlaycard(){
+    int handIndex = hand.GetClickedCard(*game->getCurrentPlayer()->getHero()->getDeck());
     if(handIndex != -1){
         game->playScheme(selected, handIndex);
         hand.ClearHighlightedCards();
         if(game->hasPendingAction()){
             HandlePendingAction(); 
-            cout << "pending\n";
         }
         else {
             selected = nullptr;
@@ -286,6 +256,6 @@ void MatchScreen::HandlePendingAction(){
         pStage = PendingStage::Move;
     }
     if(dynamic_cast<ChooseCardAction*>(action) != nullptr){
-        hand.HighlightCards(action->getOption(*game), HighlightType::None);
+        hand.HighlightCards(action->getOption(*game));
     }
 }

@@ -29,13 +29,12 @@ private:
     PendingStage pStage = PendingStage::None;
     Character* selected = nullptr;
 
-    void HandleStage(Rectangle h);
-    void DrawStageHighlight();
+    void HandleStage();
     void HandleSidekickPlacement();
     void HandleCharacterSelect();
     void HandleMove();
     void HandleAbility();
-    void HandlePlaycard(Rectangle& h);
+    void HandlePlaycard();
     void HandlePendingAction();
 
 public:

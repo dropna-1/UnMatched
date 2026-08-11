@@ -315,7 +315,7 @@ vector<int> Game::getSchemeCards(Character* character)
 {
     vector<int> playableCards;
     bool ishero = character->isHero();
-    auto ahand = otherPlayer->getHero().get()->getDeck().get()->getHand();
+    auto ahand = currentPlayer->getHero().get()->getDeck().get()->getHand();
     for(int card = 0; card < ahand.size(); card++)
         if(ahand.at(card).get()->getType() == CardType::Scheme)
         {
