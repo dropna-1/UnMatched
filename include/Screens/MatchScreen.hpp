@@ -27,14 +27,19 @@ private:
 
     Stage stage = Stage::SideKickPlacementP1;
     Character* selected = nullptr;
+    int selectedCardIndex = -1;
 
     void HandleStageInput();
-    void HandlePendingActionInput();
     void HandleSidekickPlacement();
     void HandleCharacterSelect();
     void HandleMove();
     void HandleAbility();
     void HandlePlaycard();
+
+    void HandlePendingActionInput();
+    void HandlePendingMove();
+    void HandlePendingChooseCharacter();
+    void HandlePendingChooseCard();
 
 public:
     explicit MatchScreen(ScreenManager* man);

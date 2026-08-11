@@ -160,25 +160,31 @@ void MatchScreen::HandlePendingActionInput(){
         if(!neighboors.empty()){
             board.HighlightSpaces(neighboors, HighlightType::Ability);
             HandleAbility();
-        } else {game->completePendingAction();}
+        } else {stage = Stage::None; game->completePendingAction();}
         break;
     }
     case RequestType::Move:
     {
         board.HighlightSpaces(action->getOption(*game), HighlightType::Move);
-        HandleMove();
+        HandlePendingMove();
         break;
     }
     case RequestType::Card:
     {
         hand.HighlightCards(action->getOption(*game));
-        HandlePlaycard();
+        HandlePendingChooseCard();
         break;
     }
-    case RequestType::Ravening:
+    case RequestType::RaveningST1:
     {
         board.HighlightSpaces(action->getOption(*game), HighlightType::Selected);
-        HandleMove();
+        HandlePendingChooseCharacter();
+        break;
+    }
+    case RequestType::RaveningST2:
+    {
+        board.HighlightSpaces(action->getOption(*game), HighlightType::Selected);
+        HandlePendingMove();
         break;
     }
     default:
@@ -200,12 +206,12 @@ void MatchScreen::HandleSidekickPlacement(){
             if(side->getPosition() == -1){canChange = false; break;}
 
         if(canChange == true){
+            game->changeTurn();
             if(stage == Stage::SideKickPlacementP1)
                 stage = Stage::SideKickPlacementP2;
-            else{
+            else if(!game->hasPendingAction()){
                 stage = Stage::None;
             }
-            game->changeTurn();
         }
     }
 }
@@ -231,26 +237,16 @@ void MatchScreen::HandleMove(){
     int space = board.GetClickedSpace(); 
     if(space != -1){
         board.ClearHighlightedSpaces();
-        if(game->hasPendingAction())
-            game->currentPendingAction()->submit(*game, space);
-        else{
-            game->performManeuver(selected, space);
-            selected = nullptr;
-            stage = Stage::None;
-        }
+        game->performManeuver(selected, space);
+        selected = nullptr;
+        stage = Stage::None;
     }
 }
 // ------------------------------------------------------------------------------------------
 void MatchScreen::HandleAbility(){
     int space = board.GetClickedSpace(); 
     if(space != -1){
-        PendingAction* action = game->currentPendingAction();
-        for(int& c : action->getOption(*game)){
-            if(c == space){
-                action->submit(*game, space);
-                break;
-            }
-        }
+        game->currentPendingAction()->submit(*game, space);
         board.ClearHighlightedSpaces();
         stage = Stage::None;
     }
@@ -260,9 +256,8 @@ void MatchScreen::HandlePlaycard(){
     int handIndex = hand.GetClickedCard(*game->getCurrentPlayer()->getHero()->getDeck());
     if(handIndex != -1){
         hand.ClearHighlightedCards();
-        if(game->hasPendingAction())
-            game->currentPendingAction()->submit(*game, handIndex);
         game->playScheme(selected, handIndex);
+        selectedCardIndex = handIndex;
         if(!game->hasPendingAction()){
             selected = nullptr;
             stage = Stage::None;
@@ -270,3 +265,30 @@ void MatchScreen::HandlePlaycard(){
     }
 }
 // ------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------
+void MatchScreen::HandlePendingMove(){
+    int space = board.GetClickedSpace(); 
+    if(space != -1){
+        game->currentPendingAction()->submit(*game, space);
+        if(!game->hasPendingAction()){
+            cout << "Why\n";
+            game->playScheme(selected, selectedCardIndex);
+            stage = Stage::None;
+            board.ClearHighlightedSpaces();
+        }
+    }
+}
+// ------------------------------------------------------------------------------------------
+void MatchScreen::HandlePendingChooseCharacter(){
+    int space = board.GetClickedSpace(); 
+    if(space != -1){
+        game->currentPendingAction()->submit(*game, space);
+        if(!game->hasPendingAction()){
+            game->playScheme(selected, selectedCardIndex);
+            stage = Stage::None;
+            board.ClearHighlightedSpaces();
+        }
+    }
+}
+// ------------------------------------------------------------------------------------------
+void MatchScreen::HandlePendingChooseCard(){}

@@ -426,13 +426,17 @@ void Game::playScheme(Character* source, const int& schemeCardIndex)
     auto schemeCard = currentPlayer->getHero().get()->getDeck()
     .get()->getHand().at(schemeCardIndex);
 
-    AttackOption option{currentPlayer->getHero().get(), otherPlayer->getHero().get()};
+    AttackOption option{
+        currentPlayer->getHero().get(), otherPlayer->getHero().get()
+    };
 
     pendingCombat = make_unique<PendingCombat>(
         option, schemeCard, nullptr, context
     );
 
     schemeCard.get()->execute(TriggerType::None, context);
+
+    cout << "before\n";
 
     if(hasPendingAction())
         return;
@@ -446,6 +450,8 @@ void Game::playScheme(Character* source, const int& schemeCardIndex)
     s.destination = -1;
     s.showHand = false;
     pendingCombat.reset();
+
+    cout << "after\n";
 
     useAction();
 }

@@ -4,10 +4,6 @@
 #include "Game/Player/player.hpp"
 using namespace std;
 
-bool PendingAction::isFinished() const {
-    return finished;
-}
-
 RequestType PendingAction::getType() const{
     return type;
 }
@@ -38,7 +34,6 @@ vector<int> MoveAction::getOption(Game& game){
 
 void MoveAction::submit(Game& game, int choice){
     game.getPendingCombat().get()->selection.destination = choice;
-    finished = true;
     game.completePendingAction();
 }
 /*-----------------------------------------------------------------*/
@@ -49,7 +44,7 @@ RaveningAction::RaveningAction(Game& game){
         for(auto i : game.getOtherPlayer()->getAllCharacters())
             allCharacters.push_back(i);
     }
-    type = RequestType::Ravening;
+    type = RequestType::RaveningST1;
 }
 
 std::vector<int> RaveningAction::getOption(Game& game){
@@ -69,12 +64,12 @@ void RaveningAction::submit(Game& game, int choice){
         for(Character* c : allCharacters)
             if(c->getPosition() == choice)
                 selected = c;
+        type = RequestType::RaveningST2;
         stage = 1;
     }
     else{
         game.getPendingCombat().get()->selection.character = selected;
         game.getPendingCombat().get()->selection.destination = choice;
-        finished = true;
         game.completePendingAction();
     }
 }
@@ -103,14 +98,12 @@ std::vector<int> ChooseCardAction::getOption(Game& game){
 
 void ChooseCardAction::submit(Game& game, int choice=-1){
     if(choice != -1){
-        finished = true;
         game.getPendingCombat().get()->selection.cards = selectedCards;
         return;
     }
     auto hand = selected->getHero().get()->getDeck().get()->getHand();
     selectedCards.push_back(choice);
     if(selectedCards.size() == maxCards){
-        finished = true;
         game.getPendingCombat().get()->selection.cards = selectedCards;
         game.completePendingAction();
     }
@@ -132,7 +125,6 @@ std::vector<int> ShowCardAction::getOption(Game& game){
 
 void ShowCardAction::submit(Game& game, int choice){
     game.getPendingCombat()->selection.showHand = true;
-    finished = true;
     game.completePendingAction();
 }
 /*-----------------------------------------------------------------*/
@@ -156,6 +148,5 @@ void DraculaAction::submit(Game& game, int choice){
                 break;
             }
     }
-    finished = true;
     game.completePendingAction();
 }

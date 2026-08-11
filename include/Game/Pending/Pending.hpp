@@ -16,7 +16,6 @@ enum class MoveMode
 
 class PendingAction {
 protected:
-    bool finished = false;
     RequestType type;
 public:
     virtual std::vector<int> getOption(Game& game) = 0;
