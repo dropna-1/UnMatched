@@ -48,6 +48,7 @@ class BoardView
         Texture2D agathatoken ;
         Texture2D lucytoken ;
         Texture2D minatoken ;
+        Texture2D secretIcon;
         void DrawBackground(const Layout& layout) const;
         void DrawConnections(const Board&, const Layout& layout) const;
         void DrawSpace(Vector2 pos, int id , const std::vector<Color>& colors, Direction direct ,bool highlighted,
@@ -65,5 +66,6 @@ class BoardView
         bool IsHighlighted(int id) const;
         HighlightType GetHighlightType(int id) const;
         mutable std::vector<ClickZone> clickZones;
+        void DrawSecretPassages(const Board& board, const Layout& layout ) const;
         
 };  

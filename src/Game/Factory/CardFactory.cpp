@@ -157,6 +157,7 @@ shared_ptr<Deck> CardFactory::createSherlockDeck()
         "external/images/cards/holms/master-of-disguise.png"
     );
     MasterOfDisguise->addEffect(TriggerType::None , EffectTarget::FriendlyHero , nullptr , make_shared<SwapEffect>()) ;
+    MasterOfDisguise->addEffect(TriggerType::None , EffectTarget::EnemyHero , nullptr , make_shared<DamageEffect>(1)) ;
     addCopies(deck , 2 , MasterOfDisguise); 
 
 
