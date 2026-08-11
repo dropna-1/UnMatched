@@ -57,21 +57,15 @@ struct PendingCombat{
 class Game {
 
     Board board;
-
     Player player1;
     Player player2;
-    
     std::shared_ptr<Hero> dracula;
     std::shared_ptr<Hero> sherlock;
-
     Player* currentPlayer;
     Player* otherPlayer;
-
     int actionsRemaining = 2;
-
     std::queue<unique_ptr<PendingAction>> pendingActions;
     std::unique_ptr<PendingCombat> pendingCombat;
-
     std::mt19937 rng{std::random_device{}()};
     
 public:

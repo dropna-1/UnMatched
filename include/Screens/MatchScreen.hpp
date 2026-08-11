@@ -26,16 +26,15 @@ private:
     TipView tip;
 
     Stage stage = Stage::SideKickPlacementP1;
-    PendingStage pStage = PendingStage::None;
     Character* selected = nullptr;
 
-    void HandleStage();
+    void HandleStageInput();
+    void HandlePendingActionInput();
     void HandleSidekickPlacement();
     void HandleCharacterSelect();
     void HandleMove();
     void HandleAbility();
     void HandlePlaycard();
-    void HandlePendingAction();
 
 public:
     explicit MatchScreen(ScreenManager* man);

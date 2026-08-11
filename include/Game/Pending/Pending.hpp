@@ -17,9 +17,11 @@ enum class MoveMode
 class PendingAction {
 protected:
     bool finished = false;
+    RequestType type;
 public:
     virtual std::vector<int> getOption(Game& game) = 0;
     virtual void submit(Game& game, int choice) = 0;
+    RequestType getType() const;
     bool isFinished() const;
 };
 /*-----------------------------------------------------------------*/
@@ -72,6 +74,7 @@ public:
 class DraculaAction : public PendingAction {
     std::vector<Character*> neighboors;
 public:
+    DraculaAction();
     std::vector<int> getOption(Game& game) override;
     void submit(Game& game, int choice) override;
 };

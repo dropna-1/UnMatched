@@ -7,11 +7,15 @@ using namespace std;
 bool PendingAction::isFinished() const {
     return finished;
 }
+
+RequestType PendingAction::getType() const{
+    return type;
+}
 /*-----------------------------------------------------------------*/
 MoveAction::MoveAction(Character* current, Character* other, 
     MoveMode mode, int value) :
 currentCharacter(current), otherCharacter(other), 
-mode(mode), range(value) {}
+mode(mode), range(value) {type = RequestType::Move;}
 
 
 vector<int> MoveAction::getOption(Game& game){
@@ -33,7 +37,7 @@ vector<int> MoveAction::getOption(Game& game){
 
 
 void MoveAction::submit(Game& game, int choice){
-    game.getPendingCombat().get()->selection.destination = spaces.at(choice);
+    game.getPendingCombat().get()->selection.destination = choice;
     finished = true;
     game.completePendingAction();
 }
@@ -45,13 +49,14 @@ RaveningAction::RaveningAction(Game& game){
         for(auto i : game.getOtherPlayer()->getAllCharacters())
             allCharacters.push_back(i);
     }
+    type = RequestType::Ravening;
 }
 
 std::vector<int> RaveningAction::getOption(Game& game){
     if(stage == 0){
         vector<int> options;
-        for(int id = 0; id < allCharacters.size(); id++)
-            options.push_back(id);
+        for(Character* c : allCharacters)
+            options.push_back(c->getPosition());
         return options;
     }
     spaces = game.getAvailableMoves(selected, 2);
@@ -61,19 +66,21 @@ std::vector<int> RaveningAction::getOption(Game& game){
 
 void RaveningAction::submit(Game& game, int choice){
     if(stage == 0){
-        selected = allCharacters.at(choice);
+        for(Character* c : allCharacters)
+            if(c->getPosition() == choice)
+                selected = c;
         stage = 1;
     }
     else{
         game.getPendingCombat().get()->selection.character = selected;
-        game.getPendingCombat().get()->selection.destination = spaces.at(choice);
+        game.getPendingCombat().get()->selection.destination = choice;
         finished = true;
         game.completePendingAction();
     }
 }
 /*-----------------------------------------------------------------*/
 ChooseCardAction::ChooseCardAction(Player* player, int min, int max) : 
-selected(player), minCards(min), maxCards(max) {}
+selected(player), minCards(min), maxCards(max) {type = RequestType::Card;}
 
 std::vector<int> ChooseCardAction::getOption(Game& game){
     vector<int> options;
@@ -109,7 +116,8 @@ void ChooseCardAction::submit(Game& game, int choice=-1){
     }
 }
 /*-----------------------------------------------------------------*/
-ShowCardAction::ShowCardAction(Player* player) : selected(player) {}
+ShowCardAction::ShowCardAction(Player* player) : selected(player) 
+{type = RequestType::ShowCard;}
 
 std::vector<int> ShowCardAction::getOption(Game& game){
     vector<int> options;
@@ -128,6 +136,8 @@ void ShowCardAction::submit(Game& game, int choice){
     game.completePendingAction();
 }
 /*-----------------------------------------------------------------*/
+DraculaAction::DraculaAction(){type = RequestType::Dracula;}
+
 std::vector<int> DraculaAction::getOption(Game& game){
     vector<int> options;
     neighboors = game.getEnemiesNearby();
@@ -149,4 +159,3 @@ void DraculaAction::submit(Game& game, int choice){
     finished = true;
     game.completePendingAction();
 }
-

@@ -19,4 +19,6 @@ void TipView::FillMessage(Player& pc, Player& po){
         pc.getName() + ", Choose the character you want to move"});
     message.insert({Stage::ChoiceNode,
         pc.getName() + ", Choose the place you want to go"});
+    message.insert({Stage::SelectSchemeCharacter,
+        pc.getName() + ", Choose the character you want to use scheme card"});
 }

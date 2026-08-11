@@ -69,6 +69,8 @@ enum class RequestType
     Character , 
     Card ,
     Ravening , 
+    Dracula ,
+    ShowCard ,
     None ,
 };
 
@@ -86,19 +88,10 @@ enum class Stage {
     SideKickPlacementP2,
     SelectManeuverCharacter,
     ChoiceNode,
-    ChoiceNeighboor,
     SelectAttackCharacter,
     SelectSchemeCharacter,
     SelectAttackCard,
     SelectDefenseCard,
     SelectSchemeCard,
-    None
-};
-
-enum class PendingStage {
-    Move,
-    SelectCard,
-    ShowCard,
-    SelectCharacter,
     None
 };

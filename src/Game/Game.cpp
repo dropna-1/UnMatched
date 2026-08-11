@@ -76,8 +76,6 @@ void Game::setupGame(){
         currentPlayer->getHero()->getDeck()->drawCard();
         otherPlayer->getHero()->getDeck()->drawCard();
     }
-    if(currentPlayer->getHero().get()->getAbility().get()->HasAbilityOnStart())
-        currentPlayer->getHero().get()->getAbility().get()->SendRequest(this);
 }
 
 
@@ -105,8 +103,6 @@ void Game::useAction(){
 
 void Game::nextTurn(){
     changeTurn();
-    if(currentPlayer->getHero().get()->getAbility().get()->HasAbilityOnStart())
-        currentPlayer->getHero().get()->getAbility().get()->SendRequest(this);
     resetAction();
 }
 
@@ -346,6 +342,8 @@ vector<int> Game::getSidekickPlacement(Character* character)
 
 void Game::changeTurn(){
     swap(currentPlayer, otherPlayer);
+    if(currentPlayer->getHero().get()->getAbility().get()->HasAbilityOnStart())
+        currentPlayer->getHero().get()->getAbility().get()->SendRequest(this);
 }
 
 
@@ -428,6 +426,12 @@ void Game::playScheme(Character* source, const int& schemeCardIndex)
     auto schemeCard = currentPlayer->getHero().get()->getDeck()
     .get()->getHand().at(schemeCardIndex);
 
+    AttackOption option{currentPlayer->getHero().get(), otherPlayer->getHero().get()};
+
+    pendingCombat = make_unique<PendingCombat>(
+        option, schemeCard, nullptr, context
+    );
+
     schemeCard.get()->execute(TriggerType::None, context);
 
     if(hasPendingAction())
@@ -435,6 +439,13 @@ void Game::playScheme(Character* source, const int& schemeCardIndex)
 
     currentPlayer->getHero().get()->getDeck()
     .get()->discardFromHand(schemeCardIndex);
+
+    auto& s = pendingCombat->selection;
+    s.cards.clear();
+    s.character = nullptr;
+    s.destination = -1;
+    s.showHand = false;
+    pendingCombat.reset();
 
     useAction();
 }
