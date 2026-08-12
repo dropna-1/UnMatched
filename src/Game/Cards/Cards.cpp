@@ -1,5 +1,6 @@
 #include "Game/Cards/Cards.hpp"
 #include "Game/Pending/Pending.hpp"
+#include "Game/Game.hpp"
 using namespace std ;
 
 Card::Card(const string& name,
@@ -80,23 +81,26 @@ void Card::setValue(int New)
 {
     value = New ;
 }
-void Card::execute(TriggerType trigger , GameContext& context)
+
+void Card::execute(TriggerType trigger, GameContext& context)
 {
     for(const auto& entry : effects)
     {
         if(entry.trigger != trigger)
-        {
-            continue; 
-        }
+            continue;
+
         if(entry.condition)
         {
             if(!entry.condition->check(context))
-            {
-                continue ;
-            }
+                continue;
         }
-        auto targets = context.getTargets(entry.target) ;
-        entry.effect->execute(context , targets) ;
+
+        auto targets = context.getTargets(entry.target);
+
+        entry.effect->execute(context, targets);
+
+        if(context.getGame()->hasPendingAction())
+            return;
     }
 }
 
