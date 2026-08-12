@@ -1,7 +1,6 @@
 #include "Screens/MatchScreen.hpp"
 #include "Screens/ScreenManager.hpp"
 #include "screens/MainScreen.hpp"
-#include "Game/Game.hpp"
 #include "Game/Cards/Deck.hpp"
 #include "Game/Enums/TypeEnums.hpp"
 #include "Game/Pending/Pending.hpp"
@@ -145,46 +144,23 @@ void MatchScreen::HandleStageInput(){
         HandlePlaycard();
         break;
     }
-    default:
+    case Stage::SelectAttackCharacter:
+    {
+        std::vector<int> attakers;
+        for(auto& a : game->getAttackableTargets())
+            attakers.push_back(a.attacker->getPosition());
+        board.HighlightSpaces(attakers, HighlightType::Selected);
+        HandleCharacterSelect();
         break;
     }
-}
-// ------------------------------------------------------------------------------------------
-void MatchScreen::HandlePendingActionInput(){
-    PendingAction* action = game->currentPendingAction();
-    switch (action->getType())
+    case Stage::SelectDefenseCard:
     {
-    case RequestType::Dracula:
-    {
-        std::vector<int> neighboors = game->currentPendingAction()->getOption(*game);
-        if(!neighboors.empty()){
-            board.HighlightSpaces(neighboors, HighlightType::Ability);
-            HandleAbility();
-        } else {stage = Stage::None; game->completePendingAction();}
-        break;
-    }
-    case RequestType::Move:
-    {
-        board.HighlightSpaces(action->getOption(*game), HighlightType::Move);
-        HandlePendingMove();
-        break;
-    }
-    case RequestType::Card:
-    {
-        hand.HighlightCards(action->getOption(*game));
-        HandlePendingChooseCard();
-        break;
-    }
-    case RequestType::RaveningST1:
-    {
-        board.HighlightSpaces(action->getOption(*game), HighlightType::Selected);
-        HandlePendingChooseCharacter();
-        break;
-    }
-    case RequestType::RaveningST2:
-    {
-        board.HighlightSpaces(action->getOption(*game), HighlightType::Selected);
-        HandlePendingMove();
+        std::vector<int> targets;
+        for(auto& a : game->getAttackableTargets())
+            if(option.attacker->getPosition() == a.attacker->getPosition())
+                targets.push_back(a.target->getPosition());
+        board.HighlightSpaces(targets, HighlightType::Selected);
+        HandleCharacterSelect();
         break;
     }
     default:
@@ -206,12 +182,15 @@ void MatchScreen::HandleSidekickPlacement(){
             if(side->getPosition() == -1){canChange = false; break;}
 
         if(canChange == true){
-            game->changeTurn();
             if(stage == Stage::SideKickPlacementP1)
                 stage = Stage::SideKickPlacementP2;
-            else if(!game->hasPendingAction()){
+            else {
                 stage = Stage::None;
+                game->setCanUseAbility(true);
             }
+            game->changeTurn();
+            if(game->hasPendingAction())
+                stage = Stage::Pending;
         }
     }
 }
@@ -221,12 +200,23 @@ void MatchScreen::HandleCharacterSelect(){
     if(space != -1){
         for(const auto& c : game->getCurrentPlayer()->getAllCharacters()){
             if(c->getPosition() == space){
-                selected = c;
                 board.ClearHighlightedSpaces();
-                if(stage == Stage::SelectManeuverCharacter)
+                if(stage == Stage::SelectManeuverCharacter){
                     stage = Stage::ChoiceNode;
-                else if(stage == Stage::SelectSchemeCharacter)
+                    selected = c;
+                }
+                else if(stage == Stage::SelectSchemeCharacter){
                     stage = Stage::SelectSchemeCard;
+                    selected = c;
+                }
+                else if(stage == Stage::SelectAttackCharacter){
+                    stage = Stage::SelectDefenseCharacter;
+                    option.attacker = c;
+                }
+                else if(stage == Stage::SelectAttackCharacter){
+                    stage = Stage::SelectDefenseCharacter;
+                    option.target = c;
+                }
                 break;
             }
         }
@@ -267,6 +257,58 @@ void MatchScreen::HandlePlaycard(){
 // ------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------
 // ------------------------------------------------------------------------------------------
+void MatchScreen::HandlePendingActionInput(){
+    PendingAction* action = game->currentPendingAction();
+    switch (action->getType())
+    {
+    case RequestType::Dracula:
+    {
+        std::vector<int> neighboors = game->currentPendingAction()->getOption(*game);
+        if(!neighboors.empty()){
+            board.HighlightSpaces(neighboors, HighlightType::Ability);
+            HandleAbility();
+        } else {stage = Stage::None; game->completePendingAction();}
+        break;
+    }
+    case RequestType::Move:
+    {
+        board.HighlightSpaces(action->getOption(*game), HighlightType::Move);
+        HandlePendingMove();
+        break;
+    }
+    // case RequestType::Card:
+    // {
+    //     DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), {0, 0, 0, 100});
+    //     hand.HighlightCards(action->getOption(*game));
+    //     HandlePendingChooseCard();
+    //     break;
+    // }
+    // case RequestType::ShowCard:
+    // {
+    //     DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), {0, 0, 0, 100});
+    //     Rectangle c = {(GetScreenWidth() - 890)/2, (GetScreenHeight() - 500)/2, 890, 500};
+    //     hand.Draw(*game->getOtherPlayer()->getHero()->getDeck(), c);
+    //     hand.HighlightCards(game->currentPendingAction()->getOption(*game));
+    //     HandlePendingShowCard();
+    //     break;
+    // }
+    case RequestType::RaveningST1:
+    {
+        board.HighlightSpaces(action->getOption(*game), HighlightType::Selected);
+        HandlePendingChooseCharacter();
+        break;
+    }
+    case RequestType::RaveningST2:
+    {
+        board.HighlightSpaces(action->getOption(*game), HighlightType::Selected);
+        HandlePendingMove();
+        break;
+    }
+    default:
+        break;
+    }
+}
+// ------------------------------------------------------------------------------------------
 void MatchScreen::HandlePendingMove(){
     int space = board.GetClickedSpace(); 
     if(space != -1){
@@ -292,3 +334,12 @@ void MatchScreen::HandlePendingChooseCharacter(){
 }
 // ------------------------------------------------------------------------------------------
 void MatchScreen::HandlePendingChooseCard(){}
+// ------------------------------------------------------------------------------------------
+void MatchScreen::HandlePendingShowCard(){
+    int handIndex = hand.GetClickedCard(*game->getOtherPlayer()->getHero()->getDeck());
+    if(handIndex != -1){
+        game->currentPendingAction()->submit(*game, handIndex);
+        board.ClearHighlightedSpaces();
+        stage = Stage::None;
+    }
+}

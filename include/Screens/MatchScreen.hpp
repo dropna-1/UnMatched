@@ -8,9 +8,9 @@
 #include "HandView.hpp"
 #include "TipView.hpp"
 #include "ActionsView.hpp"
+#include "Game/Game.hpp"
 
 class ScreenManager;
-class Game;
 
 class MatchScreen : public IScreen {
 private:
@@ -28,6 +28,7 @@ private:
     Stage stage = Stage::SideKickPlacementP1;
     Character* selected = nullptr;
     int selectedCardIndex = -1;
+    AttackOption option;
 
     void HandleStageInput();
     void HandleSidekickPlacement();
@@ -40,6 +41,7 @@ private:
     void HandlePendingMove();
     void HandlePendingChooseCharacter();
     void HandlePendingChooseCard();
+    void HandlePendingShowCard();
 
 public:
     explicit MatchScreen(ScreenManager* man);

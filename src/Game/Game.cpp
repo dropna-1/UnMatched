@@ -40,6 +40,9 @@ void Game::setPlayer2(const string& name, const int& age){
     player2.setAge(age);
 }
 
+void Game::setCanUseAbility(const bool& use){
+    canUseAbility = true;
+}
 
 void Game::setupPlayers(){
     if(player1.getAge() < player2.getAge()){
@@ -351,7 +354,7 @@ vector<int> Game::getSidekickPlacement(Character* character)
 
 void Game::changeTurn(){
     swap(currentPlayer, otherPlayer);
-    if(currentPlayer->getHero().get()->getAbility().get()->HasAbilityOnStart())
+    if(canUseAbility && currentPlayer->getHero().get()->getAbility().get()->HasAbilityOnStart())
         currentPlayer->getHero().get()->getAbility().get()->SendRequest(this);
 }
 
@@ -443,7 +446,6 @@ void Game::playScheme(Character* source, const int& schemeCardIndex)
         option, schemeCard, nullptr, context
     );
 
-    useAction();
     continuePlayScheme();
 }
 
@@ -457,6 +459,7 @@ void Game::continuePlayScheme(){
     currentPlayer->getHero().get()->getDeck()
     .get()->discardCard(pendingCombat->attackCard);
 
+    useAction();
     clearPendingCombat();
 }
 
@@ -488,7 +491,6 @@ void Game::combat(AttackOption option, const int& attackCardIndex,
         option, attackCard, defenseCard, context
     );
 
-    useAction();
     continueCombat();
 }
 
@@ -595,6 +597,7 @@ void Game::continueCombat()
         /*---------------------------finish---------------------------*/
         case CombatStage::Finished:
         {
+            useAction();
             clearPendingCombat();
             return;
         }
