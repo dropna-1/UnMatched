@@ -178,8 +178,14 @@ void MatchScreen::HandleStageInput(){
     }
     case Stage::SelectDefenseCard:
     {
-        hand.HighlightCards(game->getPlayableDefenseCard(option.target));
-        HandlePlayCombatCard();
+        std::vector<int> playableCards = game->getPlayableDefenseCard(option.target);
+        if(playableCards.empty()){
+            game->combat(option, AttackCardIndex, nullopt);
+            stage = Stage::Combat;
+        }else{
+            hand.HighlightCards(game->getPlayableDefenseCard(option.target));
+            HandlePlayCombatCard();
+        }
         break;
     }
     default:
@@ -316,8 +322,8 @@ void MatchScreen::HandlePendingActionInput(){
     {
         DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), {0, 0, 0, 100});
         Rectangle c = {(float)(GetScreenWidth()-890)/2, (float)(GetScreenHeight()-500)/2, 890, 500};
-        hand.Draw(*game->getCurrentPlayer()->getHero()->getDeck(), c);
-        hand.HighlightCards(action->getOption(*game));
+        pendingHand.Draw(*game->getCurrentPlayer()->getHero()->getDeck(), c);
+        pendingHand.HighlightCards(action->getOption(*game));
         HandlePendingChooseCard();
         break;
     }
@@ -326,8 +332,8 @@ void MatchScreen::HandlePendingActionInput(){
     {
         DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), {0, 0, 0, 100});
         Rectangle c = {(float)(GetScreenWidth()-890)/2, (float)(GetScreenHeight()-500)/2, 890, 500};
-        hand.Draw(*game->getOtherPlayer()->getHero()->getDeck(), c);
-        hand.HighlightCards(action->getOption(*game));
+        pendingHand.Draw(*game->getOtherPlayer()->getHero()->getDeck(), c);
+        pendingHand.HighlightCards(action->getOption(*game));
         HandlePendingChooseCard();
         break;
     }
@@ -383,7 +389,7 @@ void MatchScreen::HandlePendingChooseCharacter(){
 }
 // ------------------------------------------------------------------------------------------
 void MatchScreen::HandlePendingChooseCard(){
-    int handIndex = hand.GetClickedCard(*game->getOtherPlayer()->getHero()->getDeck());
+    int handIndex = pendingHand.GetClickedCard(*game->getOtherPlayer()->getHero()->getDeck());
     if(handIndex != -1){
         game->currentPendingAction()->submit(*game, handIndex);
         board.ClearHighlightedSpaces();

@@ -94,18 +94,16 @@ std::vector<int> ChooseCardAction::getOption(Game& game){
         if(!selected)
             options.push_back(id);
     }
-    // if(selectedCards.size() >= minCards)
-    //     options.push_back(-1);
 
     return options;
 }
 
 void ChooseCardAction::submit(Game& game, int choice=-1){
-    if(choice != -1){
+    if(choice == -1){
         game.getPendingCombat().get()->selection.cards = selectedCards;
+        game.completePendingAction();
         return;
     }
-    auto hand = selected->getHero().get()->getDeck().get()->getHand();
     selectedCards.push_back(choice);
     if(selectedCards.size() == maxCards){
         game.getPendingCombat().get()->selection.cards = selectedCards;

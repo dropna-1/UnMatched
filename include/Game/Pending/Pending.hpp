@@ -21,7 +21,6 @@ public:
     virtual std::vector<int> getOption(Game& game) = 0;
     virtual void submit(Game& game, int choice) = 0;
     RequestType getType() const;
-    bool isFinished() const;
 };
 /*-----------------------------------------------------------------*/
 class MoveAction : public PendingAction {

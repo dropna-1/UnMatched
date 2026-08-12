@@ -21,7 +21,7 @@ private:
     Rectangle btnHome;
     BoardView board;
     StatusView status;
-    HandView hand;
+    HandView hand, pendingHand;
     ActionsView actions;
     TipView tip;
 
