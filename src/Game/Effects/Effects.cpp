@@ -279,6 +279,10 @@ void RaveningEffect::execute(GameContext& context , const vector<Character*>& ta
     int count = 0  ;
     for(auto sister : targets)
     {
+        if(!sister->isAlive())
+        {
+            continue ;
+        }
         if(areAdjacent(context.getBoard() , context.getGame()->getPendingCombat()->selection.character , sister))
         {
             count++ ;
