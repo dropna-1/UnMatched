@@ -67,6 +67,8 @@ class Game {
     std::queue<unique_ptr<PendingAction>> pendingActions;
     std::unique_ptr<PendingCombat> pendingCombat;
     std::mt19937 rng{std::random_device{}()};
+
+    bool canUseAbility = false;
     
 public:
 
@@ -79,6 +81,7 @@ public:
     std::shared_ptr<Hero>& getDracula();
     std::unique_ptr<PendingCombat>& getPendingCombat();
     void clearPendingCombat();
+    void setCanUseAbility(const bool& use);
     /*-----------------------------------------------------------------*/
     void setPlayer1(const string& name, const int& age);
     void setPlayer2(const string& name, const int& age);

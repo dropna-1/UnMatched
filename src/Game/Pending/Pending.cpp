@@ -118,8 +118,7 @@ std::vector<int> ShowCardAction::getOption(Game& game){
     auto hand = selected->getHero().get()->getDeck().get()->getHand();
     for(int id = 0; id < hand.size(); id++)
         options.push_back(id);
-
-    options.push_back(-1);
+        
     return options;
 }
 
