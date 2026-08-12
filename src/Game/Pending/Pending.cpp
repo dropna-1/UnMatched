@@ -73,8 +73,13 @@ void RaveningAction::submit(Game& game, int choice){
     }
 }
 /*-----------------------------------------------------------------*/
-ChooseCardAction::ChooseCardAction(Player* player, int min, int max) : 
-selected(player), minCards(min), maxCards(max) {type = RequestType::Card;}
+ChooseCardAction::ChooseCardAction(Player* player, int min, int max, Game& game) : 
+selected(player), minCards(min), maxCards(max) {
+    if(player == game.getCurrentPlayer())
+        type = RequestType::CardFromCurrent;
+    else 
+        type = RequestType::CardFromOther;
+}
 
 std::vector<int> ChooseCardAction::getOption(Game& game){
     vector<int> options;

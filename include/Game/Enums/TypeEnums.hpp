@@ -67,9 +67,10 @@ enum class RequestType
 {
     Move, 
     Character , 
-    Card ,
+    CardFromCurrent ,
+    CardFromOther ,
     RaveningST1 , 
-    RaveningST2 , 
+    RaveningST2 ,
     Dracula ,
     ShowCard ,
     None ,

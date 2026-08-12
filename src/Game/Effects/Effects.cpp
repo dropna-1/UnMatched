@@ -71,7 +71,8 @@ void DiscardCardEffect::execute(GameContext& context, const vector<Character*>& 
 {
     if(context.getGame()->getPendingCombat()->selection.cards.empty())
     {
-        context.getGame()->requestAction(make_unique<ChooseCardAction>(context.getCurrentPlayer() , 1 , count)) ;
+        context.getGame()->requestAction(make_unique<ChooseCardAction>(
+            context.getCurrentPlayer() , 1 , count, *context.getGame())) ;
         return ;
     }
     auto index = context.getGame()->getPendingCombat()->selection.cards ;
@@ -292,7 +293,7 @@ void BeastFormEffect::execute(GameContext& context , const vector<Character*>& t
     if(context.getGame()->getPendingCombat()->selection.cards.empty())
     {
         context.getGame()->requestAction(make_unique<ChooseCardAction>(context.getCurrentPlayer() , 0 , 
-        context.getCurrentPlayer()->getHero()->getDeck()->getHandSize())) ;
+        context.getCurrentPlayer()->getHero()->getDeck()->getHandSize(), *context.getGame())) ;
         return ;
     }
     auto indexes = context.getGame()->getPendingCombat()->selection.cards ;

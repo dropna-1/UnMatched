@@ -56,7 +56,7 @@ private:
     int minCards;
     int maxCards;
 public:
-    ChooseCardAction(Player* player, int min, int max);
+    ChooseCardAction(Player* player, int min, int max, Game& game);
     std::vector<int> getOption(Game& game) override;
     void submit(Game& game, int choice) override;
 };

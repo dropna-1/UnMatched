@@ -10,9 +10,10 @@ class Game;
 class TipView{
 private:
     std::map<Stage, std::string> message;
+    std::map<RequestType, std::string> pendingMessage;
 public:
     TipView() = default;
     ~TipView() = default;
     void FillMessage(Player& pc, Player& po);
-    void Draw(Rectangle t, Stage* stage, Font& font);
+    void Draw(Rectangle t, Stage* stage, Game& game, Font& font);
 };
