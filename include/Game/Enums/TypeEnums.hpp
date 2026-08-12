@@ -88,13 +88,14 @@ enum class Stage {
     SideKickPlacementP1,
     SideKickPlacementP2,
     SelectManeuverCharacter,
-    ChoiceNode,
-    Pending,
     SelectAttackCharacter,
     SelectDefenseCharacter,
     SelectSchemeCharacter,
     SelectAttackCard,
     SelectDefenseCard,
     SelectSchemeCard,
+    ChoiceNode,
+    Pending,
+    Combat,
     None
 };

@@ -66,7 +66,11 @@ void MatchScreen::Draw() {
     status.DrawPlayerPanel(*game->getOtherPlayer(), (x*5)/6-2, 46, x/6, boardH-26);
 
     Rectangle h = {(x*2)/3, boardH+20, x/3, y/3-30-20};
-    hand.Draw(*game->getCurrentPlayer()->getHero()->getDeck(), h);
+    if(stage == Stage::SelectDefenseCard)
+        hand.Draw(*game->getOtherPlayer()->getHero()->getDeck(), h);
+    else{
+        hand.Draw(*game->getCurrentPlayer()->getHero()->getDeck(), h);
+    }
 
     Rectangle b = {2, y*7/9, x/4-2, y/4-30-30-10};
     actions.Draw(b, &stage);
@@ -141,7 +145,7 @@ void MatchScreen::HandleStageInput(){
     case Stage::SelectSchemeCard:
     {
         hand.HighlightCards(game->getSchemeCards(selected));
-        HandlePlaycard();
+        HandlePlaySchemeCard();
         break;
     }
     case Stage::SelectAttackCharacter:
@@ -153,7 +157,7 @@ void MatchScreen::HandleStageInput(){
         HandleCharacterSelect();
         break;
     }
-    case Stage::SelectDefenseCard:
+    case Stage::SelectDefenseCharacter:
     {
         std::vector<int> targets;
         for(auto& a : game->getAttackableTargets())
@@ -161,6 +165,16 @@ void MatchScreen::HandleStageInput(){
                 targets.push_back(a.target->getPosition());
         board.HighlightSpaces(targets, HighlightType::Selected);
         HandleCharacterSelect();
+        break;
+    }
+    case Stage::SelectAttackCard:
+    {
+        hand.HighlightCards(game->getPlayableAttackCard(option.attacker));
+        break;
+    }
+    case Stage::SelectDefenseCard:
+    {
+        hand.HighlightCards(game->getPlayableDefenseCard(option.target));
         break;
     }
     default:
@@ -214,7 +228,7 @@ void MatchScreen::HandleCharacterSelect(){
                     option.attacker = c;
                 }
                 else if(stage == Stage::SelectAttackCharacter){
-                    stage = Stage::SelectDefenseCharacter;
+                    stage = Stage::SelectAttackCard;
                     option.target = c;
                 }
                 break;
@@ -242,15 +256,30 @@ void MatchScreen::HandleAbility(){
     }
 }
 // ------------------------------------------------------------------------------------------
-void MatchScreen::HandlePlaycard(){
+void MatchScreen::HandlePlaySchemeCard(){
     int handIndex = hand.GetClickedCard(*game->getCurrentPlayer()->getHero()->getDeck());
     if(handIndex != -1){
         hand.ClearHighlightedCards();
         game->playScheme(selected, handIndex);
-        selectedCardIndex = handIndex;
         if(!game->hasPendingAction()){
             selected = nullptr;
             stage = Stage::None;
+        }
+    }
+}
+
+void MatchScreen::HandlePlayCombatCard(){
+    int handIndex = hand.GetClickedCard(*game->getCurrentPlayer()->getHero()->getDeck());
+    if(handIndex != -1){
+        hand.ClearHighlightedCards();
+        if(stage == Stage::SelectAttackCard){
+            AttackCardIndex = handIndex;
+            stage = Stage::SelectDefenseCard;
+        }
+        else if(stage == Stage::SelectDefenseCard){
+            DefenseCardIndex = handIndex;
+            game->combat(option, AttackCardIndex, DefenseCardIndex);
+            stage = Stage::Combat;
         }
     }
 }
@@ -314,9 +343,16 @@ void MatchScreen::HandlePendingMove(){
     if(space != -1){
         game->currentPendingAction()->submit(*game, space);
         if(!game->hasPendingAction()){
-            game->continuePlayScheme();
             board.ClearHighlightedSpaces();
-            stage = Stage::None;
+            if(stage == Stage::SelectSchemeCard){
+                game->continuePlayScheme();
+                stage = Stage::None;
+            }
+            else if(stage == Stage::Combat){
+                game->continueCombat();
+                if(!game->hasPendingAction())
+                    stage = Stage::None;
+            }
         }
     }
 }
@@ -325,10 +361,17 @@ void MatchScreen::HandlePendingChooseCharacter(){
     int space = board.GetClickedSpace(); 
     if(space != -1){
         game->currentPendingAction()->submit(*game, space);
+        board.ClearHighlightedSpaces();
         if(!game->hasPendingAction()){
-            game->continuePlayScheme();
-            board.ClearHighlightedSpaces();
-            stage = Stage::None;
+            if(stage == Stage::SelectSchemeCard){
+                game->continuePlayScheme();
+                stage = Stage::None;
+            }
+            else if(stage == Stage::Combat){
+                game->continueCombat();
+                if(!game->hasPendingAction())
+                    stage = Stage::None;
+            }
         }
     }
 }

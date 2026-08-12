@@ -27,7 +27,10 @@ private:
 
     Stage stage = Stage::SideKickPlacementP1;
     Character* selected = nullptr;
-    int selectedCardIndex = -1;
+
+    int AttackCardIndex = -1;
+    int DefenseCardIndex = -1;
+
     AttackOption option;
 
     void HandleStageInput();
@@ -35,7 +38,8 @@ private:
     void HandleCharacterSelect();
     void HandleMove();
     void HandleAbility();
-    void HandlePlaycard();
+    void HandlePlaySchemeCard();
+    void HandlePlayCombatCard();
 
     void HandlePendingActionInput();
     void HandlePendingMove();

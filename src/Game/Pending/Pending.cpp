@@ -58,7 +58,6 @@ std::vector<int> RaveningAction::getOption(Game& game){
     return spaces;
 }
 
-
 void RaveningAction::submit(Game& game, int choice){
     if(stage == 0){
         for(Character* c : allCharacters)
@@ -118,7 +117,7 @@ std::vector<int> ShowCardAction::getOption(Game& game){
     auto hand = selected->getHero().get()->getDeck().get()->getHand();
     for(int id = 0; id < hand.size(); id++)
         options.push_back(id);
-        
+
     return options;
 }
 
