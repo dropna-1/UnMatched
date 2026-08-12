@@ -52,15 +52,14 @@ shared_ptr<Deck> CardFactory::createSherlockDeck()
         "Place Dr.Watson in a space adjacent to Holmes. Holmes recovers 1 Health. Draw 1 Card." , 
         "external/images/cards/holms/administer-aid.png"
     ) ;
+    AdministerAid->addEffect(TriggerType::None , EffectTarget::FriendlySidekicks, nullptr, make_shared<MoveToAdjacentEffect>());
     AdministerAid->addEffect(
         TriggerType::None , EffectTarget::FriendlyHero , nullptr , make_shared<HealEffect>(1)
     );
     AdministerAid->addEffect(
         TriggerType::None , EffectTarget::currentPlayer , nullptr  ,make_shared<DrawCardEffect>(1)
     );
-    AdministerAid->addEffect(TriggerType::None , EffectTarget::FriendlySidekicks, nullptr, make_shared<MoveToAdjacentEffect>());
     addCopies(deck ,2 , AdministerAid) ;
-    
     auto ServiceRevolver = createCard(
         "Service Revolver" , 
         CardType::Attack , 
@@ -287,8 +286,8 @@ shared_ptr<Deck> CardFactory::createDraculaDeck()
         "Recover 2 health. Return any defeated Sister(if any) to any space in Dracula zone.", 
         "external/images/cards/dracula/baptism-of-blood.png"
     );
-    BaptismOfBlood->addEffect(TriggerType::None, EffectTarget::FriendlyHero, nullptr , make_shared<HealEffect>(2)) ;
     BaptismOfBlood->addEffect(TriggerType::None, EffectTarget::FriendlySidekicks, nullptr, make_shared<ReviveSister>()) ;
+    BaptismOfBlood->addEffect(TriggerType::None, EffectTarget::FriendlyHero, nullptr , make_shared<HealEffect>(2)) ;
     addCopies(deck ,2 , BaptismOfBlood) ;
 
     auto Ambush = createCard(

@@ -120,18 +120,34 @@ void SwapEffect::execute(GameContext& context , const vector<Character*>& target
     }
 }
 
-void MoveToAdjacentEffect::execute(GameContext& context , const vector<Character*>& targets)
+void MoveToAdjacentEffect::execute(
+    GameContext& context,
+    const vector<Character*>& targets)
 {
+    Character* hero = context.getCurrentPlayer()->getHero().get();
+
     for(auto c : targets)
     {
         if(context.getGame()->getPendingCombat()->selection.destination == -1)
         {
-            context.getGame()->requestAction(make_unique<MoveAction>(c, context.getAttacker() ,MoveMode::Neighboor ,-1)) ;
-            return ;
+            context.getGame()->requestAction(
+                make_unique<MoveAction>(
+                    c,
+                    hero,
+                    MoveMode::Neighboor,
+                    -1
+                )
+            );
+
+            return;
         }
-        if(context.getGame()->canMove(context.getGame()->getPendingCombat()->selection.destination))
+
+        int destination =
+            context.getGame()->getPendingCombat()->selection.destination;
+
+        if(context.getGame()->canMove(destination))
         {
-            context.getGame()->move(c , context.getGame()->getPendingCombat()->selection.destination) ;
+            context.getGame()->move(c, destination);
         }
     }
 }
@@ -154,25 +170,36 @@ void DeduceEffect::execute(GameContext& context , const vector<Character*>& targ
     }
 }
 
-void ReviveSister::execute(GameContext& context ,  const vector<Character*>& targets)
+void ReviveSister::execute(GameContext& context, const vector<Character*>& targets)
 {
     for(auto sister : targets)
     {
         if(!sister->isAlive())
         {
-            sister->heal(sister->getMaxhp()) ;
             if(context.getGame()->getPendingCombat()->selection.destination == -1)
             {
-                context.getGame()->requestAction(make_unique<MoveAction>(context.getAttacker() , nullptr, MoveMode::Zone , -1)) ;
-                return ;
+                context.getGame()->requestAction(
+                    make_unique<MoveAction>(
+                        context.getAttacker(),
+                        nullptr,
+                        MoveMode::Zone,
+                        -1
+                    )
+                );
+
+                return;
             }
-            if(context.getGame()->canMove(context.getGame()->getPendingCombat()->selection.destination))
+
+            int destination =
+                context.getGame()->getPendingCombat()->selection.destination;
+
+            if(context.getGame()->canMove(destination))
             {
-                context.getGame()->move(sister , context.getGame()->getPendingCombat()->selection.destination) ;
+                sister->heal(sister->getMaxhp());
+                context.getGame()->move(sister, destination);
             }
-            
         }
-    }   
+    }
 }
 
 void AmbushEffect::execute(GameContext& context ,  const vector<Character*>& targets)
