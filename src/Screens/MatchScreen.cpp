@@ -134,8 +134,12 @@ void MatchScreen::Draw() {
     status.DrawPlayerPanel(*game->getOtherPlayer(), (x*5)/6-2, 46, x/6, boardH-26);
 
     Rectangle h = {(x*2)/3, boardH+20, x/3, y/3-30-20};
-    if(stage == Stage::SelectDefenseCard)
+    if(stage == Stage::SelectDefenseCard || 
+    (game->hasPendingAction() && 
+    game->currentPendingAction()->getType() == RequestType::DeleteFromOther))
+    {
         hand.Draw(*game->getOtherPlayer()->getHero()->getDeck(), h);
+    }
     else{
         hand.Draw(*game->getCurrentPlayer()->getHero()->getDeck(), h);
     }
@@ -459,7 +463,7 @@ void MatchScreen::HandlePendingActionInput(){
         DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), {0, 0, 0, 100});
         Rectangle c = {(float)(GetScreenWidth()-712)/2, (float)(GetScreenHeight()-400)/2, 712, 400};
         hand.Draw(*game->getOtherPlayer()->getHero()->getDeck(), c);
-        HandlePendingChooseCard();
+        game->currentPendingAction()->getOption(*game);
         break;
     }
     case RequestType::RaveningST1:
@@ -472,6 +476,18 @@ void MatchScreen::HandlePendingActionInput(){
     {
         board.HighlightSpaces(action->getOption(*game), HighlightType::Selected);
         HandlePendingMove();
+        break;
+    }
+    case RequestType::DeleteFromCurrent:
+    {
+        hand.HighlightCards(action->getOption(*game));
+        HandlePendingChooseCard();
+        break;
+    }
+    case RequestType::DeleteFromOther:
+    {
+        hand.HighlightCards(action->getOption(*game));
+        HandlePendingChooseCard();
         break;
     }
     default:
@@ -517,10 +533,19 @@ void MatchScreen::HandlePendingChooseCharacter(){
 // ------------------------------------------------------------------------------------------
 void MatchScreen::HandlePendingChooseCard(){
     int handIndex = -1;
-    if(game->currentPendingAction()->getType() == RequestType::CardFromCurrent)
+    switch (game->currentPendingAction()->getType())
+    {
+    case RequestType::CardFromCurrent:
+    case RequestType::DeleteFromCurrent:
         handIndex = hand.GetClickedCard(*game->getCurrentPlayer()->getHero()->getDeck());
-    else if(game->currentPendingAction()->getType() == RequestType::CardFromOther)
+        break;
+    case RequestType::CardFromOther:
+    case RequestType::DeleteFromOther:
         handIndex = hand.GetClickedCard(*game->getOtherPlayer()->getHero()->getDeck());
+        break;
+    default:
+        break;
+    }
 
     if(handIndex != -1){
         game->currentPendingAction()->submit(*game, handIndex);

@@ -52,7 +52,7 @@ void TipView::FillMessage(Player& pc, Player& po){
     pendingMessage.insert({RequestType::Dracula,
         "Perform dracula`s ability on a character"});
     pendingMessage.insert({RequestType::ShowCard,
-        "Click on one of the cards to skip"});
+        "Click the Skip button to skip"});
     pendingMessage.insert({RequestType::CardFromCurrent,
         pc.getName() + ", Choose a specific number of cards"});
     pendingMessage.insert({RequestType::CardFromOther,

@@ -71,6 +71,8 @@ enum class RequestType
     CardFromOther ,
     RaveningST1 , 
     RaveningST2 ,
+    DeleteFromCurrent ,
+    DeleteFromOther ,
     Dracula ,
     ShowCard ,
     None ,

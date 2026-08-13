@@ -84,7 +84,7 @@ selected(player), minCards(min), maxCards(max) {
 std::vector<int> ChooseCardAction::getOption(Game& game){
     vector<int> options;
 
-    auto hand = selected->getHero().get()->getDeck().get()->getHand();
+    auto hand = selected->getHero()->getDeck()->getHand();
     for(int id = 0; id < hand.size(); id++){
         bool selected = false;
 
@@ -131,6 +131,26 @@ void ShowCardAction::submit(Game& game, int choice){
     game.completePendingAction();
 }
 /*-----------------------------------------------------------------*/
+DeleteCardAction::DeleteCardAction(Game& game, Player* player) : selected(player){
+    if(player == game.getCurrentPlayer())
+        type = RequestType::DeleteFromCurrent;
+    else 
+        type = RequestType::DeleteFromOther;
+}
+
+std::vector<int> DeleteCardAction::getOption(Game& game){
+    vector<int> options;
+    for(int id = 0; id < selected->getHero()->getDeck()->getHand().size(); id++)
+        options.push_back(id);
+    return options;
+}
+
+void DeleteCardAction::submit(Game& game, int choice){
+    selected->getHero()->getDeck()->discardFromHand(choice);
+    if(selected->getHero()->getDeck()->getHandSize() <= 7)
+        game.completePendingAction();
+}
+/*-----------------------------------------------------------------*/
 DraculaAction::DraculaAction(){type = RequestType::Dracula;}
 
 std::vector<int> DraculaAction::getOption(Game& game){
@@ -142,14 +162,12 @@ std::vector<int> DraculaAction::getOption(Game& game){
 }
 
 void DraculaAction::submit(Game& game, int choice){
-    if(choice != -1){
-        for(Character* c : neighboors)
-            if(c->getPosition() == choice){
-                game.getDracula().get()->getAbility().get()->execute(
-                    c, game.getDracula().get()
-                );
-                break;
-            }
-    }
+    for(Character* c : neighboors)
+        if(c->getPosition() == choice){
+            game.getDracula().get()->getAbility().get()->execute(
+                c, game.getDracula().get()
+            );
+            break;
+        }
     game.completePendingAction();
 }

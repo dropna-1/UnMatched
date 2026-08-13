@@ -69,6 +69,15 @@ public:
     void submit(Game& game, int choice) override;
 };
 /*-----------------------------------------------------------------*/
+class DeleteCardAction : public PendingAction {
+private:
+    Player* selected = nullptr;
+public:
+    DeleteCardAction(Game& game, Player* player);
+    std::vector<int> getOption(Game& game) override;
+    void submit(Game& game, int choice) override;
+};
+/*-----------------------------------------------------------------*/
 class DraculaAction : public PendingAction {
     std::vector<Character*> neighboors;
 public:
