@@ -19,9 +19,10 @@ private:
     Font font;
     Rectangle btnSave;
     Rectangle btnHome;
+    Rectangle btnSkip;
     BoardView board;
     StatusView status;
-    HandView hand, pendingHand;
+    HandView hand;
     ActionsView actions;
     TipView tip;
 
@@ -45,7 +46,8 @@ private:
     void HandlePendingMove();
     void HandlePendingChooseCharacter();
     void HandlePendingChooseCard();
-    void HandlePendingShowCard();
+
+    void DrawSkip();
 
 public:
     explicit MatchScreen(ScreenManager* man);

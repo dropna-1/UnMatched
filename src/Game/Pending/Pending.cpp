@@ -94,18 +94,22 @@ std::vector<int> ChooseCardAction::getOption(Game& game){
         if(!selected)
             options.push_back(id);
     }
+    if(!game.getPendingCombat()->selection.canFinish && selectedCards.size() >= minCards)
+        game.getPendingCombat()->selection.canFinish = true;
 
     return options;
 }
 
-void ChooseCardAction::submit(Game& game, int choice=-1){
+void ChooseCardAction::submit(Game& game, int choice){
     if(choice == -1){
+        game.getPendingCombat()->selection.canFinish == false;
         game.getPendingCombat().get()->selection.cards = selectedCards;
         game.completePendingAction();
         return;
     }
     selectedCards.push_back(choice);
     if(selectedCards.size() == maxCards){
+        game.getPendingCombat()->selection.canFinish == false;
         game.getPendingCombat().get()->selection.cards = selectedCards;
         game.completePendingAction();
     }
@@ -115,16 +119,12 @@ ShowCardAction::ShowCardAction(Player* player) : selected(player)
 {type = RequestType::ShowCard;}
 
 std::vector<int> ShowCardAction::getOption(Game& game){
-    vector<int> options;
-
-    auto hand = selected->getHero().get()->getDeck().get()->getHand();
-    for(int id = 0; id < hand.size(); id++)
-        options.push_back(id);
-
-    return options;
+    game.getPendingCombat()->selection.canFinish = true;
+    return std::vector<int>{};
 }
 
 void ShowCardAction::submit(Game& game, int choice){
+    game.getPendingCombat()->selection.canFinish == false;
     game.getPendingCombat()->selection.showHand = true;
     game.completePendingAction();
 }
