@@ -35,30 +35,79 @@ DrawCardEffect::DrawCardEffect(int count) : count(count)
 {
 }
 
-void DrawCardEffect::execute(GameContext& context, const vector<Character*>& targets )
+void DrawCardEffect::execute(
+    GameContext& context,
+    const vector<Character*>& targets)
 {
-    auto deck = context.getCurrentPlayer()->getHero()->getDeck() ;
-    for(int i = 0 ; i < count ; i++)
+    for(auto character : targets)
     {
-        deck->drawCard() ;
+        if(character == context.getCurrentPlayer()->getHero().get())
+        {
+            for(int i = 0; i < count; i++)
+                context.getCurrentPlayer()
+                    ->getHero()
+                    ->getDeck()
+                    ->drawCard();
+        }
+        else if(character == context.getEnemyPlayer()->getHero().get())
+        {
+            for(int i = 0; i < count; i++)
+                context.getEnemyPlayer()
+                    ->getHero()
+                    ->getDeck()
+                    ->drawCard();
+        }
     }
 }
 
 MoveEffect::MoveEffect(int distance) : distance(distance)
 {
 }
-void MoveEffect::execute(GameContext& context, const vector<Character*>& targets)
+
+void MoveEffect::execute(
+    GameContext& context,
+    const vector<Character*>& targets)
 {
-    for(auto c :targets)
+    for(auto c : targets)
     {
-        if(context.getGame()->getPendingCombat()->selection.destination == -1)
+        auto& selection =
+            context.getGame()->getPendingCombat()->selection;
+
+        if(selection.destination == -1)
         {
-            context.getGame()->requestAction(make_unique<MoveAction>(c , nullptr, MoveMode::AnySpace , distance)) ;
-            return ;
+            if(distance == -1)
+            {
+                context.getGame()->requestAction(
+                    make_unique<MoveAction>(
+                        c,
+                        nullptr,
+                        MoveMode::AnySpace,
+                        -1
+                    )
+                );
+            }
+            else
+            {
+                context.getGame()->requestAction(
+                    make_unique<MoveAction>(
+                        c,
+                        nullptr,
+                        MoveMode::Range,
+                        distance
+                    )
+                );
+            }
+
+            return;
         }
-        if(context.getGame()->canMove(context.getGame()->getPendingCombat()->selection.destination))
+
+        if(context.getGame()->canMove(
+            selection.destination))
         {
-            context.getGame()->move(c , context.getGame()->getPendingCombat()->selection.destination) ;
+            context.getGame()->move(
+                c,
+                selection.destination
+            );
         }
     }
 }
@@ -67,42 +116,74 @@ DiscardCardEffect::DiscardCardEffect(int count) : count(count)
 {
 }
 
-void DiscardCardEffect::execute(GameContext& context, const vector<Character*>& targets )
+void DiscardCardEffect::execute(
+    GameContext& context,
+    const vector<Character*>& targets)
 {
-    if(context.getGame()->getPendingCombat()->selection.cards.empty())
+    auto* game = context.getGame();
+    auto& selection = game->getPendingCombat()->selection;
+
+    if(selection.cards.empty())
     {
-        context.getGame()->requestAction(make_unique<ChooseCardAction>(
-            context.getCurrentPlayer() , 1 , count, *context.getGame())) ;
-        return ;
+        game->requestAction(
+            make_unique<ChooseCardAction>(
+                context.getEnemyPlayer(),
+                1,
+                1,
+                *game
+            )
+        );
+
+        return;
     }
-    auto index = context.getGame()->getPendingCombat()->selection.cards ;
-    if(count == 0 )
-    {
-        return ;
-    }
-    for(auto card : index)
-    {
-        context.getEnemyPlayer()->getHero()->getDeck()->discardFromHand(card) ;
-    }
+
+    int cardIndex = selection.cards[0];
+
+    context.getEnemyPlayer()
+        ->getHero()
+        ->getDeck()
+        ->discardFromHand(cardIndex);
 }
 
-void CancelEffectsEffect::execute(GameContext& context, const vector<Character*>& targets)
+void CancelEffectsEffect::execute(
+    GameContext& context,
+    const vector<Character*>& targets)
 {
-    
     if(context.getDefenderCard() == context.getCurrentCard())
     {
-        if(context.getEnemyPlayer()->getHero()->getAbility()->allowCancel(context.getAttackerCard(),context))
+        if(context.getAttackerCard() == nullptr)
+            return;
+
+        if(context.getEnemyPlayer()
+            ->getHero()
+            ->getAbility()
+            ->allowCancel(
+                context.getAttackerCard(),
+                context))
         {
-            context.getAttackerCard()->getEffects().clear(); 
-            return ;
+            context.getAttackerCard()
+                ->getEffects()
+                .clear();
         }
+
+        return;
     }
+
     if(context.getAttackerCard() == context.getCurrentCard())
     {
-        if(context.getEnemyPlayer()->getHero()->getAbility()->allowCancel(context.getDefenderCard(),context))
+        if(context.getDefenderCard() == nullptr)
+            return;
+
+        if(context.getEnemyPlayer()
+            ->getHero()
+            ->getAbility()
+            ->allowCancel(
+                context.getDefenderCard(),
+                context))
         {
-            context.getDefenderCard()->getEffects().clear(); 
-            return ;
+            context.getDefenderCard()
+                ->getEffects()
+                .clear();
         }
     }
 }
@@ -153,21 +234,32 @@ void MoveToAdjacentEffect::execute(
     }
 }
 
-void DeduceEffect::execute(GameContext& context , const vector<Character*>& targets)
+void DeduceEffect::execute(
+    GameContext& context,
+    const vector<Character*>& targets)
 {
     if(context.getCurrentCard() == context.getDefenderCard())
     {
-        int temp = context.getAttackerCard()->getBoost() ;
-        context.getAttackerCard()->setBoost(context.getAttackerCard()->getValue()) ;
-        context.getAttackerCard()->setValue(temp) ;
-        return ;
+        if(context.getAttackerCard() == nullptr)
+            return;
+
+        context.getAttackerCard()->setValue(
+            context.getAttackerCard()->getBoost()
+        );
+
+        return;
     }
+
     if(context.getCurrentCard() == context.getAttackerCard())
     {
-        int temp = context.getDefenderCard()->getBoost() ;
-        context.getDefenderCard()->setBoost(context.getDefenderCard()->getValue()) ;
-        context.getDefenderCard()->setValue(temp) ;
-        return ;
+        if(context.getDefenderCard() == nullptr)
+            return;
+
+        context.getDefenderCard()->setValue(
+            context.getDefenderCard()->getBoost()
+        );
+
+        return;
     }
 }
 
@@ -205,6 +297,10 @@ void ReviveSister::execute(GameContext& context, const vector<Character*>& targe
 
 void AmbushEffect::execute(GameContext& context ,  const vector<Character*>& targets)
 {
+    if(context.getEnemyPlayer()->getHero()->getDeck()->getHandSize() == 0)
+    {
+        return ; 
+    }
     int randomindex = (rand())%(context.getEnemyPlayer()->getHero()->getDeck()->getHandSize());
     Card* randomcard = context.getEnemyPlayer()->getHero()->getDeck()->previewCard(randomindex);
     context.getCurrentCard()->setValue(context.getCurrentCard()->getValue() + randomcard->getBoost()) ;
@@ -221,9 +317,15 @@ void FeedingFrenzyEffect::execute(GameContext& context ,  const vector<Character
     int count = 0 ; 
     for(auto sister : targets)
     {
-        if(areInSameZone(context.getBoard() , context.getDefender() , sister))
+        if(!sister->isAlive())
+            continue;
+
+        if(areInSameZone(
+            context.getBoard(),
+            context.getDefender(),
+            sister))
         {
-            count++ ;
+            count++;
         }
     }
     context.getAttackerCard()->setValue(context.getAttackerCard()->getValue() + count) ;
@@ -292,31 +394,78 @@ void RaveningEffect::execute(GameContext& context , const vector<Character*>& ta
     context.getGame()->getPendingCombat()->selection.character->takeDamage(count) ;
 }
 
-void BeastFormEffect::execute(GameContext& context , const vector<Character*>& targets)
+void BeastFormEffect::execute(
+    GameContext& context,
+    const vector<Character*>& targets)
 {
-    if(context.getGame()->getPendingCombat()->selection.cards.empty())
+    auto& selection =
+        context.getGame()->getPendingCombat()->selection;
+
+    // هنوز انتخاب کارت انجام نشده
+    if(!selection.showHand)
     {
-        context.getGame()->requestAction(make_unique<ChooseCardAction>(context.getCurrentPlayer() , 0 , 
-        context.getCurrentPlayer()->getHero()->getDeck()->getHandSize(), *context.getGame())) ;
-        return ;
+        context.getGame()->requestAction(
+            make_unique<ChooseCardAction>(
+                context.getCurrentPlayer(),
+                0,
+                context.getCurrentPlayer()
+                    ->getHero()
+                    ->getDeck()
+                    ->getHandSize() , 
+                *context.getGame() 
+            )
+        );
+
+        return;
     }
-    auto indexes = context.getGame()->getPendingCombat()->selection.cards ;
-    sort(indexes.rbegin() , indexes.rend()); 
-    int count = 0 ; 
-    for(auto index : indexes)
+
+    // انتخاب انجام شده
+    // حتی اگر cards خالی باشد، یعنی بازیکن 0 کارت انتخاب کرده
+    int count = static_cast<int>(selection.cards.size());
+
+    if(count > 0)
     {
-        context.getCurrentPlayer()->getHero()->getDeck()->discardFromHand(index) ;
-        count++ ;
+        auto deck =
+            context.getCurrentPlayer()
+                ->getHero()
+                ->getDeck();
+
+        vector<int> indexes = selection.cards;
+
+        // از آخر به اول حذف می‌کنیم تا indexها به هم نریزند
+        sort(indexes.rbegin(), indexes.rend());
+
+        for(int index : indexes)
+        {
+            deck->discardFromHand(index);
+        }
     }
-    context.getAttackerCard()->setValue(context.getAttackerCard()->getValue() + count) ;
+
+    // به ازای هر کارت حذف‌شده +1
+    context.getAttackerCard()->setValue(
+        context.getAttackerCard()->getValue() + count
+    );
+
+    // برای اجرای بعدی پاکش کن
+    selection.cards.clear();
+    selection.showHand = false;
 }
 
-void ShowHandEffect::execute(GameContext& context , const vector<Character*>& targets)
+void ShowHandEffect::execute(
+    GameContext& context,
+    const vector<Character*>& targets)
 {
-    if(context.getGame()->getPendingCombat()->selection.destination == -1)
+    auto* game = context.getGame();
+    auto& selection = game->getPendingCombat()->selection;
+
+    if(!selection.showHand)
     {
-        context.getGame()->requestAction(make_unique<ShowCardAction>(context.getEnemyPlayer())) ;
-        return ;
+        game->requestAction(
+            make_unique<ShowCardAction>(
+                context.getEnemyPlayer()
+            )
+        );
+
+        return;
     }
-    return ;
 }

@@ -84,6 +84,7 @@ void Card::setValue(int New)
 
 void Card::execute(TriggerType trigger, GameContext& context)
 {
+    context.setCurrentCard(this);
     for(const auto& entry : effects)
     {
         if(entry.trigger != trigger)
