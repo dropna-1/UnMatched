@@ -69,6 +69,7 @@ void MatchScreen::DrawSkip(){
             40,
         };
         if (GuiButton(btnSkip, "SKIP")){
+            hand.ClearHighlightedCards();
             game->combat(option, AttackCardIndex, std::nullopt);
             if(game->hasPendingAction())
                 stage = Stage::Combat;
@@ -106,6 +107,19 @@ void MatchScreen::DrawSkip(){
             stage = Stage::ChoiceNode;
         }
     }
+    else if(stage == Stage::End){
+        btnSkip = {
+            ((float)GetScreenWidth()-(float)GetScreenWidth()/3)/2,
+            (float)GetScreenHeight()/3 + 70,
+            (float)GetScreenWidth()/3,
+            70,
+        };
+        GuiSetStyle(DEFAULT, TEXT_SIZE, 60);
+        if (GuiButton(btnSkip, "OK")){
+            CloseWindow();
+        }
+        GuiSetStyle(DEFAULT, TEXT_SIZE, 24);
+    }
 }
 
 void MatchScreen::Draw() {
@@ -139,7 +153,10 @@ void MatchScreen::Draw() {
     Rectangle t = {x/4+4, y*7/9-30, x/4-2, y/8};
     tip.Draw(t, &stage, *game, font);
 
-    if(game->hasPendingAction()){
+    if(game->checkWinner() != nullptr)
+        stage = Stage::End;
+
+    if(game->hasPendingAction() && stage != Stage::End){
         if(game->currentPendingAction()->getType() == RequestType::Dracula)
             stage = Stage::Pending;
         HandlePendingActionInput();
@@ -262,6 +279,17 @@ void MatchScreen::HandleStageInput(){
             hand.HighlightCards(game->getPlayableDefenseCard(option.target));
             HandlePlayCombatCard();
         }
+        break;
+    }
+    case Stage::End:
+    {
+        int x = GetScreenWidth();
+        int y = GetScreenHeight();
+        DrawRectangle(0, 0, x, y, {0, 0, 0, 170});
+        const char* text = TextFormat("%s IS WINNER", game->checkWinner()->getName().c_str());
+        Vector2 titleSize = MeasureTextEx(font, text, 64, 1.0f);
+        DrawTextEx(font, text, (Vector2){(x - titleSize.x)/2, (float)y/3}
+        , 64, 1.0f, GOLD);
         break;
     }
     default:

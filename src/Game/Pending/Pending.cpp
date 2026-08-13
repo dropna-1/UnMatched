@@ -103,6 +103,7 @@ std::vector<int> ChooseCardAction::getOption(Game& game){
 void ChooseCardAction::submit(Game& game, int choice){
     if(choice == -1){
         game.getPendingCombat()->selection.canFinish = false;
+        game.getPendingCombat()->selection.showHand = true;
         game.getPendingCombat().get()->selection.cards = selectedCards;
         game.completePendingAction();
         return;
@@ -110,6 +111,7 @@ void ChooseCardAction::submit(Game& game, int choice){
     selectedCards.push_back(choice);
     if(selectedCards.size() == maxCards){
         game.getPendingCombat()->selection.canFinish = false;
+        game.getPendingCombat()->selection.showHand = true;
         game.getPendingCombat().get()->selection.cards = selectedCards;
         game.completePendingAction();
     }
