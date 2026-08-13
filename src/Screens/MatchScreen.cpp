@@ -69,7 +69,7 @@ void MatchScreen::DrawSkip(){
             40,
         };
         if (GuiButton(btnSkip, "SKIP")){
-            game->combat(option, AttackCardIndex, nullopt);
+            game->combat(option, AttackCardIndex, std::nullopt);
             stage = Stage::Combat;
         }
     }
@@ -120,7 +120,7 @@ void MatchScreen::Draw() {
     Rectangle b = {2, y*7/9, x/4-2, y/4-30-30-10};
     actions.Draw(b, &stage);
 
-    Rectangle t = {x/4+4, y*7/9, x/4-2, y/8};
+    Rectangle t = {x/4+4, y*7/9-30, x/4-2, y/8};
     tip.Draw(t, &stage, *game, font);
 
     if(game->hasPendingAction()){
