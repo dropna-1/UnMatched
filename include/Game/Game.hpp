@@ -36,6 +36,7 @@ struct PendingSelection{
     std::vector<int> cards;
     int destination = -1;
     bool showHand = false;
+    bool canFinish = false;
 };
 
 struct PendingCombat{

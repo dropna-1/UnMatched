@@ -3,9 +3,11 @@
 #include "Game/Player/player.hpp"
 
 void TipView::Draw(Rectangle t, Stage* stage, Game& game, Font& font){
-    std::string text = message[*stage].c_str();
+    std::string text;
     if(game.hasPendingAction())
         text = pendingMessage[game.currentPendingAction()->getType()];
+    else{text = message[*stage];}
+    
     Vector2 titleSize = MeasureTextEx(font, text.c_str(), 22, 0.2f);
     DrawTextEx(font, text.c_str(), (Vector2){(t.width - titleSize.x) / 2, t.y}, 
     22, 0.2f, GOLD);

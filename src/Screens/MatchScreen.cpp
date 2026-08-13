@@ -47,6 +47,51 @@ MatchScreen::~MatchScreen() {
 void MatchScreen::HandleInput() {}
 void MatchScreen::Update() {}
 
+void MatchScreen::DrawSkip(){
+    if(stage == Stage::Pending){
+        btnSkip = {
+            (float)GetScreenWidth()/6+14,
+            (float)GetScreenHeight()*2/3-24,
+            (float)GetScreenWidth()/12,
+            40,
+        };
+        if (GuiButton(btnSkip, "SKIP")){
+            game->completePendingAction();
+            board.ClearHighlightedSpaces();
+            stage = Stage::None;
+        }
+    }
+    else if(stage == Stage::SelectDefenseCard){
+        btnSkip = {
+            (float)GetScreenWidth()*2/3,
+            (float)GetScreenHeight()*2/3+20,
+            (float)GetScreenWidth()/3,
+            40,
+        };
+        if (GuiButton(btnSkip, "SKIP")){
+            game->combat(option, AttackCardIndex, nullopt);
+            stage = Stage::Combat;
+        }
+    }
+    else if(stage == Stage::Combat && game->getPendingCombat()->selection.canFinish){
+        btnSkip = {
+            (float)GetScreenWidth()/2-356,
+            (float)GetScreenHeight()/2+200,
+            712,
+            40,
+        };
+        if (GuiButton(btnSkip, "SKIP")){
+            game->currentPendingAction()->submit(*game, -1);
+            hand.ClearHighlightedCards();
+            if(stage == Stage::Combat){
+                game->continueCombat();
+                if(!game->hasPendingAction())
+                    stage = Stage::None;
+            }
+        }
+    }
+}
+
 void MatchScreen::Draw() {
     if (background.id != 0) {
         DrawTexturePro(background,
@@ -86,12 +131,15 @@ void MatchScreen::Draw() {
     else{
         HandleStageInput();
     }
+    DrawSkip();
 
     GuiSetStyle(DEFAULT, TEXT_SIZE, 24);
     GuiSetFont(font);
 
     GuiSetStyle(BUTTON, BASE_COLOR_NORMAL, ColorToInt(BLACK));
     GuiSetStyle(BUTTON, TEXT_COLOR_NORMAL, ColorToInt(GOLD));
+    GuiSetStyle(BUTTON, BASE_COLOR_FOCUSED, ColorToInt(GOLD));
+    GuiSetStyle(BUTTON, TEXT_COLOR_FOCUSED, ColorToInt(BLACK));
     GuiSetStyle(BUTTON, BORDER_WIDTH, 1);
 
     if (GuiButton(btnHome, "HOME")) {
@@ -166,7 +214,7 @@ void MatchScreen::HandleStageInput(){
         for(auto& a : game->getAttackableTargets())
             if(option.attacker->getPosition() == a.attacker->getPosition())
                 targets.push_back(a.target->getPosition());
-        board.HighlightSpaces(targets, HighlightType::Selected);
+        board.HighlightSpaces(targets, HighlightType::Attack);
         HandleCharacterSelect();
         break;
     }
@@ -321,19 +369,26 @@ void MatchScreen::HandlePendingActionInput(){
     case RequestType::CardFromCurrent:
     {
         DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), {0, 0, 0, 100});
-        Rectangle c = {(float)(GetScreenWidth()-890)/2, (float)(GetScreenHeight()-500)/2, 890, 500};
-        pendingHand.Draw(*game->getCurrentPlayer()->getHero()->getDeck(), c);
-        pendingHand.HighlightCards(action->getOption(*game));
+        Rectangle c = {(float)(GetScreenWidth()-712)/2, (float)(GetScreenHeight()-400)/2, 712, 400};
+        hand.Draw(*game->getCurrentPlayer()->getHero()->getDeck(), c);
+        hand.HighlightCards(action->getOption(*game));
         HandlePendingChooseCard();
         break;
     }
     case RequestType::CardFromOther:
+    {
+        DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), {0, 0, 0, 100});
+        Rectangle c = {(float)(GetScreenWidth()-712)/2, (float)(GetScreenHeight()-400)/2, 712, 400};
+        hand.Draw(*game->getOtherPlayer()->getHero()->getDeck(), c);
+        hand.HighlightCards(action->getOption(*game));
+        HandlePendingChooseCard();
+        break;
+    }
     case RequestType::ShowCard:
     {
         DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), {0, 0, 0, 100});
-        Rectangle c = {(float)(GetScreenWidth()-890)/2, (float)(GetScreenHeight()-500)/2, 890, 500};
-        pendingHand.Draw(*game->getOtherPlayer()->getHero()->getDeck(), c);
-        pendingHand.HighlightCards(action->getOption(*game));
+        Rectangle c = {(float)(GetScreenWidth()-712)/2, (float)(GetScreenHeight()-400)/2, 712, 400};
+        hand.Draw(*game->getOtherPlayer()->getHero()->getDeck(), c);
         HandlePendingChooseCard();
         break;
     }
@@ -364,7 +419,8 @@ void MatchScreen::HandlePendingMove(){
             stage = Stage::None;
         }
         if(stage == Stage::Combat){
-            game->continueCombat();
+            if(!game->hasPendingAction())
+                game->continueCombat();
             if(!game->hasPendingAction())
                 stage = Stage::None;
         }
@@ -381,7 +437,8 @@ void MatchScreen::HandlePendingChooseCharacter(){
             stage = Stage::None;
         }
         if(stage == Stage::Combat){
-            game->continueCombat();
+            if(!game->hasPendingAction())
+                game->continueCombat();
             if(!game->hasPendingAction())
                 stage = Stage::None;
         }
@@ -389,16 +446,22 @@ void MatchScreen::HandlePendingChooseCharacter(){
 }
 // ------------------------------------------------------------------------------------------
 void MatchScreen::HandlePendingChooseCard(){
-    int handIndex = pendingHand.GetClickedCard(*game->getOtherPlayer()->getHero()->getDeck());
+    int handIndex = -1;
+    if(game->currentPendingAction()->getType() == RequestType::CardFromCurrent)
+        handIndex = hand.GetClickedCard(*game->getCurrentPlayer()->getHero()->getDeck());
+    else if(game->currentPendingAction()->getType() == RequestType::CardFromOther)
+        handIndex = hand.GetClickedCard(*game->getOtherPlayer()->getHero()->getDeck());
+
     if(handIndex != -1){
         game->currentPendingAction()->submit(*game, handIndex);
-        board.ClearHighlightedSpaces();
+        hand.ClearHighlightedCards();
         if(stage == Stage::SelectSchemeCard && !game->hasPendingAction()){
             game->continuePlayScheme();
             stage = Stage::None;
         }
         if(stage == Stage::Combat){
-            game->continueCombat();
+            if(!game->hasPendingAction())
+                game->continueCombat();
             if(!game->hasPendingAction())
                 stage = Stage::None;
         }

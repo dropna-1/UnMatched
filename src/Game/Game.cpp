@@ -25,6 +25,7 @@ void Game::clearPendingCombat(){
     s.character = nullptr;
     s.destination = -1;
     s.showHand = false;
+    s.canFinish = false;
     pendingCombat.reset();
 }
 
