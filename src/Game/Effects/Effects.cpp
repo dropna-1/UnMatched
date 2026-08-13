@@ -67,23 +67,33 @@ DiscardCardEffect::DiscardCardEffect(int count) : count(count)
 {
 }
 
-void DiscardCardEffect::execute(GameContext& context, const vector<Character*>& targets )
+void DiscardCardEffect::execute(
+    GameContext& context,
+    const vector<Character*>& targets)
 {
-    if(context.getGame()->getPendingCombat()->selection.cards.empty())
+    auto* game = context.getGame();
+    auto& selection = game->getPendingCombat()->selection;
+
+    if(selection.cards.empty())
     {
-        context.getGame()->requestAction(make_unique<ChooseCardAction>(
-            context.getCurrentPlayer() , 1 , count, *context.getGame())) ;
-        return ;
+        game->requestAction(
+            make_unique<ChooseCardAction>(
+                context.getEnemyPlayer(),
+                1,
+                1,
+                *game
+            )
+        );
+
+        return;
     }
-    auto index = context.getGame()->getPendingCombat()->selection.cards ;
-    if(count == 0 )
-    {
-        return ;
-    }
-    for(auto card : index)
-    {
-        context.getEnemyPlayer()->getHero()->getDeck()->discardFromHand(card) ;
-    }
+
+    int cardIndex = selection.cards[0];
+
+    context.getEnemyPlayer()
+        ->getHero()
+        ->getDeck()
+        ->discardFromHand(cardIndex);
 }
 
 void CancelEffectsEffect::execute(GameContext& context, const vector<Character*>& targets)
@@ -311,12 +321,23 @@ void BeastFormEffect::execute(GameContext& context , const vector<Character*>& t
     context.getAttackerCard()->setValue(context.getAttackerCard()->getValue() + count) ;
 }
 
-void ShowHandEffect::execute(GameContext& context , const vector<Character*>& targets)
+void ShowHandEffect::execute(
+    GameContext& context,
+    const vector<Character*>& targets)
 {
-    if(context.getGame()->getPendingCombat()->selection.destination == -1)
+    auto* game = context.getGame();
+    auto& selection = game->getPendingCombat()->selection;
+
+    if(!selection.showHand)
     {
-        context.getGame()->requestAction(make_unique<ShowCardAction>(context.getEnemyPlayer())) ;
-        return ;
+        game->requestAction(
+            make_unique<ShowCardAction>(
+                context.getEnemyPlayer()
+            )
+        );
+
+        return;
     }
-    return ;
+
+    // ادامه‌ی Effect در صورت نیاز
 }
