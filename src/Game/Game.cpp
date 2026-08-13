@@ -376,12 +376,40 @@ Player* Game::checkWinner(){
 vector<AttackOption> Game::getAttackableTargets()
 {
     vector<AttackOption> targets;
-    for(Character* self : currentPlayer->getAllCharacters())
-        if(self->getPosition() != -1)
-            for(int neighbor : board.getSpace(self->getPosition()).neighbors)
-                for(Character* enemy : otherPlayer->getAllCharacters())
-                    if(neighbor == enemy->getPosition())
-                        targets.push_back({self, enemy});
+    for(Character* self : currentPlayer->getAllCharacters()){
+        if(self->getPosition() == -1)
+            continue;
+
+        for(Character* enemy : otherPlayer->getAllCharacters()){
+            if(enemy->getPosition() == -1)
+                continue;
+
+            bool canAttack = false;
+            if(self->isHero()){
+                for(int neighbor : board.getSpace(self->getPosition()).neighbors){
+                    if(neighbor == enemy->getPosition()){
+                        canAttack = true;
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                for(int selfZone : board.getSpace(self->getPosition()).zone){
+                    for(int enemyZone : board.getSpace(enemy->getPosition()).zone){
+                        if(selfZone == enemyZone){
+                            canAttack = true;
+                            break;
+                        }
+                    }
+                    if(canAttack)
+                        break;
+                }
+            }
+            if(canAttack)
+                targets.push_back({self, enemy});
+        }
+    }
     return targets;
 }
 

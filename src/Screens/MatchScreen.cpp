@@ -281,7 +281,7 @@ void MatchScreen::HandleStageInput(){
                 stage = Stage::Combat;
             else {stage = Stage::None;}
         }else{
-            hand.HighlightCards(game->getPlayableDefenseCard(option.target));
+            hand.HighlightCards(playableCards);
             HandlePlayCombatCard();
         }
         break;
@@ -402,7 +402,12 @@ void MatchScreen::HandlePlaySchemeCard(){
 }
 // ------------------------------------------------------------------------------------------
 void MatchScreen::HandlePlayCombatCard(){
-    int handIndex = hand.GetClickedCard(*game->getCurrentPlayer()->getHero()->getDeck());
+    int handIndex = -1;
+    if(stage == Stage::SelectAttackCard)
+        handIndex = hand.GetClickedCard(*game->getCurrentPlayer()->getHero()->getDeck());
+    else if(stage == Stage::SelectDefenseCard)
+        handIndex = hand.GetClickedCard(*game->getOtherPlayer()->getHero()->getDeck());
+
     if(handIndex != -1){
         hand.ClearHighlightedCards();
         if(stage == Stage::SelectAttackCard){
