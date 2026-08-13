@@ -411,7 +411,8 @@ void BeastFormEffect::execute(
                 context.getCurrentPlayer()
                     ->getHero()
                     ->getDeck()
-                    ->getHandSize()
+                    ->getHandSize() , 
+                *context.getGame() 
             )
         );
 
