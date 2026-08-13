@@ -215,6 +215,10 @@ void ReviveSister::execute(GameContext& context, const vector<Character*>& targe
 
 void AmbushEffect::execute(GameContext& context ,  const vector<Character*>& targets)
 {
+    if(context.getEnemyPlayer()->getHero()->getDeck()->getHandSize() == 0)
+    {
+        return ; 
+    }
     int randomindex = (rand())%(context.getEnemyPlayer()->getHero()->getDeck()->getHandSize());
     Card* randomcard = context.getEnemyPlayer()->getHero()->getDeck()->previewCard(randomindex);
     context.getCurrentCard()->setValue(context.getCurrentCard()->getValue() + randomcard->getBoost()) ;
