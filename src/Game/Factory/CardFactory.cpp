@@ -82,9 +82,14 @@ shared_ptr<Deck> CardFactory::createSherlockDeck()
         "AFTER COMBAT: If Dr.watson is adjacent to Holmes, they each recover 1 health." , 
         "external/images/cards/holms/fixed-point-in-a-changing-age.png"
     );
-    FPIACA->addEffect(
-        TriggerType::AfterCombat , EffectTarget::FriendlyCharacters , make_shared<AdjacentCondition>(
-            ConditionTarget::FriendlyHero , ConditionTarget::FriendlySidekicks) , make_shared<HealEffect>(1));
+    auto condition =
+    make_shared<AdjacentCondition>(
+        ConditionTarget::FriendlyHero,
+        ConditionTarget::FriendlySidekicks
+    );
+    FPIACA->addEffect( TriggerType::AfterCombat, EffectTarget::FriendlyHero, condition, make_shared<HealEffect>(1));
+    FPIACA->addEffect( TriggerType::AfterCombat,EffectTarget::FriendlySidekicks,
+        make_shared<AdjacentCondition>( ConditionTarget::FriendlyHero, ConditionTarget::FriendlySidekicks ), make_shared<HealEffect>(1));
     addCopies(deck , 2 , FPIACA) ;
 
     auto CounterPunch = createCard(
@@ -97,8 +102,8 @@ shared_ptr<Deck> CardFactory::createSherlockDeck()
         "AFTER COMBAT: If Holmes is Adjacent to the opsing fighter, deal 2 Damage to that Fighter.", 
         "external/images/cards/holms/counterpunch.png"
     );
-    CounterPunch->addEffect(TriggerType::AfterCombat , EffectTarget::EnemyHero , 
-        make_shared<AdjacentCondition>(ConditionTarget::FriendlyHero , ConditionTarget::EnemyHero) , make_shared<DamageEffect>(2));
+    CounterPunch->addEffect(TriggerType::AfterCombat , EffectTarget::Defender , 
+        make_shared<AdjacentCondition>(ConditionTarget::FriendlyHero , ConditionTarget::Defender) , make_shared<DamageEffect>(2));
     addCopies(deck , 3 , CounterPunch) ;
 
     auto EducationNeverEnds = createCard(
@@ -112,9 +117,9 @@ shared_ptr<Deck> CardFactory::createSherlockDeck()
         "external/images/cards/holms/education-never-ends.png"
     );
     EducationNeverEnds->addEffect(TriggerType::AfterCombat , EffectTarget::EnemyHero , 
-        make_shared<WonBattleCondition>(ConditionTarget::FriendlyHero) , make_shared<DrawCardEffect>(1) ) ;
-    EducationNeverEnds->addEffect(TriggerType::AfterCombat , EffectTarget::EnemyHero , 
-        make_shared<LossBattleCondition>(ConditionTarget::FriendlyHero) , make_shared<DrawCardEffect>(2) ) ;
+        make_shared<WonBattleCondition>(ConditionTarget::Attacker) , make_shared<DrawCardEffect>(1) ) ;
+    EducationNeverEnds->addEffect(TriggerType::AfterCombat , EffectTarget::FriendlyHero , 
+        make_shared<LossBattleCondition>(ConditionTarget::Attacker) , make_shared<DrawCardEffect>(2) ) ;
     addCopies(deck , 2 , EducationNeverEnds) ;
 
     auto EliminateTheImpossible = createCard(
@@ -197,8 +202,7 @@ shared_ptr<Deck> CardFactory::createSherlockDeck()
         "external/images/cards/holms/study-methods.png"
     );
     StudyMethods->addEffect(TriggerType::AfterCombat, EffectTarget::EnemyHero, make_shared<WonBattleCondition>(
-        ConditionTarget::FriendlyHero) ,
-        make_shared<ShowHandEffect>()) ;
+        ConditionTarget::Attacker) , make_shared<ShowHandEffect>()) ;
     addCopies(deck , 2 , StudyMethods) ;
 
     deck->shuffleDeck();
@@ -260,7 +264,7 @@ shared_ptr<Deck> CardFactory::createDraculaDeck()
         "external/images/cards/dracula/thirst-for-sustenance.png"
     );
     ThirstForSustenance->addEffect(TriggerType::AfterCombat, EffectTarget::FriendlyHero, 
-        make_shared<WonBattleCondition>(ConditionTarget::FriendlyHero),make_shared<ThirstEffect>());
+        make_shared<WonBattleCondition>(ConditionTarget::Attacker),make_shared<ThirstEffect>());
     addCopies(deck , 3 , ThirstForSustenance);
 
     auto Exploit = createCard(
