@@ -70,10 +70,13 @@ void MatchScreen::DrawSkip(){
         };
         if (GuiButton(btnSkip, "SKIP")){
             game->combat(option, AttackCardIndex, std::nullopt);
-            stage = Stage::Combat;
+            if(game->hasPendingAction())
+                stage = Stage::Combat;
+            else {stage = Stage::None;}
         }
     }
-    else if(stage == Stage::Combat && game->getPendingCombat()->selection.canFinish){
+    else if(stage == Stage::Combat && game->getPendingCombat() != nullptr && 
+    game->getPendingCombat()->selection.canFinish){
         btnSkip = {
             (float)GetScreenWidth()/2-356,
             (float)GetScreenHeight()/2+200,
@@ -168,7 +171,7 @@ void MatchScreen::HandleStageInput(){
     {
         std::vector<int> characterPlaces;
         for(auto c : game->getCurrentPlayer()->getAllCharacters())
-            if(!game->getFreeSpacesNearby(c).empty())
+            if(!game->getAvailableMoves(c, c->getMovement()).empty())
                 characterPlaces.push_back(c->getPosition());
         board.HighlightSpaces(characterPlaces, HighlightType::None);
         HandleCharacterSelect();
@@ -229,7 +232,9 @@ void MatchScreen::HandleStageInput(){
         std::vector<int> playableCards = game->getPlayableDefenseCard(option.target);
         if(playableCards.empty()){
             game->combat(option, AttackCardIndex, nullopt);
-            stage = Stage::Combat;
+            if(game->hasPendingAction())
+                stage = Stage::Combat;
+            else {stage = Stage::None;}
         }else{
             hand.HighlightCards(game->getPlayableDefenseCard(option.target));
             HandlePlayCombatCard();
@@ -340,7 +345,9 @@ void MatchScreen::HandlePlayCombatCard(){
         else if(stage == Stage::SelectDefenseCard){
             DefenseCardIndex = handIndex;
             game->combat(option, AttackCardIndex, DefenseCardIndex);
-            stage = Stage::Combat;
+            if(game->hasPendingAction())
+                stage = Stage::Combat;
+            else {stage = Stage::None;}
         }
     }
 }

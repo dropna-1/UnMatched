@@ -33,6 +33,9 @@ void ActionsView::Draw(Rectangle m, Stage* stage) {
 
     DrawRectangleRoundedLines(m, 0.1f, 1, WHITE);
     GuiSetStyle(BUTTON, BASE_COLOR_DISABLED, ColorToInt({25, 25, 25, 180}));
+    GuiSetStyle(BUTTON, TEXT_COLOR_NORMAL, ColorToInt(WHITE));
+    GuiSetStyle(BUTTON, BASE_COLOR_FOCUSED, ColorToInt(BLACK));
+    GuiSetStyle(BUTTON, TEXT_COLOR_FOCUSED, ColorToInt(GOLD));
 
     if(*stage != Stage::None || !game->canManever())
         GuiSetState(STATE_DISABLED);
@@ -40,8 +43,6 @@ void ActionsView::Draw(Rectangle m, Stage* stage) {
         GuiSetStyle(DEFAULT, TEXT_SIZE, 40);
         GuiSetStyle(BUTTON, BORDER_COLOR_NORMAL, ColorToInt({20, 20, 20, 255}));
         GuiSetStyle(BUTTON, BASE_COLOR_NORMAL, ColorToInt({0, 0, 125, 255}));
-        GuiSetStyle(BUTTON, BASE_COLOR_FOCUSED, ColorToInt({BLACK}));
-        GuiSetStyle(BUTTON, TEXT_COLOR_NORMAL, ColorToInt(WHITE));
     }
 
     if (GuiButton(btnManeuver, "Maneuver")) {
@@ -54,7 +55,6 @@ void ActionsView::Draw(Rectangle m, Stage* stage) {
         GuiSetState(STATE_DISABLED);
     else{
         GuiSetStyle(BUTTON, BASE_COLOR_NORMAL, ColorToInt({90,0,0,255}));
-        GuiSetStyle(BUTTON, TEXT_COLOR_NORMAL, ColorToInt(WHITE));
     }
 
     if (GuiButton(btnCombat, "Combat")) {
@@ -67,7 +67,6 @@ void ActionsView::Draw(Rectangle m, Stage* stage) {
         GuiSetState(STATE_DISABLED);
     else{
         GuiSetStyle(BUTTON, BASE_COLOR_NORMAL, ColorToInt({140,140,0,255}));
-        GuiSetStyle(BUTTON, TEXT_COLOR_NORMAL, ColorToInt(WHITE));
     }
 
     if (GuiButton(btnScheme, "Scheme")) {

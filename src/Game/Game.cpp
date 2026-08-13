@@ -131,20 +131,6 @@ vector<int> Game::getAvailableMoves(Character* character,
     queue<pair<int, int>> q;
     vector<bool> visited(board.size(), false);
 
-    Player* curr;
-    Player* other;
-
-    if(find(currentPlayer->getAllCharacters().begin(), 
-        currentPlayer->getAllCharacters().end(), character) != currentPlayer->getAllCharacters().end())
-        {
-            curr = currentPlayer;
-            other = otherPlayer;
-        }
-    else{
-        curr = otherPlayer;
-        other = currentPlayer;
-    }
-
     int start = character->getPosition();
     q.push({start, 0});
     visited[start] = true;
@@ -171,7 +157,7 @@ vector<int> Game::getAvailableMoves(Character* character,
             if(visited[next])
                 continue;
 
-            for(Character* c : other->getAllCharacters())
+            for(Character* c : otherPlayer->getAllCharacters())
                 if(next == c->getPosition()){
                     enemy = true;
                     break;
@@ -180,7 +166,7 @@ vector<int> Game::getAvailableMoves(Character* character,
             if(enemy)
                 continue;
 
-            for(Character* c : curr->getAllCharacters())
+            for(Character* c : currentPlayer->getAllCharacters())
                 if(next == c->getPosition()){
                     dom = true;
                     break;
@@ -213,7 +199,6 @@ vector<int> Game::getFreeSpacesNearby(Character* character){
             freeSpaces.push_back(neigh);
     return freeSpaces;
 }
-
 
 bool Game::canMove(int to) const{
     for(auto character : currentPlayer->getAllCharacters())
