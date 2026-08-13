@@ -93,6 +93,19 @@ void MatchScreen::DrawSkip(){
             }
         }
     }
+    else if(stage == Stage::Boost && Movement == -1){
+        btnSkip = {
+            (float)GetScreenWidth()*2/3,
+            (float)GetScreenHeight()*2/3+20,
+            (float)GetScreenWidth()/3,
+            40,
+        };
+        if (GuiButton(btnSkip, "SKIP")){
+            Movement = selected->getMovement();
+            hand.ClearHighlightedCards();
+            stage = Stage::ChoiceNode;
+        }
+    }
 }
 
 void MatchScreen::Draw() {
@@ -134,7 +147,6 @@ void MatchScreen::Draw() {
     else{
         HandleStageInput();
     }
-    DrawSkip();
 
     GuiSetStyle(DEFAULT, TEXT_SIZE, 24);
     GuiSetFont(font);
@@ -144,6 +156,8 @@ void MatchScreen::Draw() {
     GuiSetStyle(BUTTON, BASE_COLOR_FOCUSED, ColorToInt(GOLD));
     GuiSetStyle(BUTTON, TEXT_COLOR_FOCUSED, ColorToInt(BLACK));
     GuiSetStyle(BUTTON, BORDER_WIDTH, 1);
+
+    DrawSkip();
 
     if (GuiButton(btnHome, "HOME")) {
         manager->BackToHome(890, 500);
@@ -177,10 +191,19 @@ void MatchScreen::HandleStageInput(){
         HandleCharacterSelect();
         break;
     }
+    case Stage::Boost:
+    {
+        std::vector<int> cardIndexes;
+        for(int i = 0; i < game->getCurrentPlayer()->getHero()->getDeck()->getHand().size(); i++)
+            cardIndexes.push_back(i);
+        hand.HighlightCards(cardIndexes);
+        HandleBoost();
+        break;
+    }
     case Stage::ChoiceNode:
     {
         board.HighlightSpaces(
-            game->getAvailableMoves(selected, selected->getMovement()), 
+            game->getAvailableMoves(selected, Movement), 
             HighlightType::Move
         );
         HandleMove();
@@ -278,7 +301,7 @@ void MatchScreen::HandleCharacterSelect(){
         for(const auto& c : game->getCurrentPlayer()->getAllCharacters()){
             if(c->getPosition() == space){
                 if(stage == Stage::SelectManeuverCharacter){
-                    stage = Stage::ChoiceNode;
+                    stage = Stage::Boost;
                     selected = c;
                 }
                 else if(stage == Stage::SelectSchemeCharacter){
@@ -303,12 +326,22 @@ void MatchScreen::HandleCharacterSelect(){
     }
 }
 // ------------------------------------------------------------------------------------------
+void MatchScreen::HandleBoost(){
+    int handIndex = hand.GetClickedCard(*game->getCurrentPlayer()->getHero()->getDeck());
+    if(handIndex != -1){
+        Movement = game->boost(selected, handIndex);
+        hand.ClearHighlightedCards();
+        stage = Stage::ChoiceNode;
+    }
+}
+// ------------------------------------------------------------------------------------------
 void MatchScreen::HandleMove(){
     int space = board.GetClickedSpace(); 
     if(space != -1){
         board.ClearHighlightedSpaces();
         game->performManeuver(selected, space);
         selected = nullptr;
+        Movement = -1;
         stage = Stage::None;
     }
 }

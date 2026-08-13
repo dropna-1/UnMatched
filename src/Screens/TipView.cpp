@@ -36,6 +36,8 @@ void TipView::FillMessage(Player& pc, Player& po){
         pc.getName() + ", Choose a card to attack"});
     message.insert({Stage::SelectDefenseCard,
         pc.getName() + ", Choose a card to defense"});
+    message.insert({Stage::Boost,
+        pc.getName() + ", you can choose a card to boost"});
     // ----------------------------------------------------------------------------------
     pendingMessage.insert({RequestType::Move,
         "Choose the place you want to go"});

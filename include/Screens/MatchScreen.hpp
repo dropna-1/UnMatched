@@ -32,12 +32,15 @@ private:
     int AttackCardIndex = -1;
     int DefenseCardIndex = -1;
 
+    int Movement = -1;
+
     AttackOption option;
 
     void HandleStageInput();
     void HandleSidekickPlacement();
     void HandleCharacterSelect();
     void HandleMove();
+    void HandleBoost();
     void HandleAbility();
     void HandlePlaySchemeCard();
     void HandlePlayCombatCard();
