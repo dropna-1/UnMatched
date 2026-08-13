@@ -20,6 +20,7 @@ private:
     Rectangle btnSave;
     Rectangle btnHome;
     Rectangle btnSkip;
+    Rectangle btnBoost;
     BoardView board;
     StatusView status;
     HandView hand;
@@ -33,6 +34,7 @@ private:
     int DefenseCardIndex = -1;
 
     int Movement = -1;
+    bool canBoost = false;
 
     AttackOption option;
 
