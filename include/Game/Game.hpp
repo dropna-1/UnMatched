@@ -77,7 +77,7 @@ public:
     void setupGame();
     void changeTurn();
     void nextTurn();
-    Hero* checkWinner();
+    Player* checkWinner();
     Board& getBoard();
     std::shared_ptr<Hero>& getDracula();
     std::unique_ptr<PendingCombat>& getPendingCombat();

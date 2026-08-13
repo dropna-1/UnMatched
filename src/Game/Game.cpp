@@ -364,11 +364,11 @@ void Game::addAction(){
 }
 
 
-Hero* Game::checkWinner(){
+Player* Game::checkWinner(){
     if(!currentPlayer->getHero()->isAlive())
-        return otherPlayer->getHero().get();
+        return otherPlayer;
     if(!otherPlayer->getHero()->isAlive())
-        return currentPlayer->getHero().get();
+        return currentPlayer;
     return nullptr;
 }
 

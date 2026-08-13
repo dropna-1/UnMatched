@@ -99,5 +99,6 @@ enum class Stage {
     Pending,
     Combat,
     Boost,
-    None
+    None,
+    End
 };
