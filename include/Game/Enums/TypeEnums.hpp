@@ -98,5 +98,6 @@ enum class Stage {
     ChoiceNode,
     Pending,
     Combat,
+    Boost,
     None
 };
