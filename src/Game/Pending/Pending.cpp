@@ -131,6 +131,45 @@ void ShowCardAction::submit(Game& game, int choice){
     game.completePendingAction();
 }
 /*-----------------------------------------------------------------*/
+ChooseCharacterAction::ChooseCharacterAction(SelectionMode mode, Character* c) 
+: mode(mode), pc(c) {type = RequestType::Character;}
+
+std::vector<int> ChooseCharacterAction::getOption(Game& game){
+    std::vector<int> characterPositions;
+    if(mode == SelectionMode::Current || mode == SelectionMode::All){
+        for(Character* c : game.getCurrentPlayer()->getAllCharacters()){
+            if(c->getPosition() == pc->getPosition())
+                continue;
+            characterPositions.push_back(c->getPosition());
+        }
+    }
+    if(mode == SelectionMode::Other || mode == SelectionMode::All){
+        for(Character* c : game.getOtherPlayer()->getAllCharacters()){
+            if(c->getPosition() == pc->getPosition())
+                continue;
+            characterPositions.push_back(c->getPosition());
+        }
+    }
+    return characterPositions;
+}
+
+void ChooseCharacterAction::submit(Game& game, int choice){
+    if(mode == SelectionMode::Current || mode == SelectionMode::All)
+        for(Character* c : game.getCurrentPlayer()->getAllCharacters())
+            if(choice == c->getPosition()){
+                game.getPendingCombat()->selection.character = c;
+                game.completePendingAction();
+                return;
+            }
+    if(mode == SelectionMode::Other || mode == SelectionMode::All)
+        for(Character* c : game.getOtherPlayer()->getAllCharacters())
+            if(choice == c->getPosition()){
+                game.getPendingCombat()->selection.character = c;
+                game.completePendingAction();
+                return;
+            }
+}
+/*-----------------------------------------------------------------*/
 DeleteCardAction::DeleteCardAction(Game& game, Player* player) : selected(player){
     if(player == game.getCurrentPlayer())
         type = RequestType::DeleteFromCurrent;

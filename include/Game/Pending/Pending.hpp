@@ -14,6 +14,13 @@ enum class MoveMode
     Neighboor
 };
 
+enum class SelectionMode
+{
+    Current,
+    Other,
+    All
+};
+
 class PendingAction {
 protected:
     RequestType type;
@@ -65,6 +72,16 @@ private:
     Player* selected = nullptr;
 public:
     ShowCardAction(Player* player);
+    std::vector<int> getOption(Game& game) override;
+    void submit(Game& game, int choice) override;
+};
+/*-----------------------------------------------------------------*/
+class ChooseCharacterAction : public PendingAction {
+private:
+    SelectionMode mode;
+    Character* pc = nullptr;
+public:
+    ChooseCharacterAction(SelectionMode mode, Character* c);
     std::vector<int> getOption(Game& game) override;
     void submit(Game& game, int choice) override;
 };

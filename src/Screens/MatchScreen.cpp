@@ -472,6 +472,7 @@ void MatchScreen::HandlePendingActionInput(){
         break;
     }
     case RequestType::RaveningST1:
+    case RequestType::Character:
     {
         board.HighlightSpaces(action->getOption(*game), HighlightType::Selected);
         HandlePendingChooseCharacter();

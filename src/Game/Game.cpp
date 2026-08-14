@@ -385,7 +385,7 @@ vector<AttackOption> Game::getAttackableTargets()
                 continue;
 
             bool canAttack = false;
-            if(self->isHero()){
+            if(self->getAttackType() == AttackType::Melee){
                 for(int neighbor : board.getSpace(self->getPosition()).neighbors){
                     if(neighbor == enemy->getPosition()){
                         canAttack = true;
@@ -393,7 +393,7 @@ vector<AttackOption> Game::getAttackableTargets()
                     }
                 }
             }
-            else
+            else if(self->getAttackType() == AttackType::Ranged)
             {
                 for(int selfZone : board.getSpace(self->getPosition()).zone){
                     for(int enemyZone : board.getSpace(enemy->getPosition()).zone){
@@ -404,6 +404,14 @@ vector<AttackOption> Game::getAttackableTargets()
                     }
                     if(canAttack)
                         break;
+                }
+                if(!canAttack){
+                    for(int neighbor : board.getSpace(self->getPosition()).neighbors){
+                        if(neighbor == enemy->getPosition()){
+                            canAttack = true;
+                            break;
+                        }
+                    }
                 }
             }
             if(canAttack)
