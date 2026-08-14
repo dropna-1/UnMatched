@@ -38,16 +38,29 @@ enum class AttackType
 
 enum class EffectTarget
 {
-    currentPlayer , 
-    EnemyPlayer ,
-    FriendlyHero , 
-    FriendlySidekicks , 
-    FriendlyCharacters , 
-    EnemyHero , 
-    EenmySidekicks , 
-    EnemyCharacters ,
-    Attacker , 
-    Defender ,
+    currentPlayer,
+    EnemyPlayer,
+
+    FriendlyHero,
+    FriendlySidekicks,
+    FriendlyCharacters,
+
+    EnemyHero,
+    EenmySidekicks,
+    EnemyCharacters,
+
+    CardOwner,
+    CardOwnerSidekicks,
+    CardOwnerCharacters,
+
+    CardOpponent,
+    CardOpponentSidekicks,
+    CardOpponentCharacters,
+    CardOpponentFighter,
+
+    Attacker,
+    Defender,
+
     None
 };
 
@@ -59,6 +72,16 @@ enum class ConditionTarget
     EnemySidekicks,
     FriendlyCharacters,
     EnemyCharacters,
+
+    CardOwner,
+    CardOwnerSidekicks,
+    CardOwnerCharacters,
+
+    CardOpponent,
+    CardOpponentSidekicks,
+    CardOpponentCharacters,
+    CardOpponentFighter,
+
     Attacker,
     Defender
 };
