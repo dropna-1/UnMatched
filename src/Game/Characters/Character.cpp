@@ -43,6 +43,11 @@ void Character::setPosition(int newPosition)
     position = newPosition ;
 }
 
+void Character::setHP(int saveHP)
+{
+    hp = saveHP;
+}
+
 string Character::getname() const
 {
     return name ; 

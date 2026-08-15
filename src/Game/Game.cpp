@@ -4,6 +4,7 @@
 #include "Game/Cards/Deck.hpp"
 #include "Game/Pending/Pending.hpp"
 #include "Game/Factory/CardFactory.hpp"
+#include "Game/Common/SaveManager.hpp"
 using namespace std;
 
 
@@ -42,7 +43,7 @@ void Game::setPlayer2(const string& name, const int& age){
 }
 
 void Game::setCanUseAbility(const bool& use){
-    canUseAbility = true;
+    canUseAbility = use;
 }
 
 void Game::setupPlayers(){
@@ -644,4 +645,181 @@ void Game::continueCombat()
         }
         }
     }
+}
+// ---------------------------------Save Game---------------------------------
+bool Game::isLoadedGame() const{
+    return loadedGame;
+}
+// ---------------------------------------------------------------------------
+GameSave Game::createSaveData() const
+{
+    GameSave save;
+
+    save.players[0] = player1.createSaveData();
+    save.players[1] = player2.createSaveData();
+
+    if(player1 == *currentPlayer)
+        save.currentPlayer = 0;
+    else
+        save.currentPlayer = 1;
+
+    save.canUseAbility = canUseAbility;
+    save.remainingAction = actionsRemaining;
+
+    return save;
+}
+// ---------------------------------------------------------------------------
+bool Game::SaveGame(const std::string& path) const{
+    return SaveManager::saveGame(createSaveData(), path);
+}
+// ---------------------------------------------------------------------------
+std::shared_ptr<Deck> Game::restoreDeck(const DeckSave& save, HeroType heroType)
+{
+    std::shared_ptr<Deck> source;
+    if(heroType == HeroType::Dracula)
+        source = CardFactory::createDraculaDeck();
+    else if(heroType == HeroType::Sherlock)
+        source = CardFactory::createSherlockDeck();
+    else
+        return nullptr;
+
+    std::vector<std::shared_ptr<Card>> available;
+    for(const auto& card : source->getDrawPile())
+        available.push_back(card);
+
+    auto takeCard = [&](const std::string& id) -> std::shared_ptr<Card>
+    {
+        for(auto it = available.begin(); it != available.end(); ++it)
+            if((*it)->getId() == id){
+                auto card = *it;
+                available.erase(it);
+                return card;
+            }
+        return nullptr;
+    };
+
+    std::vector<std::shared_ptr<Card>> draw;
+    std::vector<std::shared_ptr<Card>> hand;
+    std::vector<std::shared_ptr<Card>> discard;
+
+    for(const auto& id : save.drawPile){
+        auto card = takeCard(id);
+        if(card != nullptr)
+            draw.push_back(card);
+    }
+
+    for(const auto& id : save.hand){
+        auto card = takeCard(id);
+        if(card != nullptr)
+            hand.push_back(card);
+    }
+
+    for(const auto& id : save.discardPile){
+        auto card = takeCard(id);
+        if(card != nullptr)
+            discard.push_back(card);
+    }
+
+    auto result = std::make_shared<Deck>();
+    result->restore(draw, hand, discard);
+    return result;
+}
+// ---------------------------------------------------------------------------
+bool Game::LoadGame(const std::string& path)
+{
+    GameSave save;
+    if(!SaveManager::loadGame(save, path))
+        return false;
+
+    // ----------------------------------------------------------------
+    player1.setName(save.players[0].name);
+    player1.setAge(save.players[0].age);
+
+    player2.setName(save.players[1].name);
+    player2.setAge(save.players[1].age);
+    // ----------------------------------------------------------------
+    auto createHero =
+        [](const HeroSave& heroSave) -> std::shared_ptr<Hero>
+    {
+        if(heroSave.type == HeroType::Dracula)
+            return HeroFactory::createDracula();
+
+        if(heroSave.type == HeroType::Sherlock)
+            return HeroFactory::createSherlock();
+
+        // if(heroSave.type == HeroType::InvisibleMan)
+        //     return HeroFactory::createInvisibleMan();
+
+        return nullptr;
+    };
+    // ----------------------------------------------------------------
+    auto restoreHero =
+        [](std::shared_ptr<Hero> hero,
+           const HeroSave& saveData)
+    {
+        if(hero == nullptr)
+            return;
+
+        hero->setHP(saveData.HP);
+        hero->setPosition(saveData.position);
+
+        auto& sidekicks = hero->getSidekicks();
+        for(const auto& savedSidekick : saveData.sidekicks)
+        {
+            if(savedSidekick.index < 0 || savedSidekick.index >= sidekicks.size())
+                continue;
+
+            auto& sidekick = sidekicks[savedSidekick.index];
+            sidekick->setHP(savedSidekick.HP);
+            sidekick->setPosition(savedSidekick.position);
+        }
+    };
+    // ----------------------------------------------------------------
+    auto hero1 = createHero(save.players[0].hero);
+
+    if(hero1 == nullptr)
+        return false;
+
+    player1.setHero(hero1);
+    auto deck1 = restoreDeck(save.players[0].deck, save.players[0].hero.type);
+
+    if(deck1 != nullptr)
+        hero1->setDeck(deck1);
+
+    restoreHero(player1.getHero(), save.players[0].hero);
+    // ----------------------------------------------------------------
+    auto hero2 = createHero(save.players[1].hero);
+
+    if(hero2 == nullptr)
+        return false;
+
+    player2.setHero(hero2);
+
+    auto deck2 = restoreDeck(save.players[1].deck, save.players[1].hero.type);
+    if(deck2 != nullptr)
+        hero2->setDeck(deck2);
+
+    restoreHero(player2.getHero(), save.players[1].hero);
+    // ----------------------------------------------------------------
+    if(save.currentPlayer == 0)
+    {
+        currentPlayer = &player1;
+        otherPlayer = &player2;
+    }
+    else if(save.currentPlayer == 1)
+    {
+        currentPlayer = &player2;
+        otherPlayer = &player1;
+    }
+    else{return false;}
+    // ----------------------------------------------------------------
+    actionsRemaining = save.remainingAction;
+    canUseAbility = save.canUseAbility;
+
+    while(!pendingActions.empty())
+        pendingActions.pop();
+
+    pendingCombat.reset();
+    loadedGame = true;
+    return true;
 }

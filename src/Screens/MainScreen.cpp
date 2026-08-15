@@ -1,6 +1,7 @@
 #include "Screens/MainScreen.hpp"
 #include "Screens/ScreenManager.hpp"
 #include "Screens/PlayerSetupScreen.hpp"
+#include "Screens/MatchScreen.hpp"
 #define RAYGUI_IMPLEMENTATION
 #include "raygui.h"
 #include <cstdio>
@@ -65,7 +66,11 @@ void MenuScreen::Draw() {
         manager->ChangeScreen(std::make_unique<PlayerSetupScreen>(manager));
         return;
     }
-    if (GuiButton(btnLoad, "LOAD GAME")) {}
+    if (GuiButton(btnLoad, "LOAD GAME")) {
+        manager->GetGame().LoadGame("saves/test.json");
+        manager->ChangeScreen(std::make_unique<MatchScreen>(manager));
+        return;
+    }
     if (GuiButton(btnExit, "EXIT")) {
         CloseWindow();
     }
