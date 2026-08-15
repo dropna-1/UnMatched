@@ -79,6 +79,7 @@ public:
 class ChooseCharacterAction : public PendingAction {
 private:
     SelectionMode mode;
+    std::vector<Character*> characters;
     Character* pc = nullptr;
 public:
     ChooseCharacterAction(SelectionMode mode, Character* c);

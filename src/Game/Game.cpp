@@ -424,10 +424,11 @@ vector<AttackOption> Game::getAttackableTargets()
 
 bool Game::canAttack()
 {
-    if(getAttackableTargets().empty())
+    std::vector<AttackOption> targets = getAttackableTargets();
+    if(targets.empty())
         return false;
-    for(auto c : currentPlayer->getHero()->getDeck()->getHand())
-        if(c->getType() == CardType::Attack || c->getType() == CardType::Versalite)
+    for(const auto& com : targets)
+        if(!getPlayableAttackCard(com.attacker).empty())
             return true;
     return false;
 }
