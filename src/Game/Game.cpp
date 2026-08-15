@@ -108,6 +108,10 @@ const vector<shared_ptr<Card>>& Game::showOtherHand(){
 
 
 void Game::useAction(){
+    if(currentPlayer->getHero()->getDeck()->getHandSize() > 7){
+        requestAction(make_unique<DeleteCardAction>(*this, currentPlayer));
+        return;
+    }
     actionsRemaining--;
     if(actionsRemaining == 0){
         nextTurn();

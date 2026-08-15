@@ -57,4 +57,8 @@ void TipView::FillMessage(Player& pc, Player& po){
         pc.getName() + ", Choose a specific number of cards"});
     pendingMessage.insert({RequestType::CardFromOther,
         po.getName() + ", Choose a specific number of cards"});
+    pendingMessage.insert({RequestType::DeleteFromCurrent,
+        pc.getName() + ", you need to remove extra cards"});
+    pendingMessage.insert({RequestType::DeleteFromOther,
+        po.getName() + ", you need to remove extra cards"});
 }

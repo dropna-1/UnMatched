@@ -179,8 +179,10 @@ std::vector<int> DeleteCardAction::getOption(Game& game){
 
 void DeleteCardAction::submit(Game& game, int choice){
     selected->getHero()->getDeck()->discardFromHand(choice);
-    if(selected->getHero()->getDeck()->getHandSize() <= 7)
+    if(selected->getHero()->getDeck()->getHandSize() <= 7){
         game.completePendingAction();
+        game.useAction();
+    }
 }
 /*-----------------------------------------------------------------*/
 DraculaAction::DraculaAction(){type = RequestType::Dracula;}
