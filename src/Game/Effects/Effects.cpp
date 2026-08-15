@@ -188,17 +188,39 @@ void CancelEffectsEffect::execute(
     }
 }
 
-void SwapEffect::execute(GameContext& context , const vector<Character*>& targets)
+void SwapEffect::execute(
+    GameContext& context,
+    const vector<Character*>& targets)
 {
-    auto SecondTarget = context.getTargets(EffectTarget::EnemyHero) ;
-    for(auto c1 : targets)
+    auto& selection = context.getGame()->getPendingCombat()->selection;
+
+    if(selection.character == nullptr)
     {
-        for(auto c2 : SecondTarget)
-        {
-            auto temp = c1->getPosition() ;
-            c1->setPosition(c2->getPosition()) ;
-            c2->setPosition(temp) ;
-        }
+        if(targets.empty() || targets.front() == nullptr)
+            return;
+
+        context.getGame()->requestAction(
+            make_unique<ChooseCharacterAction>(
+                SelectionMode::Other,
+                targets.front()
+            )
+        );
+
+        return;
+    }
+
+    Character* selectedCharacter = selection.character;
+
+    for(Character* source : targets)
+    {
+        if(source == nullptr || selectedCharacter == nullptr)
+            continue;
+
+        int sourcePosition = source->getPosition();
+        int selectedPosition = selectedCharacter->getPosition();
+
+        source->setPosition(selectedPosition);
+        selectedCharacter->setPosition(sourcePosition);
     }
 }
 

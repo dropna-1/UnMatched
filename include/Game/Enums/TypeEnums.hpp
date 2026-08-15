@@ -61,6 +61,8 @@ enum class EffectTarget
     Attacker,
     Defender,
 
+    SelectedCharacter,
+    
     None
 };
 

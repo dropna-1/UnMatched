@@ -1,4 +1,5 @@
 #include "Game/Effects/GameContext.hpp"
+#include "Game/Game.hpp"
 using namespace std ;
 
 GameContext::GameContext(
@@ -262,6 +263,16 @@ vector<Character*> GameContext::getTargets(EffectTarget target)
             return {defender};
         }
 
+        case EffectTarget::SelectedCharacter:
+        {
+            Character* selected =
+                game->getPendingCombat()->selection.character;
+
+            if(selected == nullptr)
+                return {};
+
+            return {selected};
+        }
         default:
         {
             return {};
