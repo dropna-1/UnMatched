@@ -36,12 +36,12 @@ void ActionsView::Draw(Rectangle m, Stage* stage) {
     GuiSetStyle(BUTTON, TEXT_COLOR_NORMAL, ColorToInt(WHITE));
     GuiSetStyle(BUTTON, BASE_COLOR_FOCUSED, ColorToInt(BLACK));
     GuiSetStyle(BUTTON, TEXT_COLOR_FOCUSED, ColorToInt(GOLD));
+    GuiSetStyle(BUTTON, BORDER_COLOR_NORMAL, ColorToInt({20, 20, 20, 255}));
 
-    if(*stage != Stage::None || !game->canManever())
+    if(*stage != Stage::None || !game->canManever() || game->hasPendingAction())
         GuiSetState(STATE_DISABLED);
     else{
         GuiSetStyle(DEFAULT, TEXT_SIZE, 40);
-        GuiSetStyle(BUTTON, BORDER_COLOR_NORMAL, ColorToInt({20, 20, 20, 255}));
         GuiSetStyle(BUTTON, BASE_COLOR_NORMAL, ColorToInt({0, 0, 125, 255}));
     }
 
@@ -51,7 +51,7 @@ void ActionsView::Draw(Rectangle m, Stage* stage) {
 
     GuiSetState(STATE_NORMAL);
 
-    if(*stage != Stage::None || !game->canAttack())
+    if(*stage != Stage::None || !game->canAttack() || game->hasPendingAction())
         GuiSetState(STATE_DISABLED);
     else{
         GuiSetStyle(BUTTON, BASE_COLOR_NORMAL, ColorToInt({90,0,0,255}));
@@ -63,7 +63,7 @@ void ActionsView::Draw(Rectangle m, Stage* stage) {
 
     GuiSetState(STATE_NORMAL);
 
-    if(*stage != Stage::None || !game->canPlayScheme())
+    if(*stage != Stage::None || !game->canPlayScheme() || game->hasPendingAction())
         GuiSetState(STATE_DISABLED);
     else{
         GuiSetStyle(BUTTON, BASE_COLOR_NORMAL, ColorToInt({140,140,0,255}));
