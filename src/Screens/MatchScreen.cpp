@@ -251,7 +251,8 @@ void MatchScreen::HandleStageInput(){
     {
         std::vector<int> attakers;
         for(auto& a : game->getAttackableTargets())
-            attakers.push_back(a.attacker->getPosition());
+            if(!game->getPlayableAttackCard(a.attacker).empty())
+                attakers.push_back(a.attacker->getPosition());
         board.HighlightSpaces(attakers, HighlightType::Selected);
         HandleCharacterSelect();
         break;
@@ -485,11 +486,6 @@ void MatchScreen::HandlePendingActionInput(){
         break;
     }
     case RequestType::DeleteFromCurrent:
-    {
-        hand.HighlightCards(action->getOption(*game));
-        HandlePendingChooseCard();
-        break;
-    }
     case RequestType::DeleteFromOther:
     {
         hand.HighlightCards(action->getOption(*game));

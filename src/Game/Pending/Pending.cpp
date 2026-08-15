@@ -140,6 +140,7 @@ std::vector<int> ChooseCharacterAction::getOption(Game& game){
         for(Character* c : game.getCurrentPlayer()->getAllCharacters()){
             if(c->getPosition() == pc->getPosition())
                 continue;
+            characters.push_back(c);
             characterPositions.push_back(c->getPosition());
         }
     }
@@ -147,6 +148,7 @@ std::vector<int> ChooseCharacterAction::getOption(Game& game){
         for(Character* c : game.getOtherPlayer()->getAllCharacters()){
             if(c->getPosition() == pc->getPosition())
                 continue;
+            characters.push_back(c);
             characterPositions.push_back(c->getPosition());
         }
     }
@@ -154,20 +156,11 @@ std::vector<int> ChooseCharacterAction::getOption(Game& game){
 }
 
 void ChooseCharacterAction::submit(Game& game, int choice){
-    if(mode == SelectionMode::Current || mode == SelectionMode::All)
-        for(Character* c : game.getCurrentPlayer()->getAllCharacters())
-            if(choice == c->getPosition()){
-                game.getPendingCombat()->selection.character = c;
-                game.completePendingAction();
-                return;
-            }
-    if(mode == SelectionMode::Other || mode == SelectionMode::All)
-        for(Character* c : game.getOtherPlayer()->getAllCharacters())
-            if(choice == c->getPosition()){
-                game.getPendingCombat()->selection.character = c;
-                game.completePendingAction();
-                return;
-            }
+    for(Character* c : characters)
+        if(choice == c->getPosition()){
+            game.getPendingCombat()->selection.character = c;
+            game.completePendingAction();
+        }
 }
 /*-----------------------------------------------------------------*/
 DeleteCardAction::DeleteCardAction(Game& game, Player* player) : selected(player){
@@ -186,8 +179,10 @@ std::vector<int> DeleteCardAction::getOption(Game& game){
 
 void DeleteCardAction::submit(Game& game, int choice){
     selected->getHero()->getDeck()->discardFromHand(choice);
-    if(selected->getHero()->getDeck()->getHandSize() <= 7)
+    if(selected->getHero()->getDeck()->getHandSize() <= 7){
         game.completePendingAction();
+        game.useAction();
+    }
 }
 /*-----------------------------------------------------------------*/
 DraculaAction::DraculaAction(){type = RequestType::Dracula;}

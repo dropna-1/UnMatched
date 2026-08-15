@@ -108,6 +108,10 @@ const vector<shared_ptr<Card>>& Game::showOtherHand(){
 
 
 void Game::useAction(){
+    if(currentPlayer->getHero()->getDeck()->getHandSize() > 7){
+        requestAction(make_unique<DeleteCardAction>(*this, currentPlayer));
+        return;
+    }
     actionsRemaining--;
     if(actionsRemaining == 0){
         nextTurn();
@@ -424,10 +428,11 @@ vector<AttackOption> Game::getAttackableTargets()
 
 bool Game::canAttack()
 {
-    if(getAttackableTargets().empty())
+    std::vector<AttackOption> targets = getAttackableTargets();
+    if(targets.empty())
         return false;
-    for(auto c : currentPlayer->getHero()->getDeck()->getHand())
-        if(c->getType() == CardType::Attack || c->getType() == CardType::Versalite)
+    for(const auto& com : targets)
+        if(!getPlayableAttackCard(com.attacker).empty())
             return true;
     return false;
 }
