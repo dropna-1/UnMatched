@@ -63,48 +63,205 @@ vector<Character*> GameContext::getTargets(EffectTarget target)
 {
     switch(target)
     {
-        case EffectTarget::FriendlyHero :
+        case EffectTarget::FriendlyHero:
         {
             return {currentPlayer->getHero().get()};
         }
-        case EffectTarget::EnemyHero :
+
+        case EffectTarget::EnemyHero:
         {
-            return {enemyPlayer->getHero().get()} ;
+            return {enemyPlayer->getHero().get()};
         }
-        case EffectTarget::FriendlySidekicks :
+
+        case EffectTarget::FriendlySidekicks:
         {
-            vector<Character*> result ;
+            vector<Character*> result;
+
             for(auto& sidekick : currentPlayer->getHero()->getSidekicks())
             {
-                result.push_back(sidekick.get()) ;
+                result.push_back(sidekick.get());
             }
-            return result ;
+
+            return result;
         }
-        case EffectTarget::EenmySidekicks :
+
+        case EffectTarget::EenmySidekicks:
         {
-            vector<Character*> result ;
+            vector<Character*> result;
+
             for(auto& sidekick : enemyPlayer->getHero()->getSidekicks())
             {
-                result.push_back(sidekick.get()) ;
+                result.push_back(sidekick.get());
             }
-            return result ;
+
+            return result;
         }
+
         case EffectTarget::FriendlyCharacters:
         {
             return currentPlayer->getAllCharacters();
         }
+
         case EffectTarget::EnemyCharacters:
         {
             return enemyPlayer->getAllCharacters();
         }
+
+        // -----------------------------------------
+        // Card Owner
+        // -----------------------------------------
+
+        case EffectTarget::CardOwner:
+        {
+            if(currentCard == attackerCard)
+            {
+                return {currentPlayer->getHero().get()};
+            }
+
+            if(currentCard == defenderCard)
+            {
+                return {enemyPlayer->getHero().get()};
+            }
+
+            return {};
+        }
+
+        case EffectTarget::CardOwnerSidekicks:
+        {
+            if(currentCard == attackerCard)
+            {
+                vector<Character*> result;
+
+                for(auto& sidekick : currentPlayer->getHero()->getSidekicks())
+                {
+                    result.push_back(sidekick.get());
+                }
+
+                return result;
+            }
+
+            if(currentCard == defenderCard)
+            {
+                vector<Character*> result;
+
+                for(auto& sidekick : enemyPlayer->getHero()->getSidekicks())
+                {
+                    result.push_back(sidekick.get());
+                }
+
+                return result;
+            }
+
+            return {};
+        }
+
+        case EffectTarget::CardOwnerCharacters:
+        {
+            if(currentCard == attackerCard)
+            {
+                return currentPlayer->getAllCharacters();
+            }
+
+            if(currentCard == defenderCard)
+            {
+                return enemyPlayer->getAllCharacters();
+            }
+
+            return {};
+        }
+
+        // -----------------------------------------
+        // Card Opponent
+        // -----------------------------------------
+
+        case EffectTarget::CardOpponent:
+        {
+            if(currentCard == attackerCard)
+            {
+                return {enemyPlayer->getHero().get()};
+            }
+
+            if(currentCard == defenderCard)
+            {
+                return {currentPlayer->getHero().get()};
+            }
+
+            return {};
+        }
+
+        case EffectTarget::CardOpponentSidekicks:
+        {
+            if(currentCard == attackerCard)
+            {
+                vector<Character*> result;
+
+                for(auto& sidekick : enemyPlayer->getHero()->getSidekicks())
+                {
+                    result.push_back(sidekick.get());
+                }
+
+                return result;
+            }
+
+            if(currentCard == defenderCard)
+            {
+                vector<Character*> result;
+
+                for(auto& sidekick : currentPlayer->getHero()->getSidekicks())
+                {
+                    result.push_back(sidekick.get());
+                }
+
+                return result;
+            }
+
+            return {};
+        }
+
+        case EffectTarget::CardOpponentCharacters:
+        {
+            if(currentCard == attackerCard)
+            {
+                return enemyPlayer->getAllCharacters();
+            }
+
+            if(currentCard == defenderCard)
+            {
+                return currentPlayer->getAllCharacters();
+            }
+
+            return {};
+        }
+
+        case EffectTarget::CardOpponentFighter:
+        {
+            if(currentCard == attackerCard)
+            {
+                return {defender};
+            }
+
+            if(currentCard == defenderCard)
+            {
+                return {attacker};
+            }
+
+            return {};
+        }
+
+        // -----------------------------------------
+        // Combat
+        // -----------------------------------------
+
         case EffectTarget::Attacker:
         {
-            return { attacker };
+            return {attacker};
         }
+
         case EffectTarget::Defender:
         {
-            return { defender };
+            return {defender};
         }
+
         default:
         {
             return {};
@@ -112,52 +269,209 @@ vector<Character*> GameContext::getTargets(EffectTarget target)
     }
 }
 
-std::vector<Character*> GameContext::resolve(ConditionTarget target) const
+vector<Character*> GameContext::resolve(ConditionTarget target) const
 {
     switch(target)
     {
-        case ConditionTarget::FriendlyHero :
+        case ConditionTarget::FriendlyHero:
         {
             return {currentPlayer->getHero().get()};
         }
-        case ConditionTarget::EnemyHero :
+
+        case ConditionTarget::EnemyHero:
         {
-            return {enemyPlayer->getHero().get()} ;
+            return {enemyPlayer->getHero().get()};
         }
-        case ConditionTarget::FriendlySidekicks :
+
+        case ConditionTarget::FriendlySidekicks:
         {
-            vector<Character*> result ;
+            vector<Character*> result;
+
             for(auto& sidekick : currentPlayer->getHero()->getSidekicks())
             {
-                result.push_back(sidekick.get()) ;
+                result.push_back(sidekick.get());
             }
-            return result ;
+
+            return result;
         }
-        case ConditionTarget::EnemySidekicks :
+
+        case ConditionTarget::EnemySidekicks:
         {
-            vector<Character*> result ;
+            vector<Character*> result;
+
             for(auto& sidekick : enemyPlayer->getHero()->getSidekicks())
             {
-                result.push_back(sidekick.get()) ;
+                result.push_back(sidekick.get());
             }
-            return result ;
+
+            return result;
         }
+
         case ConditionTarget::FriendlyCharacters:
         {
             return currentPlayer->getAllCharacters();
         }
+
         case ConditionTarget::EnemyCharacters:
         {
             return enemyPlayer->getAllCharacters();
         }
+
+        // -----------------------------------------
+        // Card Owner
+        // -----------------------------------------
+
+        case ConditionTarget::CardOwner:
+        {
+            if(currentCard == attackerCard)
+            {
+                return {currentPlayer->getHero().get()};
+            }
+
+            if(currentCard == defenderCard)
+            {
+                return {enemyPlayer->getHero().get()};
+            }
+
+            return {};
+        }
+
+        case ConditionTarget::CardOwnerSidekicks:
+        {
+            if(currentCard == attackerCard)
+            {
+                vector<Character*> result;
+
+                for(auto& sidekick : currentPlayer->getHero()->getSidekicks())
+                {
+                    result.push_back(sidekick.get());
+                }
+
+                return result;
+            }
+
+            if(currentCard == defenderCard)
+            {
+                vector<Character*> result;
+
+                for(auto& sidekick : enemyPlayer->getHero()->getSidekicks())
+                {
+                    result.push_back(sidekick.get());
+                }
+
+                return result;
+            }
+
+            return {};
+        }
+
+        case ConditionTarget::CardOwnerCharacters:
+        {
+            if(currentCard == attackerCard)
+            {
+                return currentPlayer->getAllCharacters();
+            }
+
+            if(currentCard == defenderCard)
+            {
+                return enemyPlayer->getAllCharacters();
+            }
+
+            return {};
+        }
+
+        // -----------------------------------------
+        // Card Opponent
+        // -----------------------------------------
+
+        case ConditionTarget::CardOpponent:
+        {
+            if(currentCard == attackerCard)
+            {
+                return {enemyPlayer->getHero().get()};
+            }
+
+            if(currentCard == defenderCard)
+            {
+                return {currentPlayer->getHero().get()};
+            }
+
+            return {};
+        }
+
+        case ConditionTarget::CardOpponentSidekicks:
+        {
+            if(currentCard == attackerCard)
+            {
+                vector<Character*> result;
+
+                for(auto& sidekick : enemyPlayer->getHero()->getSidekicks())
+                {
+                    result.push_back(sidekick.get());
+                }
+
+                return result;
+            }
+
+            if(currentCard == defenderCard)
+            {
+                vector<Character*> result;
+
+                for(auto& sidekick : currentPlayer->getHero()->getSidekicks())
+                {
+                    result.push_back(sidekick.get());
+                }
+
+                return result;
+            }
+
+            return {};
+        }
+
+        case ConditionTarget::CardOpponentCharacters:
+        {
+            if(currentCard == attackerCard)
+            {
+                return enemyPlayer->getAllCharacters();
+            }
+
+            if(currentCard == defenderCard)
+            {
+                return currentPlayer->getAllCharacters();
+            }
+
+            return {};
+        }
+
+        case ConditionTarget::CardOpponentFighter:
+        {
+            if(currentCard == attackerCard)
+            {
+                return {defender};
+            }
+
+            if(currentCard == defenderCard)
+            {
+                return {attacker};
+            }
+
+            return {};
+        }
+
+        // -----------------------------------------
+        // Combat
+        // -----------------------------------------
+
         case ConditionTarget::Attacker:
         {
-            return { attacker };
+            return {attacker};
         }
+
         case ConditionTarget::Defender:
         {
-            return { defender };
+            return {defender};
         }
+
         default:
         {
             return {};

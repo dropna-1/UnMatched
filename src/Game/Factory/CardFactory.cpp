@@ -87,9 +87,27 @@ shared_ptr<Deck> CardFactory::createSherlockDeck()
         ConditionTarget::FriendlyHero,
         ConditionTarget::FriendlySidekicks
     );
-    FPIACA->addEffect( TriggerType::AfterCombat, EffectTarget::FriendlyHero, condition, make_shared<HealEffect>(1));
-    FPIACA->addEffect( TriggerType::AfterCombat,EffectTarget::FriendlySidekicks,
-        make_shared<AdjacentCondition>( ConditionTarget::FriendlyHero, ConditionTarget::FriendlySidekicks ), make_shared<HealEffect>(1));
+    auto ownerAndSidekickAdjacent =
+    make_shared<AdjacentCondition>(
+        ConditionTarget::CardOwner,
+        ConditionTarget::CardOwnerSidekicks
+    );
+    FPIACA->addEffect(
+        TriggerType::AfterCombat,
+        EffectTarget::CardOwner,
+        ownerAndSidekickAdjacent,
+        make_shared<HealEffect>(1)
+    );
+
+    FPIACA->addEffect(
+        TriggerType::AfterCombat,
+        EffectTarget::CardOwnerSidekicks,
+        make_shared<AdjacentCondition>(
+            ConditionTarget::CardOwner,
+            ConditionTarget::CardOwnerSidekicks
+        ),
+        make_shared<HealEffect>(1)
+    );
     addCopies(deck , 2 , FPIACA) ;
 
     auto CounterPunch = createCard(
@@ -102,8 +120,15 @@ shared_ptr<Deck> CardFactory::createSherlockDeck()
         "AFTER COMBAT: If Holmes is Adjacent to the opsing fighter, deal 2 Damage to that Fighter.", 
         "external/images/cards/holms/counterpunch.png"
     );
-    CounterPunch->addEffect(TriggerType::AfterCombat , EffectTarget::Defender , 
-        make_shared<AdjacentCondition>(ConditionTarget::FriendlyHero , ConditionTarget::Defender) , make_shared<DamageEffect>(2));
+    CounterPunch->addEffect(
+        TriggerType::AfterCombat,
+        EffectTarget::CardOpponentFighter,
+        make_shared<AdjacentCondition>(
+            ConditionTarget::CardOwner,
+            ConditionTarget::CardOpponentFighter
+        ),
+        make_shared<DamageEffect>(2)
+    );
     addCopies(deck , 3 , CounterPunch) ;
 
     auto EducationNeverEnds = createCard(
@@ -116,10 +141,23 @@ shared_ptr<Deck> CardFactory::createSherlockDeck()
         "AFTER COMBAT: If you won the combat your opponet draws 1 card, if you lost thecombat you draw 2 cards.", 
         "external/images/cards/holms/education-never-ends.png"
     );
-    EducationNeverEnds->addEffect(TriggerType::AfterCombat , EffectTarget::EnemyHero , 
-        make_shared<WonBattleCondition>(ConditionTarget::Attacker) , make_shared<DrawCardEffect>(1) ) ;
-    EducationNeverEnds->addEffect(TriggerType::AfterCombat , EffectTarget::FriendlyHero , 
-        make_shared<LossBattleCondition>(ConditionTarget::Attacker) , make_shared<DrawCardEffect>(2) ) ;
+    EducationNeverEnds->addEffect(
+        TriggerType::AfterCombat,
+        EffectTarget::CardOpponent,
+        make_shared<WonBattleCondition>(
+            ConditionTarget::CardOwner
+        ),
+        make_shared<DrawCardEffect>(1)
+    );
+
+    EducationNeverEnds->addEffect(
+        TriggerType::AfterCombat,
+        EffectTarget::CardOwner,
+        make_shared<LossBattleCondition>(
+            ConditionTarget::CardOwner
+        ),
+        make_shared<DrawCardEffect>(2)
+    );
     addCopies(deck , 2 , EducationNeverEnds) ;
 
     auto EliminateTheImpossible = createCard(
@@ -250,7 +288,12 @@ shared_ptr<Deck> CardFactory::createDraculaDeck()
         "AFTER COMBAT: Move your fighter up to 3 spaces.", 
         "external/images/cards/dracula/dash.png"
     );
-    Dash->addEffect(TriggerType::AfterCombat , EffectTarget::FriendlyCharacters , nullptr , make_shared<MoveEffect>(3));
+    Dash->addEffect(
+        TriggerType::AfterCombat,
+        EffectTarget::CardOwnerCharacters,
+        nullptr,
+        make_shared<MoveEffect>(3)
+    );
     addCopies(deck , 2 , Dash);
 
     auto ThirstForSustenance = createCard(
@@ -277,7 +320,7 @@ shared_ptr<Deck> CardFactory::createDraculaDeck()
         "AFTER COMBAT: Draw 1 card." , 
         "external/images/cards/dracula/exploit.png"
     ); 
-    Exploit->addEffect(TriggerType::AfterCombat, EffectTarget::FriendlyHero, nullptr , make_shared<DrawCardEffect>(1) );
+    Exploit->addEffect(TriggerType::AfterCombat, EffectTarget::CardOwner, nullptr , make_shared<DrawCardEffect>(1) );
     addCopies(deck ,3 , Exploit);
 
     auto BaptismOfBlood = createCard(
@@ -344,7 +387,12 @@ shared_ptr<Deck> CardFactory::createDraculaDeck()
         "DURING COMBAT: Add the BOOSt value from your opponet's card to the defense value of this card" ,
         "external/images/cards/dracula/look-into-my-eyes.png"
     );
-    LookIntoMyEyes->addEffect(TriggerType::DuringCombat, EffectTarget::FriendlyHero, nullptr , make_shared<LookIntoMyEyesEffect>());
+    LookIntoMyEyes->addEffect(
+        TriggerType::DuringCombat,
+        EffectTarget::CardOwner,
+        nullptr,
+        make_shared<LookIntoMyEyesEffect>()
+    );
     addCopies(deck , 3 , LookIntoMyEyes) ; 
 
     auto RaveningSeduction = createCard(
