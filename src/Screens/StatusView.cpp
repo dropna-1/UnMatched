@@ -50,7 +50,7 @@ static Color PanelBackground(const Hero* hero)
         return Color{45,18,24,255};   
     if(hero->getname() == "Sherlock")
         return Color{48,42,18,255};
-    if(hero->getname() == "InvisibleMan")
+    if(hero->getname() == "Invisible Man")
     {
         return Color{0,255,255,255} ;
     }
@@ -63,7 +63,7 @@ static Color AccentColor(const Hero* hero)
         return Color{185,40,45,255};
     if(hero->getname() == "Sherlock")
         return Color{220,185,55,255} ;
-    if(hero->getname() == "InvisibleMan")
+    if(hero->getname() == "Invisible Man")
     {
         return Color{0,255,255,255} ;
     }
@@ -105,7 +105,7 @@ static Color CharacterColor(const std::string& name)
 
     if(name.find("Sister")!=std::string::npos)
         return PINK;
-    if(name == "InvisibleMan")
+    if(name == "Invisible Man")
     {
         return Color{0, 255 , 255, 255} ;
     }
@@ -116,7 +116,7 @@ const Texture2D& StatusView::GetBackground(const Hero* hero) const
 {
     if(hero->getname()=="Dracula")
         return draculaBackground;
-    if(hero->getname() == "InvisibleMan")
+    if(hero->getname() == "Invisible Man")
     {
         return invisBackground ;
     }
