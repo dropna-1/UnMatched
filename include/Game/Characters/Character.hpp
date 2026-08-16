@@ -25,6 +25,7 @@ class Character
         bool isAlive() const ;
         int getPosition() const ;
         void setPosition(int) ;
+        void setHP(int) ;
 
         std::string getname() const ; 
         int getMaxhp() const ;

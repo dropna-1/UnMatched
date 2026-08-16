@@ -11,6 +11,7 @@
 #include "Game/Player/player.hpp"
 #include "Game/Pending/Pending.hpp"
 #include "Game/Common/Option.hpp"
+#include "Game/Common/SaveData.hpp"
 
 class Character;
 class Card;
@@ -70,6 +71,7 @@ class Game {
     std::mt19937 rng{std::random_device{}()};
 
     bool canUseAbility = false;
+    bool loadedGame = false;
     
 public:
 
@@ -128,4 +130,10 @@ public:
     void combat(AttackOption option, const int& attackCardIndex, 
         std::optional<int> defenseCardIndex);
     void continueCombat();
+    /*------------------------------------------------------------------*/
+    GameSave createSaveData() const;
+    bool SaveGame(const std::string& path) const;
+    bool LoadGame(const std::string& path);
+    static std::shared_ptr<Deck> restoreDeck(const DeckSave& save, HeroType heroType);
+    bool isLoadedGame() const;
 };

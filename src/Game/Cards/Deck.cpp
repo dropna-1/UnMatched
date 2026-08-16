@@ -67,6 +67,16 @@ const vector<shared_ptr<Card>>& Deck::getHand() const
     return hand;
 }
 
+const vector<shared_ptr<Card>>& Deck::getDrawPile() const
+{
+    return drawPile;
+}
+
+const vector<shared_ptr<Card>>& Deck::getDiscardPile() const
+{
+    return discardPile;
+}
+
 shared_ptr<Card> Deck::playCard(int handIndex)
 {
     if(handIndex < 0 || handIndex>= hand.size() )
@@ -82,4 +92,14 @@ shared_ptr<Card> Deck::playCard(int handIndex)
 Card* Deck::previewCard(int index) const 
 {
     return hand[index].get() ;
+}
+
+void Deck::restore(
+    const vector<shared_ptr<Card>>& draw,
+    const vector<shared_ptr<Card>>& handCards,
+    const vector<shared_ptr<Card>>& discard)
+{
+    drawPile = draw;
+    hand = handCards;
+    discardPile = discard;
 }

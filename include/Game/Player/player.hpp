@@ -2,6 +2,7 @@
 #include <iostream>
 #include <memory>
 #include <vector>
+#include "Game/Common/SaveData.hpp"
 using namespace std;
 
 class Hero;
@@ -21,4 +22,5 @@ public:
     string getName();
     vector<Character*> getAllCharacters();
     friend bool operator==(const Player& p1, const Player& p2);
+    PlayerSave createSaveData() const;
 };

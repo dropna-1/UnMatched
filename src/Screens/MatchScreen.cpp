@@ -13,6 +13,9 @@ MatchScreen::MatchScreen(ScreenManager* mgr) {
     actions.setGame(&mgr->GetGame());
     tip.FillMessage(*game->getCurrentPlayer(), *game->getOtherPlayer());
 
+    if(game->isLoadedGame())
+        stage = Stage::None;
+
     int monitor = GetCurrentMonitor();
     int monitorWidth  = GetMonitorWidth(monitor);
     int monitorHeight = GetMonitorHeight(monitor);
@@ -178,7 +181,7 @@ void MatchScreen::Draw() {
         manager->ChangeScreen(std::make_unique<MenuScreen>(manager));
     }
     if(GuiButton(btnSave, "Save")){
-        return;
+        game->SaveGame("saves/test.json");
     }
     if(canBoost && stage == Stage::ChoiceNode && GuiButton(btnBoost, "Boost")){
         stage = Stage::Boost;

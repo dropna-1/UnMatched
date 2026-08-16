@@ -20,7 +20,7 @@ inline std::vector<HeroInf> GetAllHeroes() {
     return {
         {0, "Dracula", "Lord of the Night", "external/images/dracula/test.png", HeroType::Dracula},
         {1, "Sherlock Holmes", "The Great Detective", "external/images/sherlock/holmsArt.png", HeroType::Sherlock},
-        {2, "Invisible Man", "The Unseen Threat", "external/images/invisibleMan/invArt.png", HeroType::Dracula},
+        {2, "Invisible Man", "The Unseen Threat", "external/images/invisibleMan/invArt.png", HeroType::InvisibleMan},
     };
 }
 
