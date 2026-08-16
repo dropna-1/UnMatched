@@ -1,9 +1,11 @@
 #include "Game/Factory/HeroFactory.hpp"
+#include "Game/Characters/InvisibleMan.hpp"
 #include "Game/Characters/Hero.hpp"
 #include "Game/Characters/SideKick.hpp"
 #include "Game/Factory/CardFactory.hpp"
 #include "Game/Ability/SherlockAbility.hpp"
 #include "Game/Ability/DraculaAbility.hpp"
+
 using namespace std ;
 
 shared_ptr<Hero> HeroFactory::createSherlock()
@@ -28,6 +30,9 @@ shared_ptr<Hero> HeroFactory::createDracula()
 
 shared_ptr<Hero> HeroFactory::createInvisibleMan()
 {
-    auto hero = make_shared<Hero>("Invisible Man" , 15 , 2 , AttackType::Melee , HeroType::InvisibleMan);
-    return hero ; 
+    auto hero = make_shared<InvisibleMan>();
+    hero->setDeck(CardFactory::createInvisibleManDeck());
+    
+    return hero;
+
 }

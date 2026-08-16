@@ -26,4 +26,5 @@ class CardFactory
     public:
         static std::shared_ptr<Deck> createSherlockDeck();
         static std::shared_ptr<Deck> createDraculaDeck();
+        static std::shared_ptr<Deck> createInvisibleManDeck();
 };
