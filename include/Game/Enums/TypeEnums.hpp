@@ -4,7 +4,7 @@ enum HeroType
 {
     Sherlock , 
     Dracula , 
-    InvisibleMan
+    Invisibleman
 };
 
 enum CardType

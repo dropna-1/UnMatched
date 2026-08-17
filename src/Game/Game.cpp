@@ -432,13 +432,11 @@ bool Game::canAttack()
 {
     std::vector<AttackOption> targets = getAttackableTargets();
     if(targets.empty()){
-        cout << "empty\n";
         return false;
     }
     for(const auto& com : targets)
         if(!getPlayableAttackCard(com.attacker).empty())
             return true;
-    cout << "empty card\n";
     return false;
 }
 
