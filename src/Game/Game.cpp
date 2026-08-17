@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <queue>
 #include "Game/Characters/SideKick.hpp"
 #include "Game/Game.hpp"
 #include "Game/Cards/Deck.hpp"
@@ -238,7 +239,7 @@ void Game::performManeuver(Character* character, const int& pos){
 
 
 void Game::requestAction(unique_ptr<PendingAction> action){
-    pendingActions.push(std::move(action));
+    pendingActions.push_back(std::move(action));
 }
 
 
@@ -255,7 +256,7 @@ PendingAction* Game::currentPendingAction(){
 
 
 void Game::completePendingAction(){
-    pendingActions.pop();
+    pendingActions.pop_front();
 }
 
 
@@ -430,11 +431,14 @@ vector<AttackOption> Game::getAttackableTargets()
 bool Game::canAttack()
 {
     std::vector<AttackOption> targets = getAttackableTargets();
-    if(targets.empty())
+    if(targets.empty()){
+        cout << "empty\n";
         return false;
+    }
     for(const auto& com : targets)
         if(!getPlayableAttackCard(com.attacker).empty())
             return true;
+    cout << "empty card\n";
     return false;
 }
 
@@ -647,11 +651,166 @@ void Game::continueCombat()
     }
 }
 // ---------------------------------Save Game---------------------------------
-bool Game::isLoadedGame() const{
-    return loadedGame;
+const MatchScreenSave& Game::getLoadedMatchScreen() const{
+    return loadedMatchScreen;
 }
 // ---------------------------------------------------------------------------
-GameSave Game::createSaveData() const
+CharacterRef Game::makeCharacterRef(Character* character) const
+{
+    if(character == nullptr)
+        return {};
+
+    for(int ci = 0; ci < player1.getAllCharacters().size(); ci++){
+        if(player1.getAllCharacters().at(ci) == character)
+            return {0, ci};
+    }
+    for(int ci = 0; ci < player2.getAllCharacters().size(); ci++){
+        if(player2.getAllCharacters().at(ci) == character)
+            return {1, ci};
+    }
+    return {};
+}
+// ---------------------------------------------------------------------------
+Character* Game::resolveCharacterRef(const CharacterRef& ref)
+{
+    if(ref.player == 0){
+        auto characters = player1.getAllCharacters();
+        if(ref.index >= 0 && ref.index < characters.size()){
+            return characters[ref.index];
+        }
+    }
+    else if(ref.player == 1){
+        auto characters = player2.getAllCharacters();
+        if(ref.index >= 0 && ref.index < characters.size()){
+            return characters[ref.index];
+        }
+    }
+    return nullptr;
+}
+// ---------------------------------------------------------------------------
+std::vector<PendingSave> Game::createPendingSave() const
+{
+    std::vector<PendingSave> result;
+    for(const auto& ptr : pendingActions)
+    {
+        if(ptr == nullptr)
+            continue;
+
+        PendingAction* action = ptr.get();
+
+        PendingSave save;
+        save.type = action->getType();
+        switch(action->getType())
+        {
+        case RequestType::Move:
+        {
+            auto* move = dynamic_cast<MoveAction*>(action);
+            if(move == nullptr)
+                break;
+
+            save.currentCharacter = makeCharacterRef(move->getCurrentCharacter());
+            save.otherCharacter = makeCharacterRef(move->getOtherCharacter());
+            save.mode = static_cast<int>(move->getMode());
+            save.range = move->getRange();
+            break;
+        }
+        case RequestType::RaveningST1:
+        case RequestType::RaveningST2:
+        {
+            auto* ravening = dynamic_cast<RaveningAction*>(action);
+            if(ravening == nullptr)
+                break;
+
+            save.stage = ravening->getStage();
+            save.selectedCharacter = makeCharacterRef(ravening->getSelected());
+            break;
+        }
+        case RequestType::CardFromCurrent:
+        case RequestType::CardFromOther:
+        {
+            auto* card = dynamic_cast<ChooseCardAction*>(action);
+            if(card == nullptr)
+                break;
+
+            if(card->getSelectedPlayer() == &player1)
+                save.player = 0;
+            else if(card->getSelectedPlayer() == &player2)
+                save.player = 1;
+
+            save.minCards = card->getMinCards();
+            save.maxCards = card->getMaxCards();
+            save.selectedCards = card->getSelectedCards();
+            break;
+        }
+        case RequestType::ShowCard:
+        {
+            auto* show = dynamic_cast<ShowCardAction*>(action);
+            if(show == nullptr)
+                break;
+
+            if(show->getSelectedPlayer() == &player1)
+                save.player = 0;
+            else if(show->getSelectedPlayer() == &player2)
+                save.player = 1;
+            break;
+        }
+        case RequestType::Character:
+        {
+            auto* choose = dynamic_cast<ChooseCharacterAction*>(action);
+            if(choose == nullptr)
+                break;
+
+            save.mode = static_cast<int>(choose->getMode());
+            save.selectedCharacter = makeCharacterRef(choose->getCharacter());
+            break;
+        }
+        case RequestType::DeleteFromCurrent:
+        case RequestType::DeleteFromOther:
+        {
+            auto* deleteAction = dynamic_cast<DeleteCardAction*>(action);
+            if(deleteAction == nullptr)
+                break;
+
+            if(deleteAction->getSelectedPlayer() == &player1)
+                save.player = 0;
+            else if(deleteAction->getSelectedPlayer() == &player2)
+                save.player = 1;
+            break;
+        }
+        }
+        result.push_back(save);
+    }
+
+    return result;
+}
+// ---------------------------------------------------------------------------
+std::optional<PendingCombatSave> Game::createPendingCombatSave() const
+{
+    if(pendingCombat == nullptr)
+        return std::nullopt;
+
+    PendingCombatSave save;
+
+    save.attacker = makeCharacterRef(pendingCombat->option.attacker);
+    save.target = makeCharacterRef(pendingCombat->option.target);
+
+    if(pendingCombat->attackCard != nullptr)
+        save.attackCardId = pendingCombat->attackCard->getId();
+
+    if(pendingCombat->defenseCard != nullptr)
+        save.defenseCardId = pendingCombat->defenseCard->getId();
+
+    save.stage = static_cast<int>(pendingCombat->stage);
+
+    save.selection.character = makeCharacterRef(pendingCombat->selection.character);
+    save.selection.cards = pendingCombat->selection.cards;
+    save.selection.destination = pendingCombat->selection.destination;
+    save.selection.showHand = pendingCombat->selection.showHand;
+    save.selection.canFinish = pendingCombat->selection.canFinish;
+    return save;
+}
+// ---------------------------------------------------------------------------
+GameSave Game::createSaveData(const MatchScreenSave& screenSave) const
 {
     GameSave save;
 
@@ -665,12 +824,18 @@ GameSave Game::createSaveData() const
 
     save.canUseAbility = canUseAbility;
     save.remainingAction = actionsRemaining;
+    save.pendingActions = createPendingSave();
+    if(pendingCombat != nullptr)
+        save.pendingCombat = createPendingCombatSave();
+    else
+        save.pendingCombat.reset();
+    save.matchScreen = screenSave;
 
     return save;
 }
 // ---------------------------------------------------------------------------
-bool Game::SaveGame(const std::string& path) const{
-    return SaveManager::saveGame(createSaveData(), path);
+bool Game::SaveGame(const std::string& path, const MatchScreenSave& screenSave) const{
+    return SaveManager::saveGame(createSaveData(screenSave), path);
 }
 // ---------------------------------------------------------------------------
 std::shared_ptr<Deck> Game::restoreDeck(const DeckSave& save, HeroType heroType)
@@ -725,6 +890,188 @@ std::shared_ptr<Deck> Game::restoreDeck(const DeckSave& save, HeroType heroType)
     return result;
 }
 // ---------------------------------------------------------------------------
+std::unique_ptr<PendingAction> Game::restorePendingAction(const PendingSave& save)
+{
+    switch(save.type)
+    {
+        case RequestType::Move:
+        {
+            Character* current = resolveCharacterRef(save.currentCharacter);
+            Character* other = resolveCharacterRef(save.otherCharacter);
+
+            if(current == nullptr)
+                return nullptr;
+
+            auto action = std::make_unique<MoveAction>(
+                current,
+                other,
+                static_cast<MoveMode>(save.mode),
+                save.range
+            );
+            return action;
+        }
+        case RequestType::RaveningST1:
+        case RequestType::RaveningST2:
+        {
+            auto action = std::make_unique<RaveningAction>(*this);
+            Character* selected = resolveCharacterRef(save.selectedCharacter);
+
+            action->restoreState(selected, save.stage);
+            return action;
+        }
+        case RequestType::CardFromCurrent:
+        case RequestType::CardFromOther:
+        {
+            Player* player = nullptr;
+            if(save.player == 0)
+                player = &player1;
+            else if(save.player == 1)
+                player = &player2;
+            else
+                return nullptr;
+
+            auto action =
+                std::make_unique<ChooseCardAction>(
+                    player,
+                    save.minCards,
+                    save.maxCards,
+                    *this
+                );
+
+            action->restoreState(save.selectedCards);
+            return action;
+        }
+        case RequestType::ShowCard:
+        {
+            Player* player = nullptr;
+            if(save.player == 0)
+                player = &player1;
+            else if(save.player == 1)
+                player = &player2;
+            else
+                return nullptr;
+
+            return std::make_unique<ShowCardAction>(player);
+        }
+        case RequestType::Character:
+        {
+            Character* character = resolveCharacterRef(save.selectedCharacter);
+
+            return std::make_unique<ChooseCharacterAction>(
+                static_cast<SelectionMode>(save.mode),
+                character
+            );
+        }
+        case RequestType::DeleteFromCurrent:
+        case RequestType::DeleteFromOther:
+        {
+            Player* player = nullptr;
+            if(save.player == 0)
+                player = &player1;
+            else if(save.player == 1)
+                player = &player2;
+            else
+                return nullptr;
+
+            return std::make_unique<DeleteCardAction>(
+                *this,
+                player
+            );
+        }
+        case RequestType::Dracula:
+        {
+            return std::make_unique<DraculaAction>();
+        }
+
+        default:
+            return nullptr;
+    }
+}
+// ---------------------------------------------------------------------------
+std::shared_ptr<Card> Game::findCardById(const std::string& id, Character* c) const
+{
+    if(id.empty())
+        return nullptr;
+
+    Hero* hero = nullptr;
+    for(Character* mem : player1.getAllCharacters())
+        if(c == mem)
+            hero = player1.getHero().get();
+    if(hero == nullptr)
+        hero = player2.getHero().get();
+
+    std::shared_ptr<Deck> source;
+    if(hero->getHeroType() == HeroType::Dracula)
+        source = CardFactory::createDraculaDeck();
+    else if(hero->getHeroType() == HeroType::Sherlock)
+        source = CardFactory::createSherlockDeck();
+    else
+        return nullptr;
+
+    for(const auto& card : source->getDrawPile()){
+        if(card != nullptr && card->getId() == id)
+            return card;
+    }
+
+    return nullptr;
+}
+// ---------------------------------------------------------------------------
+std::unique_ptr<PendingCombat> Game::restorePendingCombat(const PendingCombatSave& save)
+{
+    Character* attacker = resolveCharacterRef(save.attacker);
+    Character* target = resolveCharacterRef(save.target);
+
+    if(attacker == nullptr || target == nullptr)
+        return nullptr;
+
+    std::shared_ptr<Card> attackCard = nullptr;
+    std::shared_ptr<Card> defenseCard = nullptr;
+
+    if(!save.attackCardId.empty())
+    {
+        attackCard = findCardById(save.attackCardId, attacker);
+        if(attackCard == nullptr)
+            return nullptr;
+    }
+
+    if(!save.defenseCardId.empty())
+    {
+        defenseCard = findCardById(save.defenseCardId, target);
+        if(defenseCard == nullptr)
+            return nullptr;
+    }
+
+    AttackOption option;
+    option.attacker = attacker;
+    option.target = target;
+
+    GameContext context(
+        currentPlayer,
+        otherPlayer,
+        attacker,
+        target,
+        &board,
+        attackCard.get(),
+        defenseCard.get(),
+        this
+    );
+
+    auto combat = std::make_unique<PendingCombat>(
+        option,
+        attackCard,
+        defenseCard,
+        context
+    );
+
+    combat->stage = static_cast<CombatStage>(save.stage);
+    combat->selection.character = resolveCharacterRef(save.selection.character);
+    combat->selection.cards = save.selection.cards;
+    combat->selection.destination = save.selection.destination;
+    combat->selection.showHand = save.selection.showHand;
+    combat->selection.canFinish = save.selection.canFinish;
+    return combat;
+}
+// ---------------------------------------------------------------------------
 bool Game::LoadGame(const std::string& path)
 {
     GameSave save;
@@ -739,13 +1086,17 @@ bool Game::LoadGame(const std::string& path)
     player2.setAge(save.players[1].age);
     // ----------------------------------------------------------------
     auto createHero =
-        [](const HeroSave& heroSave) -> std::shared_ptr<Hero>
+        [&](const HeroSave& heroSave) -> std::shared_ptr<Hero>
     {
-        if(heroSave.type == HeroType::Dracula)
-            return HeroFactory::createDracula();
+        if(heroSave.type == HeroType::Dracula){
+            this->dracula = HeroFactory::createDracula();
+            return dracula;
+        }
 
-        if(heroSave.type == HeroType::Sherlock)
-            return HeroFactory::createSherlock();
+        if(heroSave.type == HeroType::Sherlock){
+            this->sherlock = HeroFactory::createSherlock();
+            return sherlock;
+        }
 
         // if(heroSave.type == HeroType::InvisibleMan)
         //     return HeroFactory::createInvisibleMan();
@@ -817,9 +1168,25 @@ bool Game::LoadGame(const std::string& path)
     canUseAbility = save.canUseAbility;
 
     while(!pendingActions.empty())
-        pendingActions.pop();
+        pendingActions.pop_front();
 
-    pendingCombat.reset();
-    loadedGame = true;
+    for(const auto& pendingSave : save.pendingActions){
+        auto action = restorePendingAction(pendingSave);
+        if(action != nullptr)
+            pendingActions.push_back(std::move(action));
+    }
+    // ----------------------------------------------------------------
+    if(save.pendingCombat.has_value()){
+        auto combat = restorePendingCombat(*save.pendingCombat);
+        if(combat == nullptr)
+            return false;
+
+        pendingCombat = std::move(combat);
+    }
+    else{
+        pendingCombat.reset();
+    }
+    // ----------------------------------------------------------------
+    loadedMatchScreen = save.matchScreen;
     return true;
 }

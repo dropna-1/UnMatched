@@ -36,6 +36,11 @@ void MoveAction::submit(Game& game, int choice){
     game.getPendingCombat().get()->selection.destination = choice;
     game.completePendingAction();
 }
+
+Character* MoveAction::getCurrentCharacter() const{return currentCharacter;}
+Character* MoveAction::getOtherCharacter() const{return otherCharacter;}
+MoveMode MoveAction::getMode() const{return mode;}
+int MoveAction::getRange() const{return range;}
 /*-----------------------------------------------------------------*/
 RaveningAction::RaveningAction(Game& game){
     if(allCharacters.empty()){
@@ -71,6 +76,19 @@ void RaveningAction::submit(Game& game, int choice){
         game.getPendingCombat().get()->selection.destination = choice;
         game.completePendingAction();
     }
+}
+
+Character* RaveningAction::getSelected() const{return selected;}
+int RaveningAction::getStage() const{return stage;}
+
+void RaveningAction::restoreState(Character* c, const int& state){
+    stage = state;
+    selected = c;
+
+    if(stage == 0)
+        type = RequestType::RaveningST1;
+    else
+        type = RequestType::RaveningST2;
 }
 /*-----------------------------------------------------------------*/
 ChooseCardAction::ChooseCardAction(Player* player, int min, int max, Game& game) : 
@@ -116,6 +134,15 @@ void ChooseCardAction::submit(Game& game, int choice){
         game.completePendingAction();
     }
 }
+
+Player* ChooseCardAction::getSelectedPlayer() const{return selected;}
+int ChooseCardAction::getMinCards() const{return minCards;}
+int ChooseCardAction::getMaxCards() const{return maxCards;}
+const std::vector<int>& ChooseCardAction::getSelectedCards() const{return selectedCards;}
+
+void ChooseCardAction::restoreState(const std::vector<int>& cards){
+    selectedCards = cards;
+}
 /*-----------------------------------------------------------------*/
 ShowCardAction::ShowCardAction(Player* player) : selected(player) 
 {type = RequestType::ShowCard;}
@@ -130,6 +157,8 @@ void ShowCardAction::submit(Game& game, int choice){
     game.getPendingCombat()->selection.showHand = true;
     game.completePendingAction();
 }
+
+Player* ShowCardAction::getSelectedPlayer() const{return selected;}
 /*-----------------------------------------------------------------*/
 ChooseCharacterAction::ChooseCharacterAction(SelectionMode mode, Character* c) 
 : mode(mode), pc(c) {type = RequestType::Character;}
@@ -162,6 +191,9 @@ void ChooseCharacterAction::submit(Game& game, int choice){
             game.completePendingAction();
         }
 }
+
+SelectionMode ChooseCharacterAction::getMode() const{return mode;}
+Character* ChooseCharacterAction::getCharacter() const{return pc;}
 /*-----------------------------------------------------------------*/
 DeleteCardAction::DeleteCardAction(Game& game, Player* player) : selected(player){
     if(player == game.getCurrentPlayer())
@@ -184,6 +216,8 @@ void DeleteCardAction::submit(Game& game, int choice){
         game.useAction();
     }
 }
+
+Player* DeleteCardAction::getSelectedPlayer() const{return selected;}
 /*-----------------------------------------------------------------*/
 DraculaAction::DraculaAction(){type = RequestType::Dracula;}
 

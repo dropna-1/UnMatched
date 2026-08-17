@@ -17,10 +17,10 @@ public:
     void setHero(shared_ptr<Hero> hero);
     void setName(const string& n);
     void setAge(const int& a);
-    shared_ptr<Hero> getHero();
-    int getAge();
-    string getName();
-    vector<Character*> getAllCharacters();
+    shared_ptr<Hero> getHero() const;
+    int getAge() const;
+    string getName() const;
+    vector<Character*> getAllCharacters() const;
     friend bool operator==(const Player& p1, const Player& p2);
     PlayerSave createSaveData() const;
 };

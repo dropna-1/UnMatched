@@ -6,7 +6,8 @@ Character::Character(const string& name , int maxHP , int movement , AttackType 
     maxHp(maxHP) ,
     hp(maxHP)  ,
     movement(movement) ,
-    position(-1) 
+    position(-1) ,
+    attackType(attackType)
 {
 }
 

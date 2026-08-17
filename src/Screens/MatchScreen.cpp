@@ -13,8 +13,18 @@ MatchScreen::MatchScreen(ScreenManager* mgr) {
     actions.setGame(&mgr->GetGame());
     tip.FillMessage(*game->getCurrentPlayer(), *game->getOtherPlayer());
 
-    if(game->isLoadedGame())
-        stage = Stage::None;
+    const MatchScreenSave& save = game->getLoadedMatchScreen();
+    if(save.stage != -1)
+    {
+        stage = static_cast<Stage>(save.stage);
+        selected = game->resolveCharacterRef(save.selected);
+        option.attacker = game->resolveCharacterRef(save.attacker);
+        option.target = game->resolveCharacterRef(save.target);
+        AttackCardIndex = save.attackCardIndex;
+        DefenseCardIndex = save.defenseCardIndex;
+        Movement = save.movement;
+        canBoost = save.canBoost;
+    }
 
     int monitor = GetCurrentMonitor();
     int monitorWidth  = GetMonitorWidth(monitor);
@@ -180,8 +190,8 @@ void MatchScreen::Draw() {
         manager->BackToHome(890, 500);
         manager->ChangeScreen(std::make_unique<MenuScreen>(manager));
     }
-    if(GuiButton(btnSave, "Save")){
-        game->SaveGame("saves/test.json");
+    if(stage != Stage::End && GuiButton(btnSave, "Save")){
+        game->SaveGame("saves/test.json", createSaveData());
     }
     if(canBoost && stage == Stage::ChoiceNode && GuiButton(btnBoost, "Boost")){
         stage = Stage::Boost;
@@ -568,3 +578,17 @@ void MatchScreen::HandlePendingChooseCard(){
     }
 }
 // ------------------------------------------------------------------------------------------
+MatchScreenSave MatchScreen::createSaveData() const
+{
+    MatchScreenSave save;
+    save.stage = static_cast<int>(stage);
+
+    save.selected = game->makeCharacterRef(selected);
+    save.attacker = game->makeCharacterRef(option.attacker);
+    save.target = game->makeCharacterRef(option.target);
+    save.attackCardIndex = AttackCardIndex;
+    save.defenseCardIndex = DefenseCardIndex;
+    save.movement = Movement;
+    save.canBoost = canBoost;
+    return save;
+}

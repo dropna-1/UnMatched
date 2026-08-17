@@ -54,6 +54,8 @@ private:
 
     void DrawSkip();
 
+    MatchScreenSave createSaveData() const;
+
 public:
     explicit MatchScreen(ScreenManager* man);
     ~MatchScreen();

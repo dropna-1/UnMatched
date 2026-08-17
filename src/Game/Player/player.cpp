@@ -16,19 +16,19 @@ void Player::setAge(const int& a){
     this->age = a;
 }
 
-shared_ptr<Hero> Player::getHero(){
+shared_ptr<Hero> Player::getHero() const{
     return hero;
 }
 
-int Player::getAge(){
+int Player::getAge() const{
     return age;
 }
 
-string Player::getName(){
+string Player::getName() const{
     return name;
 }
 
-vector<Character*> Player::getAllCharacters(){
+vector<Character*> Player::getAllCharacters() const{
     vector<Character*> characters;
     if(hero.get()->isAlive())
         characters.push_back(hero.get());

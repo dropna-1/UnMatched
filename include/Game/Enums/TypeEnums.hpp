@@ -112,6 +112,21 @@ enum class HighlightType
     Selected
 };
 
+enum class MoveMode
+{
+    Range,
+    Zone,
+    AnySpace,
+    Neighboor
+};
+
+enum class SelectionMode
+{
+    Current,
+    Other,
+    All
+};
+
 enum class Stage {
     SideKickPlacementP1,
     SideKickPlacementP2,

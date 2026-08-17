@@ -1,104 +1,60 @@
 {
     "canUseAbility": true,
     "currentPlayer": 0,
+    "matchScreen": {
+        "attackCardIndex": -1,
+        "attacker": {
+            "index": -1,
+            "player": -1
+        },
+        "canBoost": true,
+        "defenseCardIndex": -1,
+        "movement": -1,
+        "selected": {
+            "index": -1,
+            "player": -1
+        },
+        "stage": 13,
+        "target": {
+            "index": -1,
+            "player": -1
+        }
+    },
+    "pendingActions": [],
+    "pendingCombat": null,
     "players": [
         {
             "age": 18,
             "deck": {
                 "discardPile": [],
                 "drawPile": [
-                    "external/images/cards/dracula/look-into-my-eyes.png",
-                    "external/images/cards/dracula/feeding-frenzy.png",
-                    "external/images/cards/dracula/look-into-my-eyes.png",
-                    "external/images/cards/dracula/dash.png",
-                    "external/images/cards/dracula/baptism-of-blood.png",
-                    "external/images/cards/dracula/ravening-seduction.png",
-                    "external/images/cards/dracula/exploit.png",
-                    "external/images/cards/dracula/ravening-seduction.png",
-                    "external/images/cards/dracula/beastform.png",
-                    "external/images/cards/dracula/feint (1).png",
-                    "external/images/cards/dracula/mistform.png",
-                    "external/images/cards/dracula/thirst-for-sustenance.png",
-                    "external/images/cards/dracula/ravening-seduction.png",
-                    "external/images/cards/dracula/exploit.png",
-                    "external/images/cards/dracula/baptism-of-blood.png",
-                    "external/images/cards/dracula/thirst-for-sustenance.png",
-                    "external/images/cards/dracula/look-into-my-eyes.png",
-                    "external/images/cards/dracula/ambush.png",
-                    "external/images/cards/dracula/exploit.png",
-                    "external/images/cards/dracula/feint (1).png",
-                    "external/images/cards/dracula/feint (1).png",
-                    "external/images/cards/dracula/thirst-for-sustenance.png",
-                    "external/images/cards/dracula/ambush.png",
-                    "external/images/cards/dracula/feeding-frenzy.png"
-                ],
-                "hand": [
-                    "external/images/cards/dracula/prey-upon.png",
-                    "external/images/cards/dracula/dash.png",
-                    "external/images/cards/dracula/beastform.png",
-                    "external/images/cards/dracula/prey-upon.png",
-                    "external/images/cards/dracula/mistform.png"
-                ]
-            },
-            "hero": {
-                "HP": 13,
-                "position": 18,
-                "sidekicks": [
-                    {
-                        "HP": 1,
-                        "index": 0,
-                        "name": "Sister 1",
-                        "position": 31
-                    },
-                    {
-                        "HP": 1,
-                        "index": 1,
-                        "name": "Sister 2",
-                        "position": 16
-                    },
-                    {
-                        "HP": 1,
-                        "index": 2,
-                        "name": "Sister 3",
-                        "position": 15
-                    }
-                ],
-                "type": "Dracula"
-            },
-            "name": "Player 1"
-        },
-        {
-            "age": 18,
-            "deck": {
-                "discardPile": [],
-                "drawPile": [
-                    "external/images/cards/holms/deduce-strategy.png",
-                    "external/images/cards/holms/the-game-is-afoot.png",
                     "external/images/cards/holms/fixed-point-in-a-changing-age.png",
                     "external/images/cards/holms/deduce-strategy.png",
-                    "external/images/cards/holms/fixed-point-in-a-changing-age.png",
-                    "external/images/cards/holms/counterpunch.png",
-                    "external/images/cards/holms/study-methods.png",
-                    "external/images/cards/holms/administer-aid.png",
-                    "external/images/cards/holms/administer-aid.png",
-                    "external/images/cards/holms/eliminate-the-impossible.png",
-                    "external/images/cards/holms/study-methods.png",
-                    "external/images/cards/holms/service-revolver.png",
-                    "external/images/cards/holms/service-revolver.png",
-                    "external/images/cards/holms/the-game-is-afoot.png",
-                    "external/images/cards/holms/counterpunch.png",
-                    "external/images/cards/holms/counterpunch.png",
-                    "external/images/cards/holms/deduce-strategy.png",
-                    "external/images/cards/holms/master-of-disguise.png",
-                    "external/images/cards/holms/eliminate-the-impossible.png",
-                    "external/images/cards/holms/education-never-ends.png"
-                ],
-                "hand": [
                     "external/images/cards/holms/feintS.png",
-                    "external/images/cards/holms/master-of-disguise.png",
+                    "external/images/cards/holms/counterpunch.png",
                     "external/images/cards/holms/education-never-ends.png",
+                    "external/images/cards/holms/service-revolver.png",
+                    "external/images/cards/holms/master-of-disguise.png",
+                    "external/images/cards/holms/study-methods.png",
+                    "external/images/cards/holms/eliminate-the-impossible.png",
+                    "external/images/cards/holms/education-never-ends.png",
+                    "external/images/cards/holms/service-revolver.png",
+                    "external/images/cards/holms/the-game-is-afoot.png",
+                    "external/images/cards/holms/study-methods.png",
+                    "external/images/cards/holms/master-of-disguise.png",
+                    "external/images/cards/holms/administer-aid.png",
+                    "external/images/cards/holms/deduce-strategy.png",
                     "external/images/cards/holms/feintS.png",
-                    "external/images/cards/holms/feintS.png"
+                    "external/images/cards/holms/counterpunch.png",
+                    "external/images/cards/holms/the-game-is-afoot.png",
+                    "external/images/cards/holms/deduce-strategy.png"
+                ],
+                "hand": [
+                    "external/images/cards/holms/administer-aid.png",
+                    "external/images/cards/holms/counterpunch.png",
+                    "external/images/cards/holms/feintS.png",
+                    "external/images/cards/holms/fixed-point-in-a-changing-age.png",
+                    "external/images/cards/holms/eliminate-the-impossible.png"
                 ]
             },
             "hero": {
@@ -113,6 +69,71 @@
                     }
                 ],
                 "type": "Sherlock"
+            },
+            "name": "Player 1"
+        },
+        {
+            "age": 18,
+            "deck": {
+                "discardPile": [],
+                "drawPile": [
+                    "external/images/cards/dracula/beastform.png",
+                    "external/images/cards/dracula/dash.png",
+                    "external/images/cards/dracula/thirst-for-sustenance.png",
+                    "external/images/cards/dracula/dash.png",
+                    "external/images/cards/dracula/exploit.png",
+                    "external/images/cards/dracula/feint (1).png",
+                    "external/images/cards/dracula/ambush.png",
+                    "external/images/cards/dracula/baptism-of-blood.png",
+                    "external/images/cards/dracula/feint (1).png",
+                    "external/images/cards/dracula/mistform.png",
+                    "external/images/cards/dracula/beastform.png",
+                    "external/images/cards/dracula/baptism-of-blood.png",
+                    "external/images/cards/dracula/exploit.png",
+                    "external/images/cards/dracula/ravening-seduction.png",
+                    "external/images/cards/dracula/look-into-my-eyes.png",
+                    "external/images/cards/dracula/feeding-frenzy.png",
+                    "external/images/cards/dracula/exploit.png",
+                    "external/images/cards/dracula/ravening-seduction.png",
+                    "external/images/cards/dracula/thirst-for-sustenance.png",
+                    "external/images/cards/dracula/feeding-frenzy.png",
+                    "external/images/cards/dracula/ambush.png",
+                    "external/images/cards/dracula/prey-upon.png"
+                ],
+                "hand": [
+                    "external/images/cards/dracula/mistform.png",
+                    "external/images/cards/dracula/feint (1).png",
+                    "external/images/cards/dracula/look-into-my-eyes.png",
+                    "external/images/cards/dracula/ravening-seduction.png",
+                    "external/images/cards/dracula/look-into-my-eyes.png",
+                    "external/images/cards/dracula/thirst-for-sustenance.png",
+                    "external/images/cards/dracula/prey-upon.png"
+                ]
+            },
+            "hero": {
+                "HP": 13,
+                "position": 1,
+                "sidekicks": [
+                    {
+                        "HP": 1,
+                        "index": 0,
+                        "name": "Sister 1",
+                        "position": 17
+                    },
+                    {
+                        "HP": 1,
+                        "index": 1,
+                        "name": "Sister 2",
+                        "position": 15
+                    },
+                    {
+                        "HP": 1,
+                        "index": 2,
+                        "name": "Sister 3",
+                        "position": 16
+                    }
+                ],
+                "type": "Dracula"
             },
             "name": "Player 2"
         }

@@ -6,21 +6,6 @@
 class Game;
 class Player;
 
-enum class MoveMode
-{
-    Range,
-    Zone,
-    AnySpace,
-    Neighboor
-};
-
-enum class SelectionMode
-{
-    Current,
-    Other,
-    All
-};
-
 class PendingAction {
 protected:
     RequestType type;
@@ -41,6 +26,10 @@ public:
     MoveAction(Character* current, Character* other, MoveMode mode, int value);
     std::vector<int> getOption(Game& game) override;
     void submit(Game& game, int choice) override;
+    Character* getCurrentCharacter() const;
+    Character* getOtherCharacter() const;
+    MoveMode getMode() const;
+    int getRange() const;
 };
 /*-----------------------------------------------------------------*/
 class RaveningAction : public PendingAction {
@@ -53,6 +42,9 @@ public:
     RaveningAction(Game& game);
     std::vector<int> getOption(Game& game) override;
     void submit(Game& game, int choice) override;
+    Character* getSelected() const;
+    int getStage() const;
+    void restoreState(Character* c, const int& state);
 };
 /*-----------------------------------------------------------------*/
 class ChooseCardAction : public PendingAction {
@@ -65,6 +57,11 @@ public:
     ChooseCardAction(Player* player, int min, int max, Game& game);
     std::vector<int> getOption(Game& game) override;
     void submit(Game& game, int choice) override;
+    Player* getSelectedPlayer() const;
+    int getMinCards() const;
+    int getMaxCards() const;
+    const std::vector<int>& getSelectedCards() const;
+    void restoreState(const std::vector<int>& cards);
 };
 /*-----------------------------------------------------------------*/
 class ShowCardAction : public PendingAction {
@@ -74,6 +71,7 @@ public:
     ShowCardAction(Player* player);
     std::vector<int> getOption(Game& game) override;
     void submit(Game& game, int choice) override;
+    Player* getSelectedPlayer() const;
 };
 /*-----------------------------------------------------------------*/
 class ChooseCharacterAction : public PendingAction {
@@ -85,6 +83,9 @@ public:
     ChooseCharacterAction(SelectionMode mode, Character* c);
     std::vector<int> getOption(Game& game) override;
     void submit(Game& game, int choice) override;
+    SelectionMode getMode() const;
+    Character* getCharacter() const;
+    void restoreState(Character* c, SelectionMode mod);
 };
 /*-----------------------------------------------------------------*/
 class DeleteCardAction : public PendingAction {
@@ -94,6 +95,8 @@ public:
     DeleteCardAction(Game& game, Player* player);
     std::vector<int> getOption(Game& game) override;
     void submit(Game& game, int choice) override;
+    Player* getSelectedPlayer() const;
+    void restoreState(Player* s);
 };
 /*-----------------------------------------------------------------*/
 class DraculaAction : public PendingAction {
