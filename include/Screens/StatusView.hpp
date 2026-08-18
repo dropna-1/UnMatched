@@ -24,7 +24,7 @@ class StatusView
             font = LoadFontEx("external/font/GermaniaOne-Regular.ttf" , 32 , nullptr , 0) ;
             draculaBackground = LoadTexture("external/images/dracula/draculatexture.png");
             sherlockBackground = LoadTexture("external/images/sherlock/sherlocktexture.png") ;
-            invisBackground = LoadTexture("external/images/invisbleMan/invisback.png"); 
+            invisBackground = LoadTexture("external/images/invisibleMan/invisback.png"); 
             invisMan = LoadTexture("external/images/invisibleMan/invArt.png") ;
         }
         void DrawPlayerPanel(Player& player,
