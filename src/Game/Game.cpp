@@ -10,7 +10,7 @@ using namespace std;
 
 
 Game::Game() : dracula(HeroFactory::createDracula())
-, sherlock(HeroFactory::createSherlock()){}
+, sherlock(HeroFactory::createSherlock()), invisible(HeroFactory::createInvisibleMan()){}
 
 
 shared_ptr<Hero>& Game::getDracula(){
@@ -80,7 +80,10 @@ Player* Game::getOtherPlayer(){
 
 
 void Game::choiceHero(Player& player, HeroType choice){
-    player.setHero((choice == dracula.get()->getHeroType() ? dracula : sherlock));
+    player.setHero(
+        (choice == dracula.get()->getHeroType() ? dracula : 
+        (choice == sherlock.get()->getHeroType() ? sherlock : invisible))
+    );
 }
 
 
@@ -843,6 +846,8 @@ std::shared_ptr<Deck> Game::restoreDeck(const DeckSave& save, HeroType heroType)
         source = CardFactory::createDraculaDeck();
     else if(heroType == HeroType::Sherlock)
         source = CardFactory::createSherlockDeck();
+    else if(heroType == HeroType::Invisibleman)
+        source = CardFactory::createInvisibleManDeck();
     else
         return nullptr;
 

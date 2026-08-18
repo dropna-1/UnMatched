@@ -63,6 +63,7 @@ class Game {
     Player player2;
     std::shared_ptr<Hero> dracula;
     std::shared_ptr<Hero> sherlock;
+    std::shared_ptr<Hero> invisible;
     Player* currentPlayer;
     Player* otherPlayer;
     int actionsRemaining = 2;

@@ -118,7 +118,7 @@ inline std::string heroTypeToString(HeroType type){
             return "Sherlock";
         case Dracula:
             return "Dracula";
-        case InvisibleMan:
+        case Invisibleman:
             return "InvisibleMan";
     }
     return "Unknown";
@@ -134,7 +134,7 @@ inline HeroType stringToHeroType(const std::string& type)
         return Dracula;
 
     if(type == "InvisibleMan")
-        return InvisibleMan;
+        return Invisibleman;
 
     return Sherlock;
 }
