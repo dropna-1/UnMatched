@@ -835,8 +835,8 @@ GameSave Game::createSaveData(const MatchScreenSave& screenSave) const
     return save;
 }
 // ---------------------------------------------------------------------------
-bool Game::SaveGame(const std::string& path, const MatchScreenSave& screenSave) const{
-    return SaveManager::saveGame(createSaveData(screenSave), path);
+bool Game::SaveGame(int slot, const MatchScreenSave& screenSave) const{
+    return SaveManager::saveGame(createSaveData(screenSave), slot);
 }
 // ---------------------------------------------------------------------------
 std::shared_ptr<Deck> Game::restoreDeck(const DeckSave& save, HeroType heroType)
@@ -1075,10 +1075,10 @@ std::unique_ptr<PendingCombat> Game::restorePendingCombat(const PendingCombatSav
     return combat;
 }
 // ---------------------------------------------------------------------------
-bool Game::LoadGame(const std::string& path)
+bool Game::LoadGame(int slot)
 {
     GameSave save;
-    if(!SaveManager::loadGame(save, path))
+    if(!SaveManager::loadGame(save, slot))
         return false;
 
     // ----------------------------------------------------------------
@@ -1101,8 +1101,10 @@ bool Game::LoadGame(const std::string& path)
             return sherlock;
         }
 
-        // if(heroSave.type == HeroType::InvisibleMan)
-        //     return HeroFactory::createInvisibleMan();
+        if(heroSave.type == HeroType::Invisibleman){
+            this->invisible = HeroFactory::createInvisibleMan();
+            return invisible;
+        }
 
         return nullptr;
     };

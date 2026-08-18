@@ -133,8 +133,8 @@ public:
     void continueCombat();
     /*------------------------------------------------------------------*/
     GameSave createSaveData(const MatchScreenSave& screenSave) const;
-    bool SaveGame(const std::string& path, const MatchScreenSave& screenSave) const;
-    bool LoadGame(const std::string& path);
+    bool SaveGame(int slot, const MatchScreenSave& screenSave) const;
+    bool LoadGame(int slot);
     static std::shared_ptr<Deck> restoreDeck(const DeckSave& save, HeroType heroType);
     std::unique_ptr<PendingAction> restorePendingAction(const PendingSave& save);
     const MatchScreenSave& getLoadedMatchScreen() const;

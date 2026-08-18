@@ -17,8 +17,8 @@ private:
     Game* game = nullptr;
     Texture2D background;
     Font font;
-    Rectangle btnSave;
-    Rectangle btnHome;
+    Rectangle btnQuit;
+    Rectangle btnMenu;
     Rectangle btnSkip;
     Rectangle btnBoost;
     BoardView board;
@@ -35,6 +35,9 @@ private:
 
     int Movement = -1;
     bool canBoost = false;
+
+    bool inMenu = false;
+    bool inSave = false;
 
     AttackOption option;
 
@@ -53,6 +56,8 @@ private:
     void HandlePendingChooseCard();
 
     void DrawSkip();
+    void HandleMenu();
+    void HandleSave();
 
     MatchScreenSave createSaveData() const;
 

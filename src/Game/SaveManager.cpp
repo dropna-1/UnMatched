@@ -1,26 +1,75 @@
 #include "Game/Common/SaveManager.hpp"
 #include <fstream>
+#include <filesystem>
 
-bool SaveManager::saveGame(const GameSave& save, const std::string& path)
-{
-    std::ofstream file(path, std::ios::out);
-    if(!file.is_open())
-        return false;
-
-    nlohmann::json j = save;
-    file << j.dump(4);
-
-    return true;
+bool SaveManager::isValidSlot(int slot){
+    return slot >= 1 && slot <= 5;
 }
 
-bool SaveManager::loadGame(GameSave& save, const std::string& path)
+std::string SaveManager::getPath(int slot){
+    return "saves/save" + std::to_string(slot) + ".json";
+}
+
+bool SaveManager::slotExists(int slot){
+    if(!isValidSlot(slot))
+        return false;
+    return std::filesystem::exists(getPath(slot));
+}
+
+bool SaveManager::deleteSlot(int slot)
 {
-    std::ifstream file(path);
-    if(!file.is_open())
+    if(!isValidSlot(slot))
+        return false;
+    try{
+        if(!std::filesystem::exists(getPath(slot)))
+            return true;
+        return std::filesystem::remove(getPath(slot));
+    }
+    catch(...){
+        return false;
+    }
+}
+
+bool SaveManager::saveGame(const GameSave& save, int slot)
+{
+    if(!isValidSlot(slot))
+        return false;
+    try{
+        const std::string path = getPath(slot);
+        const std::string tempPath = path + ".tmp";
+        json j = save;
+        {
+            std::ofstream file(tempPath);
+            if(!file.is_open())
+                return false;
+
+            file << j.dump(4);
+            if(!file.is_open()){
+                file.close();
+                std::filesystem::remove(tempPath);
+                return false;
+            }
+        }
+        std::filesystem::remove(path);
+        std::filesystem::rename(tempPath, path);
+        return true;
+    }
+    catch(...){
+        return false;
+    }
+}
+
+bool SaveManager::loadGame(GameSave& save, int slot)
+{
+    if(!isValidSlot(slot))
         return false;
 
     try{
-        nlohmann::json j;
+        std::ifstream file(getPath(slot));
+        if(!file.is_open())
+            return false;
+
+        json j;
         file >> j;
         save = j.get<GameSave>();
     }
