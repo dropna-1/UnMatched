@@ -25,6 +25,8 @@ VSScreen::VSScreen(ScreenManager* mgr) {
 
     btnStart = {890/2.0f - 160, 420, 320, 55};
     btnBack  = {80, 430, 140, 45};
+
+    GuiSetStyle(BUTTON, BORDER_WIDTH, 3);
 }
 
 VSScreen::~VSScreen() {
@@ -113,10 +115,7 @@ void VSScreen::Draw() {
         DrawTextEx(font2, h.name.c_str(), {rightX, cardY + imgSize + 10}, 26, 1, GOLD);
         DrawTextEx(font2, h.title.c_str(), {rightX, cardY + imgSize + 42}, 16, 1, LIGHTGRAY);
     }
-
-    GuiSetStyle(BUTTON, BORDER_WIDTH, 3);
-    GuiSetStyle(BUTTON, TEXT_SIZE, 24);
-
+    
     if (GuiButton(btnStart, "START BATTLE")) {
         manager->GetGame().setupGame();
         TraceLog(LOG_INFO, "Battle starting: %s vs %s",

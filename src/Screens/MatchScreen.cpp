@@ -37,13 +37,13 @@ MatchScreen::MatchScreen(ScreenManager* mgr) {
 
     float btnW = GetScreenWidth()/12;
     float btnH = 40;
-    btnHome = {
+    btnMenu = {
         2.0f,
         2.0f,
         btnW,
         btnH
     };
-    btnSave = {
+    btnQuit = {
         btnW*11-2,
         2.0f,
         btnW,
@@ -166,15 +166,6 @@ void MatchScreen::Draw() {
     if(game->checkWinner() != nullptr)
         stage = Stage::End;
 
-    if(game->hasPendingAction() && stage != Stage::End){
-        if(game->currentPendingAction()->getType() == RequestType::Dracula)
-            stage = Stage::Pending;
-        HandlePendingActionInput();
-    }
-    else{
-        HandleStageInput();
-    }
-
     GuiSetStyle(DEFAULT, TEXT_SIZE, 24);
     GuiSetFont(font);
 
@@ -184,14 +175,25 @@ void MatchScreen::Draw() {
     GuiSetStyle(BUTTON, TEXT_COLOR_FOCUSED, ColorToInt(BLACK));
     GuiSetStyle(BUTTON, BORDER_WIDTH, 1);
 
+    if(inMenu){
+        HandleMenu();
+    }
+    else if(game->hasPendingAction() && stage != Stage::End){
+        if(game->currentPendingAction()->getType() == RequestType::Dracula)
+            stage = Stage::Pending;
+        HandlePendingActionInput();
+    }
+    else{
+        HandleStageInput();
+    }
+
     DrawSkip();
 
-    if (GuiButton(btnHome, "HOME")) {
-        manager->BackToHome(890, 500);
-        manager->ChangeScreen(std::make_unique<MenuScreen>(manager));
+    if (stage != Stage::End && !inMenu && GuiButton(btnMenu, "Menu")) {
+        inMenu = true;
     }
-    if(stage != Stage::End && GuiButton(btnSave, "Save")){
-        game->SaveGame("saves/test.json", createSaveData());
+    if(GuiButton(btnQuit, "Quit")){
+        CloseWindow();
     }
     if(canBoost && stage == Stage::ChoiceNode && GuiButton(btnBoost, "Boost")){
         stage = Stage::Boost;
@@ -591,4 +593,63 @@ MatchScreenSave MatchScreen::createSaveData() const
     save.movement = Movement;
     save.canBoost = canBoost;
     return save;
+}
+
+void MatchScreen::HandleMenu(){
+    GuiSetStyle(DEFAULT, TEXT_SIZE, 40);
+    if(inSave){HandleSave(); return;}
+
+    float x = GetScreenWidth();
+    float y = GetScreenHeight();
+    Rectangle btnResume = {(x - x/3)/2, y/3, x/3, 70};
+    Rectangle btnSave = {(x - x/3)/2, y/3 + 80, x/3, 70};
+    Rectangle btnHome = {(x - x/3)/2, y/3 + 160, x/3, 70};
+
+    DrawRectangle(0, 0, x, y, {0, 0, 0, 170});
+
+    if(GuiButton(btnResume, "Resume")){
+        inMenu = false;
+    }
+    if(GuiButton(btnHome, "Home")){
+        manager->BackToHome(890, 500);
+        manager->ChangeScreen(std::make_unique<MenuScreen>(manager));
+    }
+    if(GuiButton(btnSave, "Save")){
+        inSave = true;
+    }
+    GuiSetStyle(DEFAULT, TEXT_SIZE, 24);
+}
+
+void MatchScreen::HandleSave(){
+    float x = GetScreenWidth();
+    float y = GetScreenHeight();
+    Rectangle Save1 = {(x - x/3)/2, y/2 - 160 - 35, x/3, 70};
+    Rectangle Save2 = {(x - x/3)/2, y/2 - 80 - 35, x/3, 70};
+    Rectangle Save3 = {(x - x/3)/2, y/2 - 35, x/3, 70};
+    Rectangle Save4 = {(x - x/3)/2, y/2 + 80 - 35, x/3, 70};
+    Rectangle Save5 = {(x - x/3)/2, y/2 + 160 - 35, x/3, 70};
+
+    DrawRectangle(0, 0, x, y, {0, 0, 0, 200});
+
+    if(GuiButton(Save1, "Save 1")){
+        game->SaveGame(1, createSaveData());
+        inSave = false;
+    }
+    if(GuiButton(Save2, "Save 2")){
+        game->SaveGame(2, createSaveData());
+        inSave = false;
+    }
+    if(GuiButton(Save3, "Save 3")){
+        game->SaveGame(3, createSaveData());
+        inSave = false;
+    }
+    if(GuiButton(Save4, "Save 4")){
+        game->SaveGame(4, createSaveData());
+        inSave = false;
+    }
+    if(GuiButton(Save5, "Save 5")){
+        game->SaveGame(5, createSaveData());
+        inSave = false;
+    }
+    GuiSetStyle(DEFAULT, TEXT_SIZE, 24);
 }
