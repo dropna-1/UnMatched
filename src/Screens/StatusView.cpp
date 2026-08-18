@@ -537,18 +537,10 @@ void StatusView::DrawPlayerPanel(Player& player,
 
     layout.s = std::min(layout.sx, layout.sy);
 
-    DrawRectangleRounded(
+    DrawRectangleRec(
         panel,
-        0.05f,
-        10,
-        PanelBackground(hero.get()));
-
-    DrawRectangleRoundedLinesEx(
-        panel,
-        0.05f,
-        10,
-        2,
-        AccentColor(hero.get()));
+        BLACK
+    );
 
     //--------------------------------- 
 
@@ -565,14 +557,22 @@ void StatusView::DrawPlayerPanel(Player& player,
         panel,
         {0,0},
         0,
-        Fade(WHITE,0.4f)
+        Fade(WHITE,1.0f)
     );
 
     DrawRectangleRounded(
         panel,
         0.05f,
         10,
-        Fade(BLACK,0.18f)
+        Fade(BLACK,0.50f)
+    );
+
+//--------------------------------- 
+
+    DrawRectangleLinesEx(
+        panel,
+        2,
+        AccentColor(hero.get())
     );
 
     DrawHeroSection(
@@ -602,10 +602,11 @@ const Texture2D& StatusView::GetPortrait(const Character* character) const
             return lucy ;
         if(character->getname()=="Sister 3")
             return mina ;
+        if(character->getname() == "Invisible Man")
+            return invisMan ;
         return dracula ;
 }
     
-
 StatusView::~StatusView()
 {
     UnloadTexture(dracula);

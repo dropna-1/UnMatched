@@ -37,6 +37,10 @@ Texture2D BoardView::getCharacterPic(const Character& character) const
     {
         return minatoken ;
     }
+    else if(character.getname() == "Invisible Man")
+    {
+        return InvToken ;
+    }
     return lucytoken ;
 
 }
@@ -79,6 +83,7 @@ BoardView::BoardView()
     agathatoken = LoadTexture("external/images/Board/agathao (1).png");
     lucytoken = LoadTexture("external/images/Board/lucyo (1).png") ;
     minatoken = LoadTexture("external/images/Board/minao (1).png") ;
+    InvToken = LoadTexture("external/images/Board/InvToken.png") ;
     SetTextureFilter(node , TEXTURE_FILTER_BILINEAR) ;
     secretIcon = LoadTexture("external/images/Board/secret1.png");
     SetTextureFilter( secretIcon, TEXTURE_FILTER_BILINEAR);
@@ -462,7 +467,7 @@ void BoardView::DrawFrame( const Layout& layout ) const
     DrawRectangleLinesEx(layout.panel, border, GRAY);
 
     // Inner Border
-    Rectangle inner =
+    /*Rectangle inner =
     {
         layout.panel.x + layout.S(6),
         layout.panel.y + layout.S(6),
@@ -470,7 +475,7 @@ void BoardView::DrawFrame( const Layout& layout ) const
         layout.panel.height - layout.S(6)
     };
 
-    DrawRectangleLinesEx(inner, 2, GRAY);
+    DrawRectangleLinesEx(inner, 2, GRAY);*/
 
     //-----------------------------
     // Title
@@ -721,6 +726,7 @@ BoardView::~BoardView()
     UnloadTexture(minatoken); 
     UnloadTexture(agathatoken) ;
     UnloadTexture(secretIcon) ;
+    UnloadTexture(InvToken) ;
 }
 
 

@@ -29,6 +29,22 @@ CardView::CardView()
     LoadCard("external/images/cards/dracula/look-into-my-eyes.png");
     LoadCard("external/images/cards/dracula/ravening-seduction.png");
     LoadCard("external/images/cards/dracula/beastform.png");
+
+    // Invisible Man
+    LoadCard("external/images/cards/InvisibleMan/coded-notes.png");
+    LoadCard("external/images/cards/InvisibleMan/confound.png");
+    LoadCard("external/images/cards/InvisibleMan/covert-preparation.png");
+    LoadCard("external/images/cards/InvisibleMan/dreaming-of-revenge.png");
+    LoadCard("external/images/cards/InvisibleMan/emerge-from-mist.png");
+    LoadCard("external/images/cards/InvisibleMan/impossible-to-see.png");
+    LoadCard("external/images/cards/InvisibleMan/into-thin-air.png");
+    LoadCard("external/images/cards/InvisibleMan/lurking.png");
+    LoadCard("external/images/cards/InvisibleMan/reign-of-terror.png");
+    LoadCard("external/images/cards/InvisibleMan/rolling-fog.png");
+    LoadCard("external/images/cards/InvisibleMan/slip-away.png");
+    LoadCard("external/images/cards/InvisibleMan/step-lightly.png");
+    LoadCard("external/images/cards/InvisibleMan/vanish.png");
+
 }
 
 void CardView::LoadCard(const std::string& path)

@@ -48,6 +48,7 @@ class BoardView
         Texture2D agathatoken ;
         Texture2D lucytoken ;
         Texture2D minatoken ;
+        Texture2D InvToken ;
         Texture2D secretIcon;
         void DrawBackground(const Layout& layout) const;
         void DrawConnections(const Board&, const Layout& layout) const;
