@@ -4,6 +4,8 @@
 #include "Game/Player/player.hpp"
 #include "Game/Characters/Character.hpp"
 #include "Game/Enums/TypeEnums.hpp"
+#include "Game/Characters/InvisibleMan.hpp"
+#include <memory>
 enum class ZoneColor
 {
     Red,
@@ -86,6 +88,8 @@ BoardView::BoardView()
     InvToken = LoadTexture("external/images/Board/InvToken.png") ;
     SetTextureFilter(node , TEXTURE_FILTER_BILINEAR) ;
     secretIcon = LoadTexture("external/images/Board/secret1.png");
+    fogToken = LoadTexture(
+    "external/images/Board/fogg.png");
     SetTextureFilter( secretIcon, TEXTURE_FILTER_BILINEAR);
 }
 
@@ -134,6 +138,7 @@ void BoardView::Draw(const Board& board,
     DrawConnections(board, layout);
     DrawSpaces(board,layout);
     DrawCharacters(first, second, layout);
+    DrawFogs(first, second, layout) ;
     DrawSecretPassages(board, layout);
     DrawFrame(layout);
     
@@ -715,6 +720,76 @@ void BoardView::DrawSecretPassages(
     }
 }
 
+void BoardView::DrawFogs(
+    Player& first,
+    Player& second,
+    const Layout& layout
+) const
+{
+    Player* players[] =
+    {
+        &first,
+        &second
+    };
+
+    for(Player* player : players)
+    {
+        if(player == nullptr)
+            continue;
+
+        auto hero = player->getHero();
+
+        if(!hero)
+            continue;
+
+        auto invisibleMan =
+            std::dynamic_pointer_cast<InvisibleMan>(hero);
+
+        if(!invisibleMan)
+            continue;
+
+        for(const Fog& fog : invisibleMan->getFogs())
+        {
+            if(!fog.isPlaced())
+                continue;
+
+            int position = fog.getPosition();
+
+            if(position < 0 || position >= 32)
+                continue;
+
+            Vector2 pos =
+                GetSpacePosition(position, layout);
+
+            const float size = layout.S(80);
+
+            Rectangle source =
+            {
+                0,
+                0,
+                (float)fogToken.width,
+                (float)fogToken.height
+            };
+
+            Rectangle dest =
+            {
+                pos.x - size / 2,
+                pos.y - size / 2,
+                size,
+                size
+            };
+
+            DrawTexturePro(
+                fogToken,
+                source,
+                dest,
+                {0, 0},
+                0,
+                Fade(WHITE , 0.5f) 
+            );
+        }
+    }
+}
 BoardView::~BoardView()
 {
     UnloadTexture(background);
@@ -727,6 +802,7 @@ BoardView::~BoardView()
     UnloadTexture(agathatoken) ;
     UnloadTexture(secretIcon) ;
     UnloadTexture(InvToken) ;
+    UnloadTexture(fogToken);
 }
 
 

@@ -50,6 +50,7 @@ class BoardView
         Texture2D minatoken ;
         Texture2D InvToken ;
         Texture2D secretIcon;
+        Texture2D fogToken;
         void DrawBackground(const Layout& layout) const;
         void DrawConnections(const Board&, const Layout& layout) const;
         void DrawSpace(Vector2 pos, int id , const std::vector<Color>& colors, Direction direct ,bool highlighted,
@@ -62,6 +63,7 @@ class BoardView
         void DrawCharacter(const Character&, const Layout& layout) const;
         Vector2 GetSpacePosition(int id, const Layout& layout) const;
         void DrawCharacters(Player&,Player&,const Layout& layout) const;
+        void DrawFogs(Player&, Player&, const Layout& layout) const;
         Texture2D getCharacterPic(const Character& character) const;
         std::unordered_map<int, HighlightType> highlightedSpaces;
         bool IsHighlighted(int id) const;
