@@ -96,6 +96,8 @@ enum class RequestType
     CardFromOther ,
     RaveningST1 , 
     RaveningST2 ,
+    FogST1 ,
+    FogST2 ,
     DeleteFromCurrent ,
     DeleteFromOther ,
     Dracula ,

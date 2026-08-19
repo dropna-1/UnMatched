@@ -8,7 +8,7 @@ class Game;
 class ScreenManager {
 private:
     std::unique_ptr<IScreen> current_screen;
-    Game game;
+    std::unique_ptr<Game> game;
 public:
     ScreenManager();
     ~ScreenManager();

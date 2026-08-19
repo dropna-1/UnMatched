@@ -5,6 +5,7 @@
 
 class Game;
 class Player;
+class Fog;
 
 class PendingAction {
 protected:
@@ -35,7 +36,6 @@ public:
 class RaveningAction : public PendingAction {
 private:
     std::vector<Character*> allCharacters;
-    std::vector<int> spaces;
     Character* selected = nullptr;
     int stage = 0;
 public:
@@ -105,4 +105,18 @@ public:
     DraculaAction();
     std::vector<int> getOption(Game& game) override;
     void submit(Game& game, int choice) override;
+};
+/*-----------------------------------------------------------------*/
+class FogMoveAction : public PendingAction {
+    Fog* selected = nullptr;
+    int range = -1;
+    int stage = 0;
+public:
+    FogMoveAction(const int& range);
+    std::vector<int> getOption(Game& game) override;
+    void submit(Game& game, int choice) override;
+    Fog* getSelected() const;
+    int getRange() const;
+    int getStage() const;
+    void restoreState(Fog& fog, const int& range, const int& stage);
 };

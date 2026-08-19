@@ -3,6 +3,7 @@
 #include <typeinfo>
 
 ScreenManager::ScreenManager() {
+    game = std::make_unique<Game>();
     SetConfigFlags(FLAG_MSAA_4X_HINT);
     InitWindow(890, 500, "Unmatched");
     SetTargetFPS(60);
@@ -29,6 +30,7 @@ void ScreenManager::Run() {
 }
 
 void ScreenManager::BackToHome(const int& width, const int& height){
+    game = std::make_unique<Game>();
     SetWindowSize(width, height);
 
     int monitor = GetCurrentMonitor();
@@ -39,5 +41,5 @@ void ScreenManager::BackToHome(const int& width, const int& height){
 }
 
 Game& ScreenManager::GetGame(){
-    return game;
+    return *game;
 }

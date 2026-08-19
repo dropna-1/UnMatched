@@ -1,9 +1,10 @@
 #include "Screens/MatchScreen.hpp"
 #include "Screens/ScreenManager.hpp"
-#include "screens/MainScreen.hpp"
+#include "Screens/MainScreen.hpp"
 #include "Game/Cards/Deck.hpp"
 #include "Game/Enums/TypeEnums.hpp"
 #include "Game/Pending/Pending.hpp"
+#include "Game/Characters/InvisibleMan.hpp"
 #include "raygui.h"
 
 MatchScreen::MatchScreen(ScreenManager* mgr) {
@@ -208,7 +209,7 @@ void MatchScreen::HandleStageInput(){
     case Stage::SideKickPlacementP2:
     {
         board.HighlightSpaces(
-            game->getSidekickPlacement(game->getCurrentPlayer()->getHero().get()), 
+            game->getPlacementSpaces(game->getCurrentPlayer()->getHero().get()), 
             HighlightType::Selected
         );
         HandleSidekickPlacement();
@@ -321,17 +322,28 @@ void MatchScreen::HandleStageInput(){
 void MatchScreen::HandleSidekickPlacement(){
     int space = board.GetClickedSpace(); 
     if(space != -1){
-        for(auto& side : game->getCurrentPlayer()->getHero()->getSidekicks())
-            if(side->getPosition() == -1){
-                side->setPosition(space); 
-                break;
-            }
-        board.ClearHighlightedSpaces();
-        bool canChange = true;
-        for(auto& side : game->getCurrentPlayer()->getHero()->getSidekicks())
-            if(side->getPosition() == -1){canChange = false; break;}
+        bool finished = true;
+        if(auto* inv = game->asInvisible(game->getCurrentPlayer()->getHero().get())){
+            for(auto& fog : inv->getFogs())
+                if(!fog.isPlaced()){
+                    fog.setPosition(space);
+                    break;
+                }
 
-        if(canChange == true){
+            for(const auto& fog : inv->getFogs())
+                if(!fog.isPlaced()){finished = false; break;}
+        }
+        else{
+            for(auto& side : game->getCurrentPlayer()->getHero()->getSidekicks())
+                if(side->getPosition() == -1){
+                    side->setPosition(space); 
+                    break;
+                }
+            for(auto& side : game->getCurrentPlayer()->getHero()->getSidekicks())
+                if(side->getPosition() == -1){finished = false; break;}
+        }
+        board.ClearHighlightedSpaces();
+        if(finished){
             if(stage == Stage::SideKickPlacementP1)
                 stage = Stage::SideKickPlacementP2;
             else {

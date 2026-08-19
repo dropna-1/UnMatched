@@ -6,6 +6,7 @@
 #include "Game/Pending/Pending.hpp"
 #include "Game/Factory/CardFactory.hpp"
 #include "Game/Common/SaveManager.hpp"
+#include "Game/Characters/InvisibleMan.hpp"
 using namespace std;
 
 
@@ -17,17 +18,16 @@ shared_ptr<Hero>& Game::getDracula(){
     return dracula;
 }
 
+InvisibleMan* Game::getInvisibleMan(){
+    return asInvisible(invisible.get());
+}
+
 unique_ptr<PendingCombat>& Game::getPendingCombat(){
     return pendingCombat;
 }
 
 void Game::clearPendingCombat(){
-    auto& s = pendingCombat->selection;
-    s.cards.clear();
-    s.character = nullptr;
-    s.destination = -1;
-    s.showHand = false;
-    s.canFinish = false;
+    if(!pendingCombat) return;
     pendingCombat.reset();
 }
 
@@ -78,6 +78,10 @@ Player* Game::getOtherPlayer(){
     return otherPlayer;
 }
 
+
+InvisibleMan* Game::asInvisible(Character* c){
+    return dynamic_cast<InvisibleMan*>(c);
+}
 
 void Game::choiceHero(Player& player, HeroType choice){
     player.setHero(
@@ -159,6 +163,11 @@ vector<int> Game::getAvailableMoves(Character* character,
             for(int secret : board.getSpace(place).secret)
                 neigh.push_back(secret);
 
+        if(auto* inv = asInvisible(character)){
+            for(const auto& fog : inv->getFogs())
+                neigh.push_back(fog.getPosition());
+        }
+
         for(int next : neigh){
             bool enemy = false;
             bool dom = false;
@@ -192,6 +201,43 @@ vector<int> Game::getAvailableMoves(Character* character,
     return reachable;
 }
 
+vector<int> Game::getFogMoves(Fog* fog, const int& spacing){
+    vector<int> reachable;
+    queue<pair<int, int>> q;
+    vector<bool> visited(board.size(), false);
+
+    int start = fog->getPosition();
+    q.push({start, 0});
+    visited[start] = true;
+
+    while(!q.empty()){
+        auto current = q.front();
+        q.pop();
+
+        int place = current.first;
+        int dist = current.second;
+
+        if(dist == spacing)
+            continue;
+
+        vector<int> neigh = board.getSpace(place).neighbors;
+        if(!board.getSpace(place).secret.empty())
+            for(int secret : board.getSpace(place).secret)
+                neigh.push_back(secret);
+
+        for(int next : neigh){
+
+            if(visited[next])
+                continue;
+
+            visited[next] = true;
+            q.push({next, dist+1});
+            reachable.push_back(next);
+        }
+    }
+    sort(reachable.begin(), reachable.end());
+    return reachable;
+}
 
 vector<int> Game::getAllSpaces(){
     vector<int> allSpaces;
@@ -360,11 +406,40 @@ vector<int> Game::getSidekickPlacement(Character* character)
     return reachable;
 }
 
+vector<int> Game::getFogPlacement(InvisibleMan* inv){
+    vector<int> reachable;
+    for(int zone : board.getSpace(inv->getPosition()).zone)
+        for(int i = 0; i < 32; i++)
+        {
+            bool cant = true;
+            for(const auto& fog : inv->getFogs())
+                if(fog.getPosition() == i){
+                    cant = false;
+                    break;
+                }
+            if(!cant) continue;
+
+            vector<int> zones = board.getSpace(i).zone;
+            if(find(zones.begin(), zones.end(), zone) != zones.end())
+                reachable.push_back(i);
+        }
+    return reachable;
+}
+
+vector<int> Game::getPlacementSpaces(Character* character){
+    if(auto* inv = asInvisible(character))
+        return getFogPlacement(inv);
+    return getSidekickPlacement(character);
+}
+
 
 void Game::changeTurn(){
     swap(currentPlayer, otherPlayer);
-    if(canUseAbility && currentPlayer->getHero().get()->getAbility().get()->HasAbilityOnStart())
-        currentPlayer->getHero().get()->getAbility().get()->SendRequest(this);
+    if(!canUseAbility)
+        return;
+    auto ability = currentPlayer->getHero()->getAbility();
+    if(ability != nullptr && ability->HasAbilityOnStart())
+        currentPlayer->getHero()->getAbility()->SendRequest(this);
 }
 
 
@@ -959,11 +1034,13 @@ std::unique_ptr<PendingAction> Game::restorePendingAction(const PendingSave& sav
         case RequestType::Character:
         {
             Character* character = resolveCharacterRef(save.selectedCharacter);
-
-            return std::make_unique<ChooseCharacterAction>(
+            auto action = std::make_unique<ChooseCharacterAction>(
                 static_cast<SelectionMode>(save.mode),
                 character
             );
+            Character* selected = resolveCharacterRef(save.selectedCharacter);
+            action->restoreState(selected, static_cast<SelectionMode>(save.mode));
+            return action;
         }
         case RequestType::DeleteFromCurrent:
         case RequestType::DeleteFromOther:
@@ -976,10 +1053,13 @@ std::unique_ptr<PendingAction> Game::restorePendingAction(const PendingSave& sav
             else
                 return nullptr;
 
-            return std::make_unique<DeleteCardAction>(
+            auto action = std::make_unique<DeleteCardAction>(
                 *this,
                 player
             );
+
+            action->restoreState(player);
+            return action;
         }
         case RequestType::Dracula:
         {

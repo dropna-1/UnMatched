@@ -14,7 +14,9 @@
 #include "Game/Common/SaveData.hpp"
 
 class Character;
+class InvisibleMan;
 class Card;
+class Fog;
 
 enum class CombatStage{
     DefenseImmediate,
@@ -34,6 +36,7 @@ enum class CombatStage{
 
 struct PendingSelection{
     Character* character = nullptr;
+    Fog* fog = nullptr;
     std::vector<int> cards;
     int destination = -1;
     bool showHand = false;
@@ -64,8 +67,8 @@ class Game {
     std::shared_ptr<Hero> dracula;
     std::shared_ptr<Hero> sherlock;
     std::shared_ptr<Hero> invisible;
-    Player* currentPlayer;
-    Player* otherPlayer;
+    Player* currentPlayer = nullptr;
+    Player* otherPlayer = nullptr;
     int actionsRemaining = 2;
     std::deque<unique_ptr<PendingAction>> pendingActions;
     std::unique_ptr<PendingCombat> pendingCombat;
@@ -83,9 +86,11 @@ public:
     Player* checkWinner();
     Board& getBoard();
     std::shared_ptr<Hero>& getDracula();
+    InvisibleMan* getInvisibleMan();
     std::unique_ptr<PendingCombat>& getPendingCombat();
     void clearPendingCombat();
     void setCanUseAbility(const bool& use);
+    InvisibleMan* asInvisible(Character* c);
     /*-----------------------------------------------------------------*/
     void setPlayer1(const string& name, const int& age);
     void setPlayer2(const string& name, const int& age);
@@ -94,9 +99,12 @@ public:
     void setupPlayers();
     void choiceHero(Player& player, HeroType choice);
     std::vector<int> getSidekickPlacement(Character* character);
+    std::vector<int> getPlacementSpaces(Character* character);
+    std::vector<int> getFogPlacement(InvisibleMan* inv);
     const std::vector<std::shared_ptr<Card>>& showOtherHand();
     /*-----------------------------------------------------------------*/
     std::vector<int> getAvailableMoves(Character* character, const int& spacing);
+    std::vector<int> getFogMoves(Fog* fog, const int& spacing);
     std::vector<int> getAllSpaces();
     bool canMove(int to) const;
     void move(Character* character, const int& pos);

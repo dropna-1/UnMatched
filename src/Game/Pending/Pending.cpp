@@ -2,6 +2,7 @@
 #include "Game/Cards/Deck.hpp"
 #include "Game/Game.hpp"
 #include "Game/Player/player.hpp"
+#include "Game/Characters/InvisibleMan.hpp"
 using namespace std;
 
 RequestType PendingAction::getType() const{
@@ -58,9 +59,8 @@ std::vector<int> RaveningAction::getOption(Game& game){
         for(Character* c : allCharacters)
             options.push_back(c->getPosition());
         return options;
-    }
-    spaces = game.getAvailableMoves(selected, 2);
-    return spaces;
+    } 
+    return game.getAvailableMoves(selected, 2);;
 }
 
 void RaveningAction::submit(Game& game, int choice){
@@ -194,6 +194,10 @@ void ChooseCharacterAction::submit(Game& game, int choice){
 
 SelectionMode ChooseCharacterAction::getMode() const{return mode;}
 Character* ChooseCharacterAction::getCharacter() const{return pc;}
+void ChooseCharacterAction::restoreState(Character* c, SelectionMode mode){
+    this->pc = c;
+    this->mode = mode;
+}
 /*-----------------------------------------------------------------*/
 DeleteCardAction::DeleteCardAction(Game& game, Player* player) : selected(player){
     if(player == game.getCurrentPlayer())
@@ -218,6 +222,7 @@ void DeleteCardAction::submit(Game& game, int choice){
 }
 
 Player* DeleteCardAction::getSelectedPlayer() const{return selected;}
+void DeleteCardAction::restoreState(Player* s){selected = s;}
 /*-----------------------------------------------------------------*/
 DraculaAction::DraculaAction(){type = RequestType::Dracula;}
 
@@ -238,4 +243,40 @@ void DraculaAction::submit(Game& game, int choice){
             break;
         }
     game.completePendingAction();
+}
+/*-----------------------------------------------------------------*/
+FogMoveAction::FogMoveAction(const int& range) : range(range){type = RequestType::FogST1;}
+
+std::vector<int> FogMoveAction::getOption(Game& game){
+    if(stage == 0){
+        std::vector<int> fogs;
+        for(auto& fog : game.getInvisibleMan()->getFogs())
+            fogs.push_back(fog.getPosition());
+        return fogs;
+    }
+    return game.getFogMoves(selected, range);
+}
+
+void FogMoveAction::submit(Game& game, int choice){
+    if(stage == 0){
+        for(auto& fog : game.getInvisibleMan()->getFogs())
+            if(choice == fog.getPosition())
+                selected = &fog;
+        stage = 1;
+        type = RequestType::FogST2;
+    }
+    else{
+        game.getPendingCombat().get()->selection.fog = selected;
+        game.getPendingCombat().get()->selection.destination = choice;
+        game.completePendingAction();
+    }
+}
+
+Fog* FogMoveAction::getSelected() const{return selected;}
+int FogMoveAction::getRange() const{return range;}
+int FogMoveAction::getStage() const{return stage;}
+void FogMoveAction::restoreState(Fog& fog, const int& range, const int& stage){
+    selected = &fog;
+    this->range = range;
+    this->stage = stage;
 }
