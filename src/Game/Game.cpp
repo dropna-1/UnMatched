@@ -165,7 +165,8 @@ vector<int> Game::getAvailableMoves(Character* character,
 
         if(auto* inv = asInvisible(character)){
             for(const auto& fog : inv->getFogs())
-                neigh.push_back(fog.getPosition());
+                if(fog.isPlaced())
+                    neigh.push_back(fog.getPosition());
         }
 
         for(int next : neigh){
@@ -411,6 +412,9 @@ vector<int> Game::getFogPlacement(InvisibleMan* inv){
     for(int zone : board.getSpace(inv->getPosition()).zone)
         for(int i = 0; i < 32; i++)
         {
+            if(i == invisible->getPosition())
+                continue;
+                
             bool cant = true;
             for(const auto& fog : inv->getFogs())
                 if(fog.getPosition() == i){

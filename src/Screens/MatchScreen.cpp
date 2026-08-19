@@ -501,12 +501,14 @@ void MatchScreen::HandlePendingActionInput(){
     }
     case RequestType::RaveningST1:
     case RequestType::Character:
+    case RequestType::FogST1:
     {
         board.HighlightSpaces(action->getOption(*game), HighlightType::Selected);
         HandlePendingChooseCharacter();
         break;
     }
     case RequestType::RaveningST2:
+    case RequestType::FogST2:
     {
         board.HighlightSpaces(action->getOption(*game), HighlightType::Selected);
         HandlePendingMove();
