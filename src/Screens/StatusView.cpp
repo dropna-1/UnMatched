@@ -104,7 +104,7 @@ static Color CharacterColor(const std::string& name)
         return BEIGE;
 
     if(name.find("Sister")!=std::string::npos)
-        return PINK;
+        return {120, 0, 0, 255};
     if(name == "Invisible Man")
     {
         return Color{0, 255 , 255, 255} ;
@@ -220,7 +220,7 @@ void StatusView::DrawHeroSection(Player& player,
     float portraitSize = layout.S(250) ;
     Rectangle portrait =
     {
-        layout.X(16) ,
+        layout.X((layout.panel.width - portraitSize)/2) ,
         layout.Y(40) ,
         portraitSize , 
         portraitSize 
@@ -375,9 +375,9 @@ void StatusView::DrawCharacterCard(const Character* character,
 
     Rectangle portrait
     {
-        card.x + layout.W(6),
-        card.y + padding,
-        card.width - layout.W(12),
+        card.x,
+        card.y,
+        card.width,
         portraitHeight
     };
 
@@ -438,7 +438,7 @@ void StatusView::DrawCharacterCard(const Character* character,
     Rectangle hpBar
     {
         card.x + layout.W(8),
-        card.y + card.height - bottomPadding - hpHeight,
+        card.y + card.height - 2 * bottomPadding - hpHeight,
         card.width - layout.W(16),
         hpHeight
     };
@@ -479,7 +479,7 @@ void StatusView::DrawSidekickSection(Player& player,
     float cardWidth  = layout.W(68);
     float cardHeight = layout.H(120) ;
 
-    float gap = layout.W(8);
+    float gap = layout.W(12);
 
     float totalWidth =
         sidekicks.size() * cardWidth +

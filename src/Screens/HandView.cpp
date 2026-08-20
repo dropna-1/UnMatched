@@ -22,11 +22,7 @@ void HandView::Draw(
 
     currentLayout = layout ;
 
-    DrawRectangleLinesEx(
-        layout.panel,
-        layout.S(3),
-        RED
-    );
+    DrawRectangleRoundedLines(layout.panel, 0.1f, 1, GOLD);
 
     const auto& hand = deck.getHand();
 

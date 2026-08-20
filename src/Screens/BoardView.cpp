@@ -79,14 +79,17 @@ BoardView::BoardView()
         "external/images/Board/node6.png") ;
     font = LoadFontEx(
         "external/font/GermaniaOne-Regular.ttf" , 40 , nullptr, 0 ) ;
-    dractoken = LoadTexture("external/images/Board/draculao.png") ;
-    watsontoken = LoadTexture("external/images/Board/watsono (1).png");
-    shertoken = LoadTexture("external/images/Board/sherlocko (1).png") ;
-    agathatoken = LoadTexture("external/images/Board/agathao (1).png");
-    lucytoken = LoadTexture("external/images/Board/lucyo (1).png") ;
-    minatoken = LoadTexture("external/images/Board/minao (1).png") ;
-    InvToken = LoadTexture("external/images/Board/InvToken.png") ;
+    dractoken = LoadTexture("external/images/Board/draco.png") ;
+    watsontoken = LoadTexture("external/images/Board/watsono.png");
+    shertoken = LoadTexture("external/images/Board/shero.png") ;
+    agathatoken = LoadTexture("external/images/Board/agho3.png");
+    lucytoken = LoadTexture("external/images/Board/l2.png") ;
+    minatoken = LoadTexture("external/images/Board/mina4.png") ;
+    InvToken = LoadTexture("external/images/Board/invo1.png") ;
     SetTextureFilter(node , TEXTURE_FILTER_BILINEAR) ;
+    SetTextureFilter(minatoken , TEXTURE_FILTER_BILINEAR) ;
+    SetTextureFilter(lucytoken , TEXTURE_FILTER_BILINEAR) ;
+    SetTextureFilter(agathatoken , TEXTURE_FILTER_BILINEAR) ;
     secretIcon = LoadTexture("external/images/Board/secret1.png");
     fogToken = LoadTexture(
     "external/images/Board/fogg.png");
@@ -360,7 +363,7 @@ static const spacePosition spaces[] =
 
     {{180,210},3},
 
-    {{270,240},4},
+    {{270,200},4},
 
     {{350,90},5},
 
@@ -604,6 +607,9 @@ void BoardView::DrawCharacter(const Character& character,
         0,
         WHITE
     );
+
+    DrawCircleLinesV(pos, size/2, Fade(BLACK, 0.55f));
+    DrawCircleLinesV(pos, size/2 - 1.0f, Fade(GOLD, 0.8f));
 }
 
 void BoardView::DrawCharacters(

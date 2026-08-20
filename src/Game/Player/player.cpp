@@ -2,6 +2,7 @@
 #include "Game/Characters/SideKick.hpp"
 #include "Game/Characters/Hero.hpp"
 #include "Game/Cards/Deck.hpp"
+#include "Game/Characters/InvisibleMan.hpp"
 
 
 void Player::setHero(shared_ptr<Hero> hero){
@@ -59,16 +60,26 @@ PlayerSave Player::createSaveData() const
 
     int index = 0;
 
-    for(const auto& sidekick : hero->getSidekicks())
-    {
-        SidekickSave sidekickSave;
+    if(hero->getHeroType() == HeroType::Invisibleman){
+        InvisibleMan* h = dynamic_cast<InvisibleMan*>(hero.get());
+        for(const auto& fog : h->getFogs()){
+            FogSave fogSave;
+            fogSave.position = fog.getPosition();
+            save.hero.fogs.push_back(fogSave);
+        }
+    }
+    else{
+        for(const auto& sidekick : hero->getSidekicks())
+        {
+            SidekickSave sidekickSave;
 
-        sidekickSave.name = sidekick->getname();
-        sidekickSave.index = index++;
-        sidekickSave.HP = sidekick->getHp();
-        sidekickSave.position = sidekick->getPosition();
+            sidekickSave.name = sidekick->getname();
+            sidekickSave.index = index++;
+            sidekickSave.HP = sidekick->getHp();
+            sidekickSave.position = sidekick->getPosition();
 
-        save.hero.sidekicks.push_back(sidekickSave);
+            save.hero.sidekicks.push_back(sidekickSave);
+        }
     }
 
     auto deck = hero->getDeck();

@@ -17,15 +17,19 @@ class StatusView
         {
             dracula  = LoadTexture("external/images/dracula/DracArt.png");
             sherlock = LoadTexture("external/images/sherlock/holmsArt.png");
-            watson   = LoadTexture("external/images/sherlock/drwatson.png");
-            agatha  = LoadTexture("external/images/dracula/sis1.png");
-            lucy  = LoadTexture("external/images/dracula/sis2.png");
-            mina = LoadTexture("external/images/dracula/sis3.png");
+            watson   = LoadTexture("external/images/Board/watsono.png");
+            agatha  = LoadTexture("external/images/Board/agho3.png");
+            lucy  = LoadTexture("external/images/Board/l2.png");
+            mina = LoadTexture("external/images/Board/mina4.png");
             font = LoadFontEx("external/font/GermaniaOne-Regular.ttf" , 32 , nullptr , 0) ;
             draculaBackground = LoadTexture("external/images/dracula/draculatexture.png");
             sherlockBackground = LoadTexture("external/images/sherlock/sherlocktexture.png") ;
             invisBackground = LoadTexture("external/images/invisibleMan/invisback.png"); 
             invisMan = LoadTexture("external/images/invisibleMan/invArt.png") ;
+            SetTextureFilter(mina , TEXTURE_FILTER_BILINEAR) ;
+            SetTextureFilter(lucy , TEXTURE_FILTER_BILINEAR) ;
+            SetTextureFilter(agatha , TEXTURE_FILTER_BILINEAR) ;
+            SetTextureFilter(watson , TEXTURE_FILTER_BILINEAR) ;
         }
         void DrawPlayerPanel(Player& player,
                             int x,

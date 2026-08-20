@@ -118,8 +118,6 @@ void VSScreen::Draw() {
     
     if (GuiButton(btnStart, "START BATTLE")) {
         manager->GetGame().setupGame();
-        TraceLog(LOG_INFO, "Battle starting: %s vs %s",
-                 heroes[id1].name.c_str(), heroes[id2].name.c_str());
         manager->ChangeScreen(std::make_unique<MatchScreen>(manager));
         return;
     }

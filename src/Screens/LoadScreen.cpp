@@ -12,9 +12,9 @@ LoadScreen::LoadScreen(ScreenManager* man){
     font = LoadFontEx("external/font/Griffy-Regular.ttf", 64, 0, 0);
 
     btnBack = {
-        float(GetScreenWidth() - 118)/2,
+        float(GetScreenWidth() - 200)/2,
         float(GetScreenHeight() - 70),
-        118,
+        200,
         50
     };
 

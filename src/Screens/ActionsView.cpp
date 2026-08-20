@@ -32,7 +32,10 @@ void ActionsView::Draw(Rectangle m, Stage* stage) {
     };
 
     DrawRectangleRoundedLines(m, 0.1f, 1, WHITE);
+    GuiSetStyle(DEFAULT, TEXT_SIZE, 40);
     GuiSetStyle(BUTTON, BASE_COLOR_DISABLED, ColorToInt({25, 25, 25, 180}));
+    GuiSetStyle(BUTTON, TEXT_COLOR_DISABLED, ColorToInt({80, 80, 80, 180}));
+    GuiSetStyle(BUTTON, BORDER_COLOR_DISABLED, ColorToInt(BLACK));
     GuiSetStyle(BUTTON, TEXT_COLOR_NORMAL, ColorToInt(WHITE));
     GuiSetStyle(BUTTON, BASE_COLOR_FOCUSED, ColorToInt(BLACK));
     GuiSetStyle(BUTTON, TEXT_COLOR_FOCUSED, ColorToInt(GOLD));
@@ -41,7 +44,6 @@ void ActionsView::Draw(Rectangle m, Stage* stage) {
     if(*stage != Stage::None || !game->canManever() || game->hasPendingAction())
         GuiSetState(STATE_DISABLED);
     else{
-        GuiSetStyle(DEFAULT, TEXT_SIZE, 40);
         GuiSetStyle(BUTTON, BASE_COLOR_NORMAL, ColorToInt({0, 0, 125, 255}));
     }
 

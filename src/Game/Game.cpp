@@ -1194,7 +1194,7 @@ bool Game::LoadGame(int slot)
     };
     // ----------------------------------------------------------------
     auto restoreHero =
-        [](std::shared_ptr<Hero> hero,
+        [&](std::shared_ptr<Hero> hero,
            const HeroSave& saveData)
     {
         if(hero == nullptr)
@@ -1204,14 +1204,20 @@ bool Game::LoadGame(int slot)
         hero->setPosition(saveData.position);
 
         auto& sidekicks = hero->getSidekicks();
-        for(const auto& savedSidekick : saveData.sidekicks)
-        {
-            if(savedSidekick.index < 0 || savedSidekick.index >= sidekicks.size())
-                continue;
+        if(!sidekicks.empty())
+            for(const auto& savedSidekick : saveData.sidekicks)
+            {
+                if(savedSidekick.index < 0 || savedSidekick.index >= sidekicks.size())
+                    continue;
 
-            auto& sidekick = sidekicks[savedSidekick.index];
-            sidekick->setHP(savedSidekick.HP);
-            sidekick->setPosition(savedSidekick.position);
+                auto& sidekick = sidekicks[savedSidekick.index];
+                sidekick->setHP(savedSidekick.HP);
+                sidekick->setPosition(savedSidekick.position);
+            }
+        else if(auto inv = asInvisible(hero.get())){
+            for(int i = 0; i < saveData.fogs.size(); i++){
+                inv->getFogs()[i].setPosition(saveData.fogs[i].position);
+            }
         }
     };
     // ----------------------------------------------------------------

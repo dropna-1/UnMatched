@@ -20,11 +20,16 @@ struct DeckSave {
     std::vector<std::string> discardPile;
 };
 
+struct FogSave {
+    int position = -1;
+};
+
 struct HeroSave {
     HeroType type = HeroType::Sherlock;
     int HP = -1;
     int position = -1;
     std::vector<SidekickSave> sidekicks;
+    std::vector<FogSave> fogs;
 };
 
 struct PlayerSave {
@@ -158,6 +163,18 @@ inline void from_json(const json& j, SidekickSave& s)
     j.at("index").get_to(s.index);
 }
 // ------------------------------------------------------------------------------------------
+inline void to_json(json& j, const FogSave& s)
+{
+    j = json{
+        {"position", s.position}
+    };
+}
+
+inline void from_json(const json& j, FogSave& s)
+{
+    j.at("position").get_to(s.position);
+}
+// ------------------------------------------------------------------------------------------
 inline void to_json(json& j, const DeckSave& d)
 {
     j = json{
@@ -181,7 +198,8 @@ inline void to_json(json& j, const HeroSave& h)
         {"type", heroTypeToString(h.type)},
         {"HP", h.HP},
         {"position", h.position},
-        {"sidekicks", h.sidekicks}
+        {"sidekicks", h.sidekicks},
+        {"fogs", h.fogs}
     };
 }
 
@@ -194,6 +212,7 @@ inline void from_json(const json& j, HeroSave& h)
     j.at("HP").get_to(h.HP);
     j.at("position").get_to(h.position);
     j.at("sidekicks").get_to(h.sidekicks);
+    j.at("fogs").get_to(h.fogs);
 }
 // ------------------------------------------------------------------------------------------
 inline void to_json(json& j, const PlayerSave& p)

@@ -73,7 +73,7 @@ void MatchScreen::DrawSkip(){
             (float)GetScreenWidth()/6+14,
             (float)GetScreenHeight()*2/3-24,
             (float)GetScreenWidth()/12,
-            40,
+            40
         };
         if (GuiButton(btnSkip, "SKIP")){
             game->completePendingAction();
@@ -86,7 +86,7 @@ void MatchScreen::DrawSkip(){
             (float)GetScreenWidth()*2/3,
             (float)GetScreenHeight()*2/3+20,
             (float)GetScreenWidth()/3,
-            40,
+            40
         };
         if (GuiButton(btnSkip, "SKIP")){
             hand.ClearHighlightedCards();
@@ -100,9 +100,9 @@ void MatchScreen::DrawSkip(){
     game->getPendingCombat()->selection.canFinish){
         btnSkip = {
             (float)GetScreenWidth()/2-356,
-            (float)GetScreenHeight()/2+200,
+            (float)GetScreenHeight()/2+200+10,
             712,
-            40,
+            40
         };
         if (GuiButton(btnSkip, "SKIP")){
             game->currentPendingAction()->submit(*game, -1);
@@ -119,7 +119,7 @@ void MatchScreen::DrawSkip(){
             ((float)GetScreenWidth()-(float)GetScreenWidth()/3)/2,
             (float)GetScreenHeight()/3 + 70,
             (float)GetScreenWidth()/3,
-            70,
+            70
         };
         GuiSetStyle(DEFAULT, TEXT_SIZE, 60);
         if (GuiButton(btnSkip, "OK")){
@@ -147,7 +147,7 @@ void MatchScreen::Draw() {
     status.DrawPlayerPanel(*game->getCurrentPlayer(), 2, 46, x/6, boardH-26);
     status.DrawPlayerPanel(*game->getOtherPlayer(), (x*5)/6-2, 46, x/6, boardH-26);
 
-    Rectangle h = {(x*2)/3, boardH+20, x/3, y/3-30-20};
+    Rectangle h = {(x - (x*2/5))/2, boardH+30, (x*2/5), y/3-30-40};
     if(stage == Stage::SelectDefenseCard || 
     (game->hasPendingAction() && 
     game->currentPendingAction()->getType() == RequestType::DeleteFromOther))
