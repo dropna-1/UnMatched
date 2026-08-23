@@ -319,9 +319,9 @@ int Game::calculateDamage(Card* attack, Card* defense){
 }
 
 
-vector<Character*> Game::getEnemiesNearby(){
+vector<Character*> Game::getEnemiesNearby(Character* own){
     vector<Character*> enemies;
-    auto neighboors = board.getSpace(dracula.get()->getPosition()).neighbors;
+    auto neighboors = board.getSpace(own->getPosition()).neighbors;
     for(int target : neighboors){
         for(auto character : player1.getAllCharacters())
             if(character->getPosition() == target)

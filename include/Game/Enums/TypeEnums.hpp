@@ -128,7 +128,8 @@ enum class SelectionMode
 {
     Current,
     Other,
-    All
+    All,
+    Neighboors
 };
 
 enum class Stage {
