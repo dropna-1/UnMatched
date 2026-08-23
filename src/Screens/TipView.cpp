@@ -26,6 +26,8 @@ void TipView::FillMessage(Player& pc, Player& po){
         pc.getName() + ", Choose the place you want to go"});
     message.insert({Stage::SelectSchemeCharacter,
         pc.getName() + ", Choose the character you want to play as"});
+    message.insert({Stage::SelectSchemeCard,
+        pc.getName() + ", Choose the card you want to play"});
     message.insert({Stage::Combat, 
         pc.getName() + " VS " + po.getName()});
     message.insert({Stage::SelectAttackCharacter,

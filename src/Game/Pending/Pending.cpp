@@ -275,8 +275,67 @@ void FogMoveAction::submit(Game& game, int choice){
 Fog* FogMoveAction::getSelected() const{return selected;}
 int FogMoveAction::getRange() const{return range;}
 int FogMoveAction::getStage() const{return stage;}
-void FogMoveAction::restoreState(Fog& fog, const int& range, const int& stage){
+void FogMoveAction::restoreState(Fog& fog, const int& stage){
     selected = &fog;
-    this->range = range;
     this->stage = stage;
+}
+/*-----------------------------------------------------------------*/
+LurkingAction::LurkingAction(){type = RequestType::LurST1;}
+
+vector<int> LurkingAction::getOption(Game& game){
+    InvisibleMan* inv = game.getInvisibleMan();
+    std::vector<int> fogs;
+    for(auto& fog : inv->getFogs()){
+        bool canPlace = true;
+        for(auto c : game.getOtherPlayer()->getAllCharacters())
+            if(c->getPosition() == fog.getPosition())
+                canPlace = false;
+        if(canPlace)
+            fogs.push_back(fog.getPosition());
+    }
+    if(stage == 0){
+        std::vector<int> all;
+        if(!fogs.empty())
+            all.push_back(inv->getPosition());
+        for(auto& fog : inv->getFogs())
+            all.push_back(fog.getPosition());
+        return all;
+    }
+    if(selectedInv != nullptr)
+        return fogs;
+    return game.getFogMoves(selectedFog, 3);
+}
+
+void LurkingAction::submit(Game& game, int choice){
+    if(stage == 0){
+        InvisibleMan* inv = game.getInvisibleMan();
+        if(choice == inv->getPosition())
+            selectedInv = inv;
+        else{
+            for(auto& fog : inv->getFogs())
+                if(choice == fog.getPosition()){
+                    selectedFog = &fog;
+                    break;
+                }
+        }
+        stage = 1;
+        type = RequestType::LurST2;
+    }
+    else{
+        if(selectedFog != nullptr)
+            game.getPendingCombat()->selection.fog = selectedFog;
+        else if(selectedInv != nullptr)
+            game.getPendingCombat()->selection.character = selectedInv;
+        game.getPendingCombat()->selection.destination = choice;
+        game.completePendingAction();
+    }
+}
+
+Fog* LurkingAction::getSelectedFog() const{return selectedFog;}
+Character* LurkingAction::getSelectedInv() const{return selectedInv;}
+int LurkingAction::getStage() const{return stage;}
+void LurkingAction::restoreState(Fog* fog, Character* inv , const int& stage){
+    this->stage = stage;
+    selectedFog = fog;
+    selectedInv = inv;
 }

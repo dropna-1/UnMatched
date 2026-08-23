@@ -118,5 +118,19 @@ public:
     Fog* getSelected() const;
     int getRange() const;
     int getStage() const;
-    void restoreState(Fog& fog, const int& range, const int& stage);
+    void restoreState(Fog& fog, const int& stage);
+};
+/*-----------------------------------------------------------------*/
+class LurkingAction : public PendingAction {
+    Fog* selectedFog = nullptr;
+    Character* selectedInv = nullptr;
+    int stage = 0;
+public:
+    LurkingAction();
+    std::vector<int> getOption(Game& game) override;
+    void submit(Game& game, int choice) override;
+    Fog* getSelectedFog() const;
+    Character* getSelectedInv() const;
+    int getStage() const;
+    void restoreState(Fog* fog, Character* inv , const int& stage);
 };

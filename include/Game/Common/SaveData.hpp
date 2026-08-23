@@ -70,6 +70,7 @@ struct PendingSelectionSave
     CharacterRef character;
     std::vector<int> cards;
     int destination = -1;
+    int fog = -1;
     bool showHand = false;
     bool canFinish = false;
 };

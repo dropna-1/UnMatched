@@ -9,6 +9,7 @@
 #include "TipView.hpp"
 #include "ActionsView.hpp"
 #include "Game/Game.hpp"
+#include "Screens/HelpView.hpp"
 
 class ScreenManager;
 
@@ -21,11 +22,14 @@ private:
     Rectangle btnMenu;
     Rectangle btnSkip;
     Rectangle btnBoost;
+    Rectangle btnHelp;
+    Rectangle helpBox;
     BoardView board;
     StatusView status;
     HandView hand;
     ActionsView actions;
     TipView tip;
+    HelpView help;
 
     Stage stage = Stage::SideKickPlacementP1;
     Character* selected = nullptr;
@@ -55,7 +59,7 @@ private:
     void HandlePendingChooseCharacter();
     void HandlePendingChooseCard();
 
-    void DrawSkip();
+    void DrawSkip(Rectangle sk);
     void HandleMenu();
     void HandleSave();
 

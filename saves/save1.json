@@ -14,37 +14,13 @@
             "index": -1,
             "player": -1
         },
-        "stage": 10,
+        "stage": 13,
         "target": {
             "index": -1,
             "player": -1
         }
     },
-    "pendingActions": [
-        {
-            "currentCharacter": {
-                "index": -1,
-                "player": -1
-            },
-            "destination": -1,
-            "maxCards": 0,
-            "minCards": 0,
-            "mode": 0,
-            "otherCharacter": {
-                "index": -1,
-                "player": -1
-            },
-            "player": -1,
-            "range": 0,
-            "selectedCards": [],
-            "selectedCharacter": {
-                "index": -1,
-                "player": -1
-            },
-            "stage": 0,
-            "type": 10
-        }
-    ],
+    "pendingActions": [],
     "pendingCombat": null,
     "players": [
         {

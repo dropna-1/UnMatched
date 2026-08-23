@@ -15,8 +15,8 @@ class StatusView
     public:
         StatusView()
         {
-            dracula  = LoadTexture("external/images/dracula/DracArt.png");
-            sherlock = LoadTexture("external/images/sherlock/holmsArt.png");
+            dracula  = LoadTexture("external/images/dracula/dracport.jpg");
+            sherlock = LoadTexture("external/images/sherlock/sherlockb.jpg");
             watson   = LoadTexture("external/images/Board/watsono.png");
             agatha  = LoadTexture("external/images/Board/agho3.png");
             lucy  = LoadTexture("external/images/Board/l2.png");
@@ -25,7 +25,7 @@ class StatusView
             draculaBackground = LoadTexture("external/images/dracula/draculatexture.png");
             sherlockBackground = LoadTexture("external/images/sherlock/sherlocktexture.png") ;
             invisBackground = LoadTexture("external/images/invisibleMan/invisback.png"); 
-            invisMan = LoadTexture("external/images/invisibleMan/invArt.png") ;
+            invisMan = LoadTexture("external/images/invisibleMan/inv.jpg") ;
             SetTextureFilter(mina , TEXTURE_FILTER_BILINEAR) ;
             SetTextureFilter(lucy , TEXTURE_FILTER_BILINEAR) ;
             SetTextureFilter(agatha , TEXTURE_FILTER_BILINEAR) ;

@@ -14,6 +14,8 @@ MatchScreen::MatchScreen(ScreenManager* mgr) {
     actions.setGame(&mgr->GetGame());
     tip.FillMessage(*game->getCurrentPlayer(), *game->getOtherPlayer());
 
+    background = LoadTexture("external/images/m.jpg");
+
     const MatchScreenSave& save = game->getLoadedMatchScreen();
     if(save.stage != -1)
     {
@@ -36,6 +38,8 @@ MatchScreen::MatchScreen(ScreenManager* mgr) {
 
     font = LoadFontEx("external/font/GermaniaOne-Regular.ttf", 64, 0, 0);
 
+    float x = GetScreenWidth();
+    float y = GetScreenHeight();
     float btnW = GetScreenWidth()/12;
     float btnH = 40;
     btnMenu = {
@@ -51,10 +55,19 @@ MatchScreen::MatchScreen(ScreenManager* mgr) {
         btnH
     };
     btnBoost = {
-        (float)GetScreenWidth()/6+14,
-        (float)GetScreenHeight()*2/3-24,
-        (float)GetScreenWidth()/12,
+        x/6+14,
+        y*2/3-24,
+        x/12,
         40,
+    };
+    helpBox = {(x*3/4)-20, y*7/9-10, x/4, y/4-70};
+    btnW = helpBox.width*7/8;
+    btnH = helpBox.height*3/8;
+    btnHelp = {
+        helpBox.x + btnW/14,
+        helpBox.y + helpBox.height/2,
+        btnW,
+        btnH
     };
 }
 
@@ -65,9 +78,11 @@ MatchScreen::~MatchScreen() {
 }
 
 void MatchScreen::HandleInput() {}
-void MatchScreen::Update() {}
+void MatchScreen::Update() {
+    help.Update();
+}
 
-void MatchScreen::DrawSkip(){
+void MatchScreen::DrawSkip(Rectangle sk){
     if(stage == Stage::Pending){
         btnSkip = {
             (float)GetScreenWidth()/6+14,
@@ -82,11 +97,13 @@ void MatchScreen::DrawSkip(){
         }
     }
     else if(stage == Stage::SelectDefenseCard){
+        float btnW = sk.width*7/8;
+        float btnH = sk.height*3/8;
         btnSkip = {
-            (float)GetScreenWidth()*2/3,
-            (float)GetScreenHeight()*2/3+20,
-            (float)GetScreenWidth()/3,
-            40
+            sk.x + btnW/14,
+            sk.y + btnH/3 - 5,
+            btnW,
+            btnH
         };
         if (GuiButton(btnSkip, "SKIP")){
             hand.ClearHighlightedCards();
@@ -135,7 +152,9 @@ void MatchScreen::Draw() {
             {0, 0, (float)background.width, (float)background.height},
             {0, 0, (float)GetScreenWidth(), (float)GetScreenHeight()}, {0, 0}, 0, WHITE);
     }
-    DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), {0, 0, 0, 255});
+    DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), {0, 0, 0, 140});
+
+    DrawRectangleRoundedLines(helpBox, 0.1f, 1, WHITE);
 
     float x = GetScreenWidth();
     float y = GetScreenHeight();
@@ -157,17 +176,16 @@ void MatchScreen::Draw() {
     else{
         hand.Draw(*game->getCurrentPlayer()->getHero()->getDeck(), h);
     }
-
-    Rectangle b = {2, y*7/9, x/4-2, y/4-30-30-10};
+    Rectangle b = {20, y*7/9-10, x/4, y/4-30-30-10};
     actions.Draw(b, &stage);
 
-    Rectangle t = {x/4+4, y*7/9-30, x/4-2, y/8};
+    Rectangle t = {0, y*7/9-40, x/4+20, 0};
     tip.Draw(t, &stage, *game, font);
 
     if(game->checkWinner() != nullptr)
         stage = Stage::End;
 
-    GuiSetStyle(DEFAULT, TEXT_SIZE, 24);
+    GuiSetStyle(DEFAULT, TEXT_SIZE, 40);
     GuiSetFont(font);
 
     GuiSetStyle(BUTTON, BASE_COLOR_NORMAL, ColorToInt(BLACK));
@@ -187,8 +205,7 @@ void MatchScreen::Draw() {
     else{
         HandleStageInput();
     }
-
-    DrawSkip();
+    DrawSkip(helpBox);
 
     if (stage != Stage::End && !inMenu && GuiButton(btnMenu, "Menu")) {
         inMenu = true;
@@ -200,6 +217,12 @@ void MatchScreen::Draw() {
         stage = Stage::Boost;
         board.ClearHighlightedSpaces();
     }
+    GuiSetStyle(BUTTON, BASE_COLOR_NORMAL, ColorToInt(BLUE));
+    GuiSetStyle(BUTTON, TEXT_COLOR_NORMAL, ColorToInt(WHITE));
+    if(GuiButton(btnHelp, "Help")){
+        help.Open();
+    }
+    help.Draw(font);
 }
 // ------------------------------------------------------------------------------------------
 void MatchScreen::HandleStageInput(){
@@ -502,6 +525,7 @@ void MatchScreen::HandlePendingActionInput(){
     case RequestType::RaveningST1:
     case RequestType::Character:
     case RequestType::FogST1:
+    case RequestType::LurST1:
     {
         board.HighlightSpaces(action->getOption(*game), HighlightType::Selected);
         HandlePendingChooseCharacter();
@@ -509,6 +533,7 @@ void MatchScreen::HandlePendingActionInput(){
     }
     case RequestType::RaveningST2:
     case RequestType::FogST2:
+    case RequestType::LurST2:
     {
         board.HighlightSpaces(action->getOption(*game), HighlightType::Selected);
         HandlePendingMove();

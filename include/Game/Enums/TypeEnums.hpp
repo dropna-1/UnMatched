@@ -98,6 +98,8 @@ enum class RequestType
     RaveningST2 ,
     FogST1 ,
     FogST2 ,
+    LurST1 ,
+    LurST2 ,
     DeleteFromCurrent ,
     DeleteFromOther ,
     Dracula ,
