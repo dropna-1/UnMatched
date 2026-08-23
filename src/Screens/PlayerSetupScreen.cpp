@@ -42,10 +42,6 @@ void PlayerSetupScreen::Draw() {
     GuiSetStyle(TEXTBOX, TEXT_COLOR_FOCUSED, ColorToInt(GOLD));
     GuiSetStyle(TEXTBOX, BASE_COLOR_PRESSED, ColorToInt({40, 20, 60, 255}));
 
-    // const char* title = "PLAYER SETUP";
-    // Vector2 tSize = MeasureTextEx(font, title, 48, 1);
-    // DrawTextEx(font, title, {(890 - tSize.x) / 2, 30}, 48, 1, GOLD);
-
     DrawTextEx(font, "Player 1", {120, 120}, 70, 1, RAYWHITE);
 
     GuiLabel({400, 120, 100, 40}, "Name:");
@@ -87,9 +83,6 @@ void PlayerSetupScreen::Draw() {
 
         manager->ChangeScreen(std::make_unique<HeroSelectionScreen>(manager));
         return;
-        // TraceLog(LOG_INFO, "P1: %s (%d)  |  P2: %s (%d)", 
-        //          player1Name.c_str(), player1Age, 
-        //          player2Name.c_str(), player2Age);
     }
 
     if (GuiButton(btnBack, "BACK")) {

@@ -165,6 +165,11 @@ ChooseCharacterAction::ChooseCharacterAction(SelectionMode mode, Character* c)
 
 std::vector<int> ChooseCharacterAction::getOption(Game& game){
     std::vector<int> characterPositions;
+    if(mode == SelectionMode::Neighboors){
+        for(auto ch : game.getEnemiesNearby(pc))
+            characterPositions.push_back(ch->getPosition());
+        return characterPositions;
+    }
     if(mode == SelectionMode::Current || mode == SelectionMode::All){
         for(Character* c : game.getCurrentPlayer()->getAllCharacters()){
             if(c->getPosition() == pc->getPosition())
@@ -228,7 +233,7 @@ DraculaAction::DraculaAction(){type = RequestType::Dracula;}
 
 std::vector<int> DraculaAction::getOption(Game& game){
     vector<int> options;
-    neighboors = game.getEnemiesNearby();
+    neighboors = game.getEnemiesNearby(game.getDracula().get());
     for(Character* c : neighboors)
         options.push_back(c->getPosition());
     return options;

@@ -61,14 +61,20 @@ MatchScreen::MatchScreen(ScreenManager* mgr) {
         40,
     };
     helpBox = {(x*3/4)-20, y*7/9-10, x/4, y/4-70};
-    btnW = helpBox.width*7/8;
-    btnH = helpBox.height*3/8;
     btnHelp = {
-        helpBox.x + btnW/14,
-        helpBox.y + helpBox.height/2,
+        helpBox.x + helpBox.width - btnW,
+        helpBox.y - btnH - 10,
         btnW,
         btnH
     };
+
+    heroes = getToken();
+    for (auto& hero : heroes) {
+        hero.texture = LoadTexture(hero.imagePath.c_str());
+        if (hero.texture.id != 0) {
+            SetTextureFilter(hero.texture, TEXTURE_FILTER_BILINEAR);
+        }
+    }
 }
 
 MatchScreen::~MatchScreen() {
@@ -97,13 +103,11 @@ void MatchScreen::DrawSkip(Rectangle sk){
         }
     }
     else if(stage == Stage::SelectDefenseCard){
-        float btnW = sk.width*7/8;
-        float btnH = sk.height*3/8;
         btnSkip = {
-            sk.x + btnW/14,
-            sk.y + btnH/3 - 5,
-            btnW,
-            btnH
+            helpBox.x,
+            helpBox.y - 50,
+            helpBox.width*2/3,
+            40
         };
         if (GuiButton(btnSkip, "SKIP")){
             hand.ClearHighlightedCards();
@@ -155,6 +159,24 @@ void MatchScreen::Draw() {
     DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), {0, 0, 0, 140});
 
     DrawRectangleRoundedLines(helpBox, 0.1f, 1, WHITE);
+
+    Texture2D token;
+    for(auto& hero : heroes)
+        if(game->getCurrentPlayer()->getHero()->getHeroType() == hero.type){
+            token = hero.texture;
+            break;
+        }
+    DrawTexturePro(token, 
+    {0, 0, (float)token.width, (float)token.height},
+    {helpBox.x,
+    helpBox.y,
+    helpBox.height,
+    helpBox.height
+    }, {0, 0}, 0, WHITE);
+
+    std::string tt = game->getCurrentPlayer()->getName()+"`s Turn";
+    DrawTextEx(font, tt.c_str(), (Vector2){helpBox.x + helpBox.width/2 - 20, helpBox.y + helpBox.height*2/3}, 
+    30, 0.3f, GOLD);
 
     float x = GetScreenWidth();
     float y = GetScreenHeight();
@@ -217,8 +239,6 @@ void MatchScreen::Draw() {
         stage = Stage::Boost;
         board.ClearHighlightedSpaces();
     }
-    GuiSetStyle(BUTTON, BASE_COLOR_NORMAL, ColorToInt(BLUE));
-    GuiSetStyle(BUTTON, TEXT_COLOR_NORMAL, ColorToInt(WHITE));
     if(GuiButton(btnHelp, "Help")){
         help.Open();
     }
@@ -635,7 +655,6 @@ MatchScreenSave MatchScreen::createSaveData() const
 }
 
 void MatchScreen::HandleMenu(){
-    GuiSetStyle(DEFAULT, TEXT_SIZE, 40);
     if(inSave){HandleSave(); return;}
 
     float x = GetScreenWidth();
@@ -656,7 +675,6 @@ void MatchScreen::HandleMenu(){
     if(GuiButton(btnSave, "Save")){
         inSave = true;
     }
-    GuiSetStyle(DEFAULT, TEXT_SIZE, 24);
 }
 
 void MatchScreen::HandleSave(){
@@ -690,5 +708,4 @@ void MatchScreen::HandleSave(){
         game->SaveGame(5, createSaveData());
         inSave = false;
     }
-    GuiSetStyle(DEFAULT, TEXT_SIZE, 24);
 }

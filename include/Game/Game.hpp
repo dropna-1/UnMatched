@@ -128,7 +128,7 @@ public:
     std::vector<int> getPlayableDefenseCard(Character* defender);
     bool canDefense(Character* character);
     bool canAttack();
-    std::vector<Character*> getEnemiesNearby();
+    std::vector<Character*> getEnemiesNearby(Character* own);
     /*------------------------------------------------------------------*/
     void playScheme(Character* source, const int& schemeCardIndex);
     void continuePlayScheme();

@@ -13,6 +13,20 @@
 
 class ScreenManager;
 
+struct HeroToken {
+    std::string imagePath;
+    HeroType type;
+    Texture2D texture{0};
+};
+
+inline std::vector<HeroToken> getToken(){
+    return {
+        {"external/images/Board/draco.png", HeroType::Dracula},
+        {"external/images/Board/shero.png", HeroType::Sherlock},
+        {"external/images/Board/invo1.png", HeroType::Invisibleman}
+    };
+}
+
 class MatchScreen : public IScreen {
 private:
     Game* game = nullptr;
@@ -30,6 +44,8 @@ private:
     ActionsView actions;
     TipView tip;
     HelpView help;
+
+    std::vector<HeroToken> heroes;
 
     Stage stage = Stage::SideKickPlacementP1;
     Character* selected = nullptr;

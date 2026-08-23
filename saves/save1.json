@@ -1,23 +1,23 @@
 {
     "canUseAbility": true,
-    "currentPlayer": 1,
+    "currentPlayer": 0,
     "matchScreen": {
-        "attackCardIndex": -1,
+        "attackCardIndex": 3,
         "attacker": {
-            "index": -1,
-            "player": -1
+            "index": 0,
+            "player": 0
         },
-        "canBoost": false,
-        "defenseCardIndex": -1,
+        "canBoost": true,
+        "defenseCardIndex": 3,
         "movement": -1,
         "selected": {
             "index": -1,
             "player": -1
         },
-        "stage": 13,
+        "stage": 7,
         "target": {
-            "index": -1,
-            "player": -1
+            "index": 0,
+            "player": 1
         }
     },
     "pendingActions": [],
@@ -26,7 +26,9 @@
         {
             "age": 18,
             "deck": {
-                "discardPile": [],
+                "discardPile": [
+                    "external/images/cards/InvisibleMan/impossible-to-see.png"
+                ],
                 "drawPile": [
                     "external/images/cards/InvisibleMan/rolling-fog.png",
                     "external/images/cards/InvisibleMan/lurking.png",
@@ -46,7 +48,6 @@
                     "external/images/cards/InvisibleMan/lurking.png"
                 ],
                 "hand": [
-                    "external/images/cards/InvisibleMan/impossible-to-see.png",
                     "external/images/cards/InvisibleMan/into-thin-air.png",
                     "external/images/cards/InvisibleMan/step-lightly.png",
                     "external/images/cards/InvisibleMan/reign-of-terror.png",
@@ -75,7 +76,9 @@
         {
             "age": 18,
             "deck": {
-                "discardPile": [],
+                "discardPile": [
+                    "external/images/cards/dracula/feint (1).png"
+                ],
                 "drawPile": [
                     "external/images/cards/dracula/look-into-my-eyes.png",
                     "external/images/cards/dracula/beastform.png",
@@ -98,22 +101,21 @@
                     "external/images/cards/dracula/exploit.png",
                     "external/images/cards/dracula/thirst-for-sustenance.png",
                     "external/images/cards/dracula/baptism-of-blood.png",
-                    "external/images/cards/dracula/exploit.png",
-                    "external/images/cards/dracula/thirst-for-sustenance.png",
-                    "external/images/cards/dracula/feeding-frenzy.png"
+                    "external/images/cards/dracula/exploit.png"
                 ],
                 "hand": [
                     "external/images/cards/dracula/mistform.png",
                     "external/images/cards/dracula/feint (1).png",
                     "external/images/cards/dracula/exploit.png",
-                    "external/images/cards/dracula/feint (1).png",
-                    "external/images/cards/dracula/mistform.png"
+                    "external/images/cards/dracula/mistform.png",
+                    "external/images/cards/dracula/feeding-frenzy.png",
+                    "external/images/cards/dracula/thirst-for-sustenance.png"
                 ]
             },
             "hero": {
                 "HP": 13,
                 "fogs": [],
-                "position": 18,
+                "position": 1,
                 "sidekicks": [
                     {
                         "HP": 1,
@@ -139,5 +141,5 @@
             "name": "Player 2"
         }
     ],
-    "remainingAction": 2
+    "remainingAction": 1
 }
