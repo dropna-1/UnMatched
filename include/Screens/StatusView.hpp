@@ -15,7 +15,7 @@ class StatusView
     public:
         StatusView()
         {
-            dracula  = LoadTexture("external/images/dracula/dracport.jpg");
+            dracula  = LoadTexture("external/images/dracula/dracPic.png");
             sherlock = LoadTexture("external/images/sherlock/sherlockb.jpg");
             watson   = LoadTexture("external/images/Board/watsono.png");
             agatha  = LoadTexture("external/images/Board/agho3.png");

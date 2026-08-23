@@ -53,3 +53,13 @@ bool InvisibleMan::isOnFog() const
 
     return false;
 }
+
+void InvisibleMan::updateStartedTurnOnFog()
+{
+    startedTurnOnFogFlag = isOnFog();
+}
+
+bool InvisibleMan::startedTurnOnFog() const
+{
+    return startedTurnOnFogFlag;
+}

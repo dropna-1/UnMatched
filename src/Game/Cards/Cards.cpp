@@ -79,7 +79,10 @@ void Card::setBoost(int New)
 
 void Card::setValue(int New)
 {
-    value = New ;
+    if(valueLocked)
+        return;
+
+    value = New;
 }
 
 void Card::execute(TriggerType trigger, GameContext& context)
@@ -108,4 +111,14 @@ void Card::execute(TriggerType trigger, GameContext& context)
 string Card::getId() const
 {
     return pathID ;
+}
+
+void Card::lockValue()
+{
+    valueLocked = true;
+}
+
+bool Card::isValueLocked() const
+{
+    return valueLocked;
 }

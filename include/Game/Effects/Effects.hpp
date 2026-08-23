@@ -144,3 +144,9 @@ class ShowHandEffect : public IEffect
     public :
         void execute(GameContext& context , const vector<Character*>& targets) override ;
 };
+
+class EmergeFromMistEffect : public IEffect
+{
+    public:
+        void execute( GameContext& context, const vector<Character*>& targets ) override;
+};

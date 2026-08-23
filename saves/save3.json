@@ -1,0 +1,129 @@
+{
+    "canUseAbility": true,
+    "currentPlayer": 1,
+    "matchScreen": {
+        "attackCardIndex": 3,
+        "attacker": {
+            "index": 1,
+            "player": 1
+        },
+        "canBoost": true,
+        "defenseCardIndex": -1,
+        "movement": -1,
+        "selected": {
+            "index": -1,
+            "player": -1
+        },
+        "stage": 13,
+        "target": {
+            "index": 0,
+            "player": 0
+        }
+    },
+    "pendingActions": [],
+    "pendingCombat": null,
+    "players": [
+        {
+            "age": 18,
+            "deck": {
+                "discardPile": [
+                    "external/images/cards/InvisibleMan/lurking.png",
+                    "external/images/cards/InvisibleMan/emerge-from-mist.png"
+                ],
+                "drawPile": [
+                    "external/images/cards/InvisibleMan/emerge-from-mist.png",
+                    "external/images/cards/InvisibleMan/step-lightly.png",
+                    "external/images/cards/InvisibleMan/coded-notes.png",
+                    "external/images/cards/InvisibleMan/slip-away.png",
+                    "external/images/cards/InvisibleMan/into-thin-air.png",
+                    "external/images/cards/InvisibleMan/step-lightly.png",
+                    "external/images/cards/InvisibleMan/slip-away.png",
+                    "external/images/cards/InvisibleMan/reign-of-terror.png",
+                    "external/images/cards/InvisibleMan/impossible-to-see.png",
+                    "external/images/cards/InvisibleMan/into-thin-air.png",
+                    "external/images/cards/InvisibleMan/rolling-fog.png",
+                    "external/images/cards/InvisibleMan/rolling-fog.png"
+                ],
+                "hand": [
+                    "external/images/cards/InvisibleMan/dreaming-of-revenge.png",
+                    "external/images/cards/InvisibleMan/dreaming-of-revenge.png",
+                    "external/images/cards/InvisibleMan/lurking.png",
+                    "external/images/cards/InvisibleMan/reign-of-terror.png",
+                    "external/images/cards/InvisibleMan/impossible-to-see.png",
+                    "external/images/cards/InvisibleMan/slip-away.png",
+                    "external/images/cards/InvisibleMan/coded-notes.png"
+                ]
+            },
+            "hero": {
+                "HP": 10,
+                "fogs": [
+                    {
+                        "position": 17
+                    },
+                    {
+                        "position": 15
+                    },
+                    {
+                        "position": 16
+                    }
+                ],
+                "position": 8,
+                "sidekicks": [],
+                "type": "InvisibleMan"
+            },
+            "name": "Player 1"
+        },
+        {
+            "age": 18,
+            "deck": {
+                "discardPile": [
+                    "external/images/cards/holms/service-revolver.png"
+                ],
+                "drawPile": [
+                    "external/images/cards/holms/eliminate-the-impossible.png",
+                    "external/images/cards/holms/the-game-is-afoot.png",
+                    "external/images/cards/holms/fixed-point-in-a-changing-age.png",
+                    "external/images/cards/holms/feintS.png",
+                    "external/images/cards/holms/eliminate-the-impossible.png",
+                    "external/images/cards/holms/the-game-is-afoot.png",
+                    "external/images/cards/holms/education-never-ends.png",
+                    "external/images/cards/holms/counterpunch.png",
+                    "external/images/cards/holms/administer-aid.png",
+                    "external/images/cards/holms/feintS.png",
+                    "external/images/cards/holms/counterpunch.png",
+                    "external/images/cards/holms/fixed-point-in-a-changing-age.png",
+                    "external/images/cards/holms/study-methods.png",
+                    "external/images/cards/holms/study-methods.png",
+                    "external/images/cards/holms/deduce-strategy.png",
+                    "external/images/cards/holms/education-never-ends.png",
+                    "external/images/cards/holms/administer-aid.png",
+                    "external/images/cards/holms/service-revolver.png",
+                    "external/images/cards/holms/master-of-disguise.png"
+                ],
+                "hand": [
+                    "external/images/cards/holms/feintS.png",
+                    "external/images/cards/holms/deduce-strategy.png",
+                    "external/images/cards/holms/counterpunch.png",
+                    "external/images/cards/holms/master-of-disguise.png",
+                    "external/images/cards/holms/deduce-strategy.png"
+                ]
+            },
+            "hero": {
+                "HP": 16,
+                "fogs": [],
+                "position": 4,
+                "sidekicks": [
+                    {
+                        "HP": 13,
+                        "index": 0,
+                        "name": "Dr.Watson",
+                        "position": 7
+                    }
+                ],
+                "type": "Sherlock"
+            },
+            "name": "Player 2"
+        }
+    ],
+    "remainingAction": 2
+}

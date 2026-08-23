@@ -3,6 +3,7 @@
 #include "Game/Ability/IAbility.hpp"
 #include "Game/Pending/Pending.hpp"
 #include "Game/Game.hpp"
+#include "Game/Characters/InvisibleMan.hpp"
 #include <cstdlib>
 #include <algorithm>
 using namespace std ;
@@ -490,4 +491,16 @@ void ShowHandEffect::execute(
 
         return;
     }
+}
+
+void EmergeFromMistEffect::execute(
+    GameContext& context,
+    const vector<Character*>& targets)
+{
+    auto* invisibleMan = context.getGame()->getInvisibleMan();
+
+    if(invisibleMan == nullptr || !invisibleMan->startedTurnOnFog())
+        return;
+
+    context.getCurrentCard()->setValue(5);
 }
