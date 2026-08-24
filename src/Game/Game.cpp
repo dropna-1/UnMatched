@@ -18,8 +18,18 @@ shared_ptr<Hero>& Game::getDracula(){
     return dracula;
 }
 
-InvisibleMan* Game::getInvisibleMan(){
-    return asInvisible(invisible.get());
+InvisibleMan* Game::getInvisibleMan() const{
+    if(player1.getHero() != nullptr){
+        auto* invisible = asInvisible(player1.getHero().get());
+        if(invisible != nullptr)
+            return invisible;
+    }
+    if(player2.getHero() != nullptr){
+        auto* invisible = asInvisible(player1.getHero().get());
+        if(invisible != nullptr)
+            return invisible;
+    }
+    return nullptr;
 }
 
 unique_ptr<PendingCombat>& Game::getPendingCombat(){
@@ -79,7 +89,7 @@ Player* Game::getOtherPlayer(){
 }
 
 
-InvisibleMan* Game::asInvisible(Character* c){
+InvisibleMan* Game::asInvisible(Character* c) const{
     return dynamic_cast<InvisibleMan*>(c);
 }
 
@@ -857,10 +867,55 @@ std::vector<PendingSave> Game::createPendingSave() const
                 save.player = 1;
             break;
         }
+        case RequestType::FogST1:
+        case RequestType::FogST2:
+        {
+            auto* fogAction = dynamic_cast<FogMoveAction*>(action);
+            if(fogAction == nullptr)
+                break;
+
+            save.stage = fogAction->getStage();
+            save.range = fogAction->getRange();
+
+            if(fogAction->getSelected() != nullptr){
+                auto* inv = getInvisibleMan();
+                if(inv != nullptr){
+                    for(int i = 0; i < inv->getFogs().size(); ++i){
+                        if(&inv->getFogs()[i] == fogAction->getSelected()){
+                            save.fogIndex = i;
+                            break;
+                        }
+                    }
+                }
+            }
+            break;
+        }
+        case RequestType::LurST1:
+        case RequestType::LurST2:
+        {
+            auto* fogAction = dynamic_cast<LurkingAction*>(action);
+            if(fogAction == nullptr)
+                break;
+
+            save.stage = fogAction->getStage();
+
+            auto* inv = fogAction->getSelectedInv();
+            auto* fog = fogAction->getSelectedFog();
+            if(inv != nullptr)
+                save.selectedCharacter = makeCharacterRef(inv);
+            else if(fog != nullptr){
+                auto invis = getInvisibleMan();
+                for(int i = 0; i < invis->getFogs().size(); ++i){
+                    if(&invis->getFogs()[i] == fog){
+                        save.fogIndex = i;
+                        break;
+                    }
+                }
+            }
+        }
         }
         result.push_back(save);
     }
-
     return result;
 }
 // ---------------------------------------------------------------------------
@@ -887,6 +942,17 @@ std::optional<PendingCombatSave> Game::createPendingCombatSave() const
     save.selection.destination = pendingCombat->selection.destination;
     save.selection.showHand = pendingCombat->selection.showHand;
     save.selection.canFinish = pendingCombat->selection.canFinish;
+    if(pendingCombat->selection.fog != nullptr){
+        auto* inv = getInvisibleMan();
+        if(inv != nullptr){
+            for(int i = 0; i < inv->getFogs().size(); ++i){
+                if(&inv->getFogs()[i] == pendingCombat->selection.fog){
+                    save.selection.fog = i;
+                    break;
+                }
+            }
+        }
+    }
     return save;
 }
 // ---------------------------------------------------------------------------
@@ -1069,7 +1135,36 @@ std::unique_ptr<PendingAction> Game::restorePendingAction(const PendingSave& sav
         {
             return std::make_unique<DraculaAction>();
         }
+        case RequestType::FogST1:
+        case RequestType::FogST2:
+        {
+            auto action = std::make_unique<FogMoveAction>(save.range);
+            if(save.fogIndex >= 0){
+                auto* inv = getInvisibleMan();
+                if(inv == nullptr || save.fogIndex >= inv->getFogs().size())
+                    return nullptr;
 
+                action->restoreState(
+                    inv->getFogs()[save.fogIndex],
+                    save.stage
+                );
+            }
+            return action;
+        }
+        case RequestType::LurST1:
+        case RequestType::LurST2:
+        {
+            auto action = std::make_unique<LurkingAction>();
+            auto* inv = getInvisibleMan();
+            Fog* fog = nullptr;
+            if(save.fogIndex != -1)
+                fog = &inv->getFogs()[save.fogIndex];
+
+            action->restoreState(
+                fog, resolveCharacterRef(save.selectedCharacter), save.stage      
+            );
+            return action;
+        }
         default:
             return nullptr;
     }
@@ -1092,6 +1187,8 @@ std::shared_ptr<Card> Game::findCardById(const std::string& id, Character* c) co
         source = CardFactory::createDraculaDeck();
     else if(hero->getHeroType() == HeroType::Sherlock)
         source = CardFactory::createSherlockDeck();
+    else if(hero->getHeroType() == HeroType::Invisibleman)
+        source = CardFactory::createInvisibleManDeck();
     else
         return nullptr;
 
@@ -1156,6 +1253,11 @@ std::unique_ptr<PendingCombat> Game::restorePendingCombat(const PendingCombatSav
     combat->selection.destination = save.selection.destination;
     combat->selection.showHand = save.selection.showHand;
     combat->selection.canFinish = save.selection.canFinish;
+    if(save.selection.fog >= 0){
+        auto* inv = getInvisibleMan();
+        if(inv != nullptr && save.selection.fog < inv->getFogs().size())
+            combat->selection.fog =&inv->getFogs()[save.selection.fog];
+    }
     return combat;
 }
 // ---------------------------------------------------------------------------

@@ -207,21 +207,21 @@ void StatusView::DrawHeroSection(Player& player,
         30,
         1 ,
         LIGHTGRAY);*/
-    DrawOutlinedText(
-        font,
-        player.getName(),
-        {layout.X(20) , layout.Y(10)},
-        layout.S(34),
-        1,
-        LIGHTGRAY,
-        BLACK,
-        2
-    );
+    // DrawOutlinedText(
+    //     font,
+    //     player.getName(),
+    //     {layout.X(20) , layout.Y(10)},
+    //     layout.S(34),
+    //     1,
+    //     LIGHTGRAY,
+    //     BLACK,
+    //     2
+    // );
     float portraitSize = layout.S(250) ;
     Rectangle portrait =
     {
         layout.X((layout.panel.width - portraitSize)/2) ,
-        layout.Y(40) ,
+        layout.Y(30) ,
         portraitSize , 
         portraitSize 
     };

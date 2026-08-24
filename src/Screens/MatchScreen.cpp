@@ -174,9 +174,13 @@ void MatchScreen::Draw() {
     helpBox.height
     }, {0, 0}, 0, WHITE);
 
+    std::string at = "Remaining Action : " + to_string(game->getRemainingActions());
+    DrawTextEx(font, at.c_str(), (Vector2)
+    {helpBox.x + helpBox.width/2 - 20, helpBox.y + helpBox.height*2/3}, 28, 0.3f, GOLD);
+
     std::string tt = game->getCurrentPlayer()->getName()+"`s Turn";
-    DrawTextEx(font, tt.c_str(), (Vector2){helpBox.x + helpBox.width/2 - 20, helpBox.y + helpBox.height*2/3}, 
-    30, 0.3f, GOLD);
+    DrawTextEx(font, tt.c_str(), (Vector2)
+    {helpBox.x + helpBox.width/2 - 20, helpBox.y + helpBox.height*2/3 - 30}, 30, 0.3f, GOLD);
 
     float x = GetScreenWidth();
     float y = GetScreenHeight();
