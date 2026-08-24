@@ -40,4 +40,7 @@ class InvisibleMan : public Hero
         Fog& getFog(std::size_t index);
         const Fog& getFog(std::size_t index) const;
         bool isOnFog() const;
+        bool startedTurnOnFogFlag = false;
+        void updateStartedTurnOnFog();
+        bool startedTurnOnFog() const;
 };

@@ -30,6 +30,7 @@ class Card
         std::string description ;
         std::vector<EffectEntry> effects ;
         std::string pathID;
+        bool valueLocked = false;
     public :
         Card(const std::string& name,
             CardType type,
@@ -53,6 +54,8 @@ class Card
         void setBoost(int) ;
         void setValue(int) ;
         std::string getId() const ;
+        void lockValue();
+        bool isValueLocked() const;
 };
 
 
