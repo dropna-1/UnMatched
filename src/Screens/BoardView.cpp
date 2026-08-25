@@ -71,6 +71,26 @@ Color GetZoneColor(int zone)
     }
 }
 
+static Color CharacterColor(const std::string& name)
+{
+    if(name=="Sherlock")
+        return GOLD;
+
+    if(name=="Dracula")
+        return RED;
+
+    if(name=="Dr.Watson")
+        return BEIGE;
+
+    if(name.find("Sister")!=std::string::npos)
+        return {120, 0, 0, 255};
+    if(name == "Invisible Man")
+    {
+        return Color{0, 255 , 255, 255} ;
+    }
+    return WHITE;
+}
+
 BoardView::BoardView()
 {
     background = LoadTexture(
@@ -79,7 +99,7 @@ BoardView::BoardView()
         "external/images/Board/node6.png") ;
     font = LoadFontEx(
         "external/font/GermaniaOne-Regular.ttf" , 40 , nullptr, 0 ) ;
-    dractoken = LoadTexture("external/images/Board/dract.png") ;
+    dractoken = LoadTexture("external/images/Board/dracto.png") ;
     watsontoken = LoadTexture("external/images/Board/watsono.png");
     shertoken = LoadTexture("external/images/Board/shero.png") ;
     agathatoken = LoadTexture("external/images/Board/agho3.png");
@@ -607,9 +627,9 @@ void BoardView::DrawCharacter(const Character& character,
         0,
         WHITE
     );
-
+    auto color = CharacterColor(character.getname()) ;
     DrawCircleLinesV(pos, size/2, Fade(BLACK, 0.55f));
-    DrawCircleLinesV(pos, size/2 - 1.0f, Fade(GOLD, 0.8f));
+    DrawCircleLinesV(pos, size/2 - 1.0f, Fade(color , 0.8f));
 }
 
 void BoardView::DrawCharacters(
