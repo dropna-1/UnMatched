@@ -5,6 +5,7 @@
 #include "Game/Factory/CardFactory.hpp"
 #include "Game/Ability/SherlockAbility.hpp"
 #include "Game/Ability/DraculaAbility.hpp"
+#include "Game/Ability/InvisibleManAbility.hpp"
 
 using namespace std ;
 
@@ -32,7 +33,7 @@ shared_ptr<Hero> HeroFactory::createInvisibleMan()
 {
     auto hero = make_shared<InvisibleMan>();
     hero->setDeck(CardFactory::createInvisibleManDeck());
-    
+    hero->setAbility(make_shared<InvisibleManAbility>()); 
     return hero;
 
 }

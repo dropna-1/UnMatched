@@ -99,7 +99,7 @@ BoardView::BoardView()
         "external/images/Board/node6.png") ;
     font = LoadFontEx(
         "external/font/GermaniaOne-Regular.ttf" , 40 , nullptr, 0 ) ;
-    dractoken = LoadTexture("external/images/Board/dracto.png") ;
+    dractoken = LoadTexture("external/images/Board/dractos.png") ;
     watsontoken = LoadTexture("external/images/Board/watsono.png");
     shertoken = LoadTexture("external/images/Board/shero.png") ;
     agathatoken = LoadTexture("external/images/Board/agho3.png");

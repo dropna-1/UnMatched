@@ -173,42 +173,56 @@ vector<int> Game::getAvailableMoves(Character* character,
             for(int secret : board.getSpace(place).secret)
                 neigh.push_back(secret);
 
-        if(auto* inv = asInvisible(character)){
+        if(auto* inv = asInvisible(character))
+        {
+            bool currentSpaceHasFog = false;
             for(const auto& fog : inv->getFogs())
-                if(fog.isPlaced())
-                    neigh.push_back(fog.getPosition());
-        }
+            {
+                if(fog.isPlaced() &&
+                fog.getPosition() == place)
+                {
+                    currentSpaceHasFog = true;
+                    break;
+                }
+            }
+            if(currentSpaceHasFog)
+            {
+                for(const auto& fog : inv->getFogs())
+                {
+                    if(!fog.isPlaced())
+                        continue;
 
+                    if(fog.getPosition() == place)
+                        continue;
+                    neigh.push_back(fog.getPosition());
+                }
+            }
+        }
         for(int next : neigh){
             bool enemy = false;
             bool dom = false;
-
             if(visited[next])
                 continue;
-
             for(Character* c : otherPlayer->getAllCharacters())
                 if(next == c->getPosition()){
                     enemy = true;
                     break;
                 }
-            
             if(enemy)
                 continue;
-
             for(Character* c : currentPlayer->getAllCharacters())
                 if(next == c->getPosition()){
                     dom = true;
                     break;
                 }
-
             visited[next] = true;
             q.push({next, dist+1});
-  
+
             if(!dom)
                 reachable.push_back(next);
         }
     }
-    sort(reachable.begin(), reachable.end());
+    std::sort(reachable.begin(), reachable.end());
     return reachable;
 }
 
@@ -284,7 +298,7 @@ vector<int> Game::getFogMoves(
         }
     }
 
-    sort(reachable.begin(), reachable.end());
+    std::sort(reachable.begin(), reachable.end());
 
     return reachable;
 }
@@ -359,14 +373,30 @@ void Game::completePendingAction(){
 }
 
 
-int Game::calculateDamage(Card* attack, Card* defense){
+int Game::calculateDamage(Card* attack, Card* defense)
+{
+    if(attack == nullptr)
+        return 0;
     if(defense == nullptr)
         return attack->getValue();
-    if(attack->getValue() > defense->getValue())
-        return attack->getValue() - defense->getValue();
+    int defenseValue = defense->getValue();
+    Character* defender = pendingCombat->option.target;
+    if(defender != nullptr && defender->isHero())
+    {
+        auto hero = dynamic_cast<Hero*>(defender);
+        if(hero != nullptr && hero->getAbility() != nullptr)
+        {
+            defenseValue += hero->getAbility()->getDefenseBonus(
+                defender,
+                pendingCombat->context
+            );
+        }
+    }
+    if(attack->getValue() > defenseValue)
+        return attack->getValue() - defenseValue;
+
     return 0;
 }
-
 
 vector<Character*> Game::getEnemiesNearby(Character* own){
     vector<Character*> enemies;
