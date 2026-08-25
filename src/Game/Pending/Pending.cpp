@@ -163,7 +163,7 @@ Player* ShowCardAction::getSelectedPlayer() const{return selected;}
 ChooseCharacterAction::ChooseCharacterAction(SelectionMode mode, Character* c) 
 : mode(mode), pc(c) {type = RequestType::Character;}
 
-std::vector<int> ChooseCharacterAction::getOption(Game& game){
+/*std::vector<int> ChooseCharacterAction::getOption(Game& game){
     std::vector<int> characterPositions;
     if(mode == SelectionMode::Neighboors){
         for(auto ch : game.getEnemiesNearby(pc))
@@ -186,6 +186,47 @@ std::vector<int> ChooseCharacterAction::getOption(Game& game){
             characterPositions.push_back(c->getPosition());
         }
     }
+    return characterPositions;
+}*/
+
+std::vector<int> ChooseCharacterAction::getOption(Game& game)
+{
+    std::vector<int> characterPositions;
+
+    characters.clear();
+
+    if(mode == SelectionMode::Neighboors)
+    {
+        for(auto ch : game.getEnemiesNearby(pc))
+            characterPositions.push_back(ch->getPosition());
+
+        return characterPositions;
+    }
+
+    if(mode == SelectionMode::Current || mode == SelectionMode::All)
+    {
+        for(Character* c : game.getCurrentPlayer()->getAllCharacters())
+        {
+            if(pc != nullptr && c->getPosition() == pc->getPosition())
+                continue;
+
+            characters.push_back(c);
+            characterPositions.push_back(c->getPosition());
+        }
+    }
+
+    if(mode == SelectionMode::Other || mode == SelectionMode::All)
+    {
+        for(Character* c : game.getOtherPlayer()->getAllCharacters())
+        {
+            if(pc != nullptr && c->getPosition() == pc->getPosition())
+                continue;
+
+            characters.push_back(c);
+            characterPositions.push_back(c->getPosition());
+        }
+    }
+
     return characterPositions;
 }
 
@@ -250,18 +291,35 @@ void DraculaAction::submit(Game& game, int choice){
     game.completePendingAction();
 }
 /*-----------------------------------------------------------------*/
-FogMoveAction::FogMoveAction(const int& range) : range(range){type = RequestType::FogST1;}
-
-std::vector<int> FogMoveAction::getOption(Game& game){
-    if(stage == 0){
-        std::vector<int> fogs;
-        for(auto& fog : game.getInvisibleMan()->getFogs())
-            fogs.push_back(fog.getPosition());
-        return fogs;
-    }
-    return game.getFogMoves(selected, range);
+FogMoveAction::FogMoveAction( const int& range, bool emptySpaceOnly)
+    : range(range), emptySpaceOnly(emptySpaceOnly)
+{
+    type = RequestType::FogST1;
 }
 
+std::vector<int> FogMoveAction::getOption(Game& game)
+{
+    if(stage == 0)
+    {
+        std::vector<int> fogs;
+
+        for(auto& fog : game.getInvisibleMan()->getFogs())
+        {
+            if(!fog.isPlaced())
+                continue;
+
+            fogs.push_back(fog.getPosition());
+        }
+
+        return fogs;
+    }
+
+    return game.getFogMoves(
+        selected,
+        range,
+        emptySpaceOnly
+    );
+}
 void FogMoveAction::submit(Game& game, int choice){
     if(stage == 0){
         for(auto& fog : game.getInvisibleMan()->getFogs())

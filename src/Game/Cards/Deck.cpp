@@ -103,3 +103,24 @@ void Deck::restore(
     hand = handCards;
     discardPile = discard;
 }
+
+void Deck::putCardsOnTop(
+    const vector<shared_ptr<Card>>& cards)
+{
+    for(const auto& card : cards)
+    {
+        if(card == nullptr)
+            continue;
+
+        auto it = find(hand.begin(), hand.end(), card);
+
+        if(it != hand.end())
+            hand.erase(it);
+    }
+
+    // drawPile.back() is the top of the deck.
+    for(auto it = cards.rbegin(); it != cards.rend(); ++it)
+    {
+        drawPile.push_back(*it);
+    }
+}

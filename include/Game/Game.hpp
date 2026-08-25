@@ -104,7 +104,7 @@ public:
     const std::vector<std::shared_ptr<Card>>& showOtherHand();
     /*-----------------------------------------------------------------*/
     std::vector<int> getAvailableMoves(Character* character, const int& spacing);
-    std::vector<int> getFogMoves(Fog* fog, const int& spacing);
+    std::vector<int> getFogMoves(Fog* fog, const int& spacing, bool emptySpaceOnly = false);
     std::vector<int> getAllSpaces();
     bool canMove(int to) const;
     void move(Character* character, const int& pos);

@@ -108,11 +108,14 @@ public:
 };
 /*-----------------------------------------------------------------*/
 class FogMoveAction : public PendingAction {
+private:
     Fog* selected = nullptr;
     int range = -1;
     int stage = 0;
+    bool emptySpaceOnly = false;
+
 public:
-    FogMoveAction(const int& range);
+    FogMoveAction( const int& range, bool emptySpaceOnly = false );
     std::vector<int> getOption(Game& game) override;
     void submit(Game& game, int choice) override;
     Fog* getSelected() const;

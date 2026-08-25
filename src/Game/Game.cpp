@@ -202,16 +202,22 @@ vector<int> Game::getAvailableMoves(Character* character,
     return reachable;
 }
 
-vector<int> Game::getFogMoves(Fog* fog, const int& spacing){
+vector<int> Game::getFogMoves(
+    Fog* fog,
+    const int& spacing,
+    bool emptySpaceOnly)
+{
     vector<int> reachable;
     queue<pair<int, int>> q;
     vector<bool> visited(board.size(), false);
 
     int start = fog->getPosition();
+
     q.push({start, 0});
     visited[start] = true;
 
-    while(!q.empty()){
+    while(!q.empty())
+    {
         auto current = q.front();
         q.pop();
 
@@ -222,21 +228,54 @@ vector<int> Game::getFogMoves(Fog* fog, const int& spacing){
             continue;
 
         vector<int> neigh = board.getSpace(place).neighbors;
+
         if(!board.getSpace(place).secret.empty())
+        {
             for(int secret : board.getSpace(place).secret)
                 neigh.push_back(secret);
+        }
 
-        for(int next : neigh){
-
+        for(int next : neigh)
+        {
             if(visited[next])
                 continue;
 
             visited[next] = true;
-            q.push({next, dist+1});
+            q.push({next, dist + 1});
+
+            bool occupied = false;
+
+            for(Character* c : currentPlayer->getAllCharacters())
+            {
+                if(c->getPosition() == next)
+                {
+                    occupied = true;
+                    break;
+                }
+            }
+
+            if(!occupied)
+            {
+                for(Character* c : otherPlayer->getAllCharacters())
+                {
+                    if(c->getPosition() == next)
+                    {
+                        occupied = true;
+                        break;
+                    }
+                }
+            }
+
+            // For Slip Away, only the destination must be empty.
+            if(emptySpaceOnly && occupied)
+                continue;
+
             reachable.push_back(next);
         }
     }
+
     sort(reachable.begin(), reachable.end());
+
     return reachable;
 }
 
@@ -439,6 +478,11 @@ vector<int> Game::getPlacementSpaces(Character* character){
 
 void Game::changeTurn(){
     swap(currentPlayer, otherPlayer);
+    if(auto* invisibleMan = getInvisibleMan())
+    {
+        if(currentPlayer->getHero().get() == invisibleMan)
+            invisibleMan->updateStartedTurnOnFog();
+    }
     if(!canUseAbility)
         return;
     auto ability = currentPlayer->getHero()->getAbility();

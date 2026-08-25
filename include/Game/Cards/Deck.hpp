@@ -31,5 +31,6 @@ class Deck
         );
         std::shared_ptr<Card> playCard(int handindex) ;
         Card* previewCard(int) const ;
+        void putCardsOnTop( const std::vector<std::shared_ptr<Card>>& cards);
     
 };

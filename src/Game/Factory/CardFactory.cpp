@@ -31,13 +31,18 @@ void CardFactory::addCopies(
     int count,
     const std::shared_ptr<Card>& card)
 {
-    for (int i = 0; i < count; i++)
+    for (int i = 0; i < count; ++i)
     {
-        deck->addcard(
-            std::make_shared<Card>(*card)
-        );
+        auto copy = std::make_shared<Card>(*card);
+        for (auto& entry : copy->getEffects())
+        {
+            if (entry.effect)
+                entry.effect = entry.effect->clone();
+        }
+        deck->addcard(copy);
     }
 }
+
 shared_ptr<Deck> CardFactory::createSherlockDeck()
 {
     auto deck = make_shared<Deck>() ;
@@ -451,7 +456,12 @@ shared_ptr<Deck> CardFactory::createInvisibleManDeck()
         "then place Invisible Man on that space.",
         "external/images/cards/InvisibleMan/slip-away.png"
     );
-
+    SlipAway->addEffect(
+        TriggerType::AfterCombat,
+        EffectTarget::None,
+        nullptr,
+        make_shared<SlipAwayEffect>()
+    );
     addCopies(deck, 3, SlipAway);
 
 
@@ -492,8 +502,14 @@ shared_ptr<Deck> CardFactory::createInvisibleManDeck()
         "a space with a fog token, this card's value is 5 instead.",
         "external/images/cards/InvisibleMan/emerge-from-mist.png"
     );
-
+    EmergeFromMist->addEffect(
+        TriggerType::DuringCombat,
+        EffectTarget::None,
+        nullptr,
+        make_shared<EmergeFromMistEffect>()
+    );
     addCopies(deck, 2, EmergeFromMist);
+
 
 
     // =========================================================
@@ -532,7 +548,12 @@ shared_ptr<Deck> CardFactory::createInvisibleManDeck()
         "Your opponent then moves a fog token up to 3 spaces.",
         "external/images/cards/InvisibleMan/into-thin-air.png"
     );
-
+    IntoThinAir->addEffect(
+        TriggerType::AfterCombat,
+        EffectTarget::None,
+        nullptr,
+        make_shared<IntoThinAirEffect>()
+    );
     addCopies(deck, 2, IntoThinAir);
 
 
@@ -553,7 +574,12 @@ shared_ptr<Deck> CardFactory::createInvisibleManDeck()
         "or move 1 fog token up to 3 spaces.",
         "external/images/cards/InvisibleMan/lurking.png"
     );
-
+    Lurking->addEffect(
+        TriggerType::AfterCombat,
+        EffectTarget::None,
+        nullptr,
+        make_shared<LurkingEffect>()
+    );
     addCopies(deck, 2, Lurking);
 
 
@@ -571,6 +597,12 @@ shared_ptr<Deck> CardFactory::createInvisibleManDeck()
         1,
         "Move 1 fog token to another space. Gain 1 action.",
         "external/images/cards/InvisibleMan/rolling-fog.png"
+    );
+    RollingFog->addEffect(
+        TriggerType::None,
+        EffectTarget::None,
+        nullptr,
+        make_shared<RollingFogEffect>()
     );
 
     addCopies(deck, 2, RollingFog);
@@ -591,6 +623,13 @@ shared_ptr<Deck> CardFactory::createInvisibleManDeck()
         "If Invisible Man is on a space with a fog token, "
         "deal 2 damage to any one opposing fighter.",
         "external/images/cards/InvisibleMan/reign-of-terror.png"
+    );
+
+    ReignOfTerror->addEffect(
+        TriggerType::None,
+        EffectTarget::None,
+        nullptr,
+        make_shared<ReignOfTerrorEffect>()
     );
 
     addCopies(deck, 2, ReignOfTerror);
@@ -635,7 +674,12 @@ shared_ptr<Deck> CardFactory::createInvisibleManDeck()
         "Your opponent then moves a fog token up to 2 spaces.",
         "external/images/cards/InvisibleMan/step-lightly.png"
     );
-
+    StepLightly->addEffect(
+        TriggerType::None,
+        EffectTarget::None,
+        nullptr,
+        make_shared<StepLightlyEffect>()
+    );
     addCopies(deck, 2, StepLightly);
 
 
@@ -677,6 +721,13 @@ shared_ptr<Deck> CardFactory::createInvisibleManDeck()
         "external/images/cards/InvisibleMan/impossible-to-see.png"
     );
 
+    ImpossibleToSee->addEffect(
+        TriggerType::Immediately,
+        EffectTarget::None,
+        nullptr,
+        make_shared<ImpossibleToSeeEffect>()
+    );
+
     addCopies(deck, 2, ImpossibleToSee);
 
 
@@ -715,6 +766,13 @@ shared_ptr<Deck> CardFactory::createInvisibleManDeck()
         "AFTER COMBAT: If Invisible Man is on a space with a fog token, "
         "all opposing fighters on spaces with fog tokens take 1 damage.",
         "external/images/cards/InvisibleMan/dreaming-of-revenge.png"
+    );
+
+    DreamingOfRevenge->addEffect(
+        TriggerType::AfterCombat,
+        EffectTarget::None,
+        nullptr,
+        make_shared<DreamingOfRevengeEffect>()
     );
 
     addCopies(deck, 2, DreamingOfRevenge);
