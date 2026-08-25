@@ -1,5 +1,15 @@
 {
     "canUseAbility": true,
+<<<<<<< HEAD
+    "currentPlayer": 0,
+    "matchScreen": {
+        "attackCardIndex": -1,
+        "attacker": {
+            "index": -1,
+            "player": -1
+        },
+        "canBoost": false,
+=======
     "currentPlayer": 1,
     "matchScreen": {
         "attackCardIndex": 3,
@@ -8,12 +18,47 @@
             "player": 1
         },
         "canBoost": true,
+>>>>>>> 8643ac9c9c96ba10f98010c44a5d2f7c6ebefcf7
         "defenseCardIndex": -1,
         "movement": -1,
         "selected": {
             "index": -1,
             "player": -1
         },
+<<<<<<< HEAD
+        "stage": 10,
+        "target": {
+            "index": -1,
+            "player": -1
+        }
+    },
+    "pendingActions": [
+        {
+            "currentCharacter": {
+                "index": -1,
+                "player": -1
+            },
+            "destination": -1,
+            "fogIndex": -1,
+            "maxCards": 0,
+            "minCards": 0,
+            "mode": 0,
+            "otherCharacter": {
+                "index": -1,
+                "player": -1
+            },
+            "player": -1,
+            "range": 0,
+            "selectedCards": [],
+            "selectedCharacter": {
+                "index": -1,
+                "player": -1
+            },
+            "stage": 0,
+            "type": 12
+        }
+    ],
+=======
         "stage": 13,
         "target": {
             "index": 0,
@@ -21,11 +66,74 @@
         }
     },
     "pendingActions": [],
+>>>>>>> 8643ac9c9c96ba10f98010c44a5d2f7c6ebefcf7
     "pendingCombat": null,
     "players": [
         {
             "age": 18,
             "deck": {
+<<<<<<< HEAD
+                "discardPile": [],
+                "drawPile": [
+                    "external/images/cards/dracula/dash.png",
+                    "external/images/cards/dracula/feint (1).png",
+                    "external/images/cards/dracula/beastform.png",
+                    "external/images/cards/dracula/look-into-my-eyes.png",
+                    "external/images/cards/dracula/beastform.png",
+                    "external/images/cards/dracula/ravening-seduction.png",
+                    "external/images/cards/dracula/mistform.png",
+                    "external/images/cards/dracula/ravening-seduction.png",
+                    "external/images/cards/dracula/prey-upon.png",
+                    "external/images/cards/dracula/look-into-my-eyes.png",
+                    "external/images/cards/dracula/feint (1).png",
+                    "external/images/cards/dracula/exploit.png",
+                    "external/images/cards/dracula/exploit.png",
+                    "external/images/cards/dracula/thirst-for-sustenance.png",
+                    "external/images/cards/dracula/thirst-for-sustenance.png",
+                    "external/images/cards/dracula/feeding-frenzy.png",
+                    "external/images/cards/dracula/ambush.png",
+                    "external/images/cards/dracula/exploit.png",
+                    "external/images/cards/dracula/ambush.png",
+                    "external/images/cards/dracula/feeding-frenzy.png",
+                    "external/images/cards/dracula/ravening-seduction.png",
+                    "external/images/cards/dracula/thirst-for-sustenance.png",
+                    "external/images/cards/dracula/baptism-of-blood.png",
+                    "external/images/cards/dracula/mistform.png"
+                ],
+                "hand": [
+                    "external/images/cards/dracula/baptism-of-blood.png",
+                    "external/images/cards/dracula/prey-upon.png",
+                    "external/images/cards/dracula/feint (1).png",
+                    "external/images/cards/dracula/dash.png",
+                    "external/images/cards/dracula/look-into-my-eyes.png"
+                ]
+            },
+            "hero": {
+                "HP": 13,
+                "fogs": [],
+                "position": 18,
+                "sidekicks": [
+                    {
+                        "HP": 1,
+                        "index": 0,
+                        "name": "Sister 1",
+                        "position": 17
+                    },
+                    {
+                        "HP": 1,
+                        "index": 1,
+                        "name": "Sister 2",
+                        "position": 15
+                    },
+                    {
+                        "HP": 1,
+                        "index": 2,
+                        "name": "Sister 3",
+                        "position": 16
+                    }
+                ],
+                "type": "Dracula"
+=======
                 "discardPile": [
                     "external/images/cards/InvisibleMan/lurking.png",
                     "external/images/cards/InvisibleMan/emerge-from-mist.png"
@@ -70,12 +178,58 @@
                 "position": 8,
                 "sidekicks": [],
                 "type": "InvisibleMan"
+>>>>>>> 8643ac9c9c96ba10f98010c44a5d2f7c6ebefcf7
             },
             "name": "Player 1"
         },
         {
             "age": 18,
             "deck": {
+<<<<<<< HEAD
+                "discardPile": [],
+                "drawPile": [
+                    "external/images/cards/InvisibleMan/impossible-to-see.png",
+                    "external/images/cards/InvisibleMan/impossible-to-see.png",
+                    "external/images/cards/InvisibleMan/into-thin-air.png",
+                    "external/images/cards/InvisibleMan/dreaming-of-revenge.png",
+                    "external/images/cards/InvisibleMan/lurking.png",
+                    "external/images/cards/InvisibleMan/slip-away.png",
+                    "external/images/cards/InvisibleMan/rolling-fog.png",
+                    "external/images/cards/InvisibleMan/slip-away.png",
+                    "external/images/cards/InvisibleMan/step-lightly.png",
+                    "external/images/cards/InvisibleMan/reign-of-terror.png",
+                    "external/images/cards/InvisibleMan/slip-away.png",
+                    "external/images/cards/InvisibleMan/step-lightly.png",
+                    "external/images/cards/InvisibleMan/lurking.png",
+                    "external/images/cards/InvisibleMan/emerge-from-mist.png",
+                    "external/images/cards/InvisibleMan/into-thin-air.png",
+                    "external/images/cards/InvisibleMan/reign-of-terror.png"
+                ],
+                "hand": [
+                    "external/images/cards/InvisibleMan/rolling-fog.png",
+                    "external/images/cards/InvisibleMan/coded-notes.png",
+                    "external/images/cards/InvisibleMan/emerge-from-mist.png",
+                    "external/images/cards/InvisibleMan/dreaming-of-revenge.png",
+                    "external/images/cards/InvisibleMan/coded-notes.png"
+                ]
+            },
+            "hero": {
+                "HP": 15,
+                "fogs": [
+                    {
+                        "position": 12
+                    },
+                    {
+                        "position": 3
+                    },
+                    {
+                        "position": 1
+                    }
+                ],
+                "position": 4,
+                "sidekicks": [],
+                "type": "InvisibleMan"
+=======
                 "discardPile": [
                     "external/images/cards/holms/service-revolver.png"
                 ],
@@ -121,6 +275,7 @@
                     }
                 ],
                 "type": "Sherlock"
+>>>>>>> 8643ac9c9c96ba10f98010c44a5d2f7c6ebefcf7
             },
             "name": "Player 2"
         }

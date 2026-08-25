@@ -8,7 +8,7 @@
 
 MenuScreen::MenuScreen(ScreenManager* man){
     this->manager = man;
-    background = LoadTexture("external/images/player.jpg");
+    background = LoadTexture("external/images/cobbleFog.jpg");
     font = LoadFontEx("external/font/Griffy-Regular.ttf", 120, 0, 0);
     
     if (background.id == 0) {}
@@ -42,7 +42,7 @@ void MenuScreen::Draw() {
     } else {
         ClearBackground(BLUE);
     }
-    DrawRectangle(0, 0, 890, 500, {0, 0, 0, 150});
+    DrawRectangle(0, 0, 890, 500, {0, 0, 0, 100});
 
     Vector2 titleSize = MeasureTextEx(font, "UNMATCHED", 120, 1.0f);
     DrawTextEx(font, "UNMATCHED", (Vector2){(890 - titleSize.x) / 2, 20}, 

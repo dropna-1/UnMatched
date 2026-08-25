@@ -63,6 +63,8 @@ struct PendingSave
     int minCards = 0;
     int maxCards = 0;
     std::vector<int> selectedCards;
+
+    int fogIndex = -1;
 };
 
 struct PendingSelectionSave
@@ -268,7 +270,9 @@ inline void to_json(json& j, const PendingSave& p)
         {"player", p.player},
         {"minCards", p.minCards},
         {"maxCards", p.maxCards},
-        {"selectedCards", p.selectedCards}
+        {"selectedCards", p.selectedCards},
+
+        {"fogIndex", p.fogIndex}
     };
 }
 
@@ -291,6 +295,8 @@ inline void from_json(const json& j, PendingSave& p)
     j.at("minCards").get_to(p.minCards);
     j.at("maxCards").get_to(p.maxCards);
     j.at("selectedCards").get_to(p.selectedCards);
+
+    j.at("fogIndex").get_to(p.fogIndex);
 }
 // ------------------------------------------------------------------------------------------
 inline void to_json(json& j, const PendingSelectionSave& s)
@@ -300,7 +306,8 @@ inline void to_json(json& j, const PendingSelectionSave& s)
         {"cards", s.cards},
         {"destination", s.destination},
         {"showHand", s.showHand},
-        {"canFinish", s.canFinish}
+        {"canFinish", s.canFinish},
+        {"fog", s.fog}
     };
 }
 
@@ -311,6 +318,7 @@ inline void from_json(const json& j, PendingSelectionSave& s)
     j.at("destination").get_to(s.destination);
     j.at("showHand").get_to(s.showHand);
     j.at("canFinish").get_to(s.canFinish);
+    j.at("fog").get_to(s.fog);
 }
 // ------------------------------------------------------------------------------------------
 inline void to_json(json& j, const PendingCombatSave& s)

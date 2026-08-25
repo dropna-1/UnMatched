@@ -63,4 +63,12 @@ void TipView::FillMessage(Player& pc, Player& po){
         pc.getName() + ", you need to remove extra cards"});
     pendingMessage.insert({RequestType::DeleteFromOther,
         po.getName() + ", you need to remove extra cards"});
+    pendingMessage.insert({RequestType::FogST1,
+        "Choose the fog you want to move"});
+    pendingMessage.insert({RequestType::FogST2,
+        "Select the location you want it to move to"});
+    pendingMessage.insert({RequestType::LurST1,
+        "Choose hero to move on the fogs or Choose fog to move"});
+    pendingMessage.insert({RequestType::LurST2,
+        "Choose your desired location"});
 }

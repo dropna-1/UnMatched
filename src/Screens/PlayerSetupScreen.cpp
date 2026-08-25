@@ -45,7 +45,7 @@ void PlayerSetupScreen::Draw() {
     DrawTextEx(font, "Player 1", {120, 120}, 70, 1, RAYWHITE);
 
     GuiLabel({400, 120, 100, 40}, "Name:");
-    if (GuiTextBox({510, 120, 280, 40}, name1, 32, editName1)) editName1 = !editName1;
+    if (GuiTextBox({510, 120, 280, 40}, name1, 12, editName1)) editName1 = !editName1;
 
     GuiLabel({400, 170, 100, 40}, "Age:");
     if (GuiTextBox({510, 170, 100, 40}, age1, 8, editAge1)) editAge1 = !editAge1;
@@ -53,7 +53,7 @@ void PlayerSetupScreen::Draw() {
     DrawTextEx(font, "Player 2", {120, 280}, 70, 1, RAYWHITE);
 
     GuiLabel({400, 280, 100, 40}, "Name:");
-    if (GuiTextBox({510, 280, 280, 40}, name2, 32, editName2)) editName2 = !editName2;
+    if (GuiTextBox({510, 280, 280, 40}, name2, 12, editName2)) editName2 = !editName2;
 
     GuiLabel({400, 330, 100, 40}, "Age:");
     if (GuiTextBox({510, 330, 100, 40}, age2, 8, editAge2)) editAge2 = !editAge2;

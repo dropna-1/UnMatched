@@ -26,8 +26,8 @@ private:
     Font font;
     Texture2D background;
 
-    char name1[32] = "Player 1";
-    char name2[32] = "Player 2";
+    char name1[12] = "Player 1";
+    char name2[12] = "Player 2";
     char age1[8]  = "18";
     char age2[8]  = "18";
 

@@ -86,11 +86,11 @@ public:
     Player* checkWinner();
     Board& getBoard();
     std::shared_ptr<Hero>& getDracula();
-    InvisibleMan* getInvisibleMan();
+    InvisibleMan* getInvisibleMan() const;
     std::unique_ptr<PendingCombat>& getPendingCombat();
     void clearPendingCombat();
     void setCanUseAbility(const bool& use);
-    InvisibleMan* asInvisible(Character* c);
+    InvisibleMan* asInvisible(Character* c) const;
     /*-----------------------------------------------------------------*/
     void setPlayer1(const string& name, const int& age);
     void setPlayer2(const string& name, const int& age);
