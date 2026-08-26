@@ -110,18 +110,33 @@ public:
 class FogMoveAction : public PendingAction {
 private:
     Fog* selected = nullptr;
+    // Optional restrictions used by Invisible Man cards.
+    Fog* restricted = nullptr;
+    Fog* excluded = nullptr;
     int range = -1;
     int stage = 0;
     bool emptySpaceOnly = false;
-
 public:
-    FogMoveAction( const int& range, bool emptySpaceOnly = false );
+    FogMoveAction(
+        const int& range,
+        bool emptySpaceOnly = false,
+        Fog* restricted = nullptr,
+        Fog* excluded = nullptr
+    );
     std::vector<int> getOption(Game& game) override;
     void submit(Game& game, int choice) override;
     Fog* getSelected() const;
+    Fog* getRestricted() const;
+    Fog* getExcluded() const;
     int getRange() const;
+    bool getEmptySpaceOnly() const;
     int getStage() const;
-    void restoreState(Fog& fog, const int& stage);
+    void restoreState(
+        Fog& fog,
+        const int& stage,
+        Fog* restricted = nullptr,
+        Fog* excluded = nullptr
+    );
 };
 /*-----------------------------------------------------------------*/
 class LurkingAction : public PendingAction {

@@ -41,6 +41,8 @@ struct PendingSelection{
     int destination = -1;
     bool showHand = false;
     bool canFinish = false;
+    int effectStage = 0;
+    int effectFogIndex = 0;
 };
 
 struct PendingCombat{

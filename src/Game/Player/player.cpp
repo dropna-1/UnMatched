@@ -57,6 +57,17 @@ PlayerSave Player::createSaveData() const
     save.hero.type = hero->getHeroType();
     save.hero.HP = hero->getHp();
     save.hero.position = hero->getPosition();
+    if(hero->getHeroType() == HeroType::Invisibleman)
+    {
+        auto* invisibleMan =
+            dynamic_cast<InvisibleMan*>(hero.get());
+
+        if(invisibleMan != nullptr)
+        {
+            save.hero.startedTurnOnFog =
+                invisibleMan->startedTurnOnFog();
+        }
+    }
 
     int index = 0;
 

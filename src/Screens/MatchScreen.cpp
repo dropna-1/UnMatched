@@ -81,6 +81,10 @@ MatchScreen::~MatchScreen() {
     UnloadFont(font);
     if (background.id != 0)
         UnloadTexture(background);
+    for (auto& hero : heroes) {
+        if (hero.texture.id != 0)
+            UnloadTexture(hero.texture);
+    }
 }
 
 void MatchScreen::HandleInput() {}
@@ -675,6 +679,7 @@ void MatchScreen::HandleMenu(){
     if(GuiButton(btnHome, "Home")){
         manager->BackToHome(890, 500);
         manager->ChangeScreen(std::make_unique<MenuScreen>(manager));
+        return;
     }
     if(GuiButton(btnSave, "Save")){
         inSave = true;

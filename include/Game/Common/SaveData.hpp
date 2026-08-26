@@ -30,6 +30,8 @@ struct HeroSave {
     int position = -1;
     std::vector<SidekickSave> sidekicks;
     std::vector<FogSave> fogs;
+    // Invisible Man state
+    bool startedTurnOnFog = false;
 };
 
 struct PlayerSave {
@@ -64,7 +66,10 @@ struct PendingSave
     int maxCards = 0;
     std::vector<int> selectedCards;
 
+    int restrictedFogIndex = -1;
+    int excludedFogIndex = -1;
     int fogIndex = -1;
+    bool emptySpaceOnly = false;
 };
 
 struct PendingSelectionSave
@@ -75,6 +80,9 @@ struct PendingSelectionSave
     int fog = -1;
     bool showHand = false;
     bool canFinish = false;
+    //recently added
+    int effectStage = 0;
+    int effectFogIndex = 0;
 };
 
 struct PendingCombatSave
@@ -202,7 +210,8 @@ inline void to_json(json& j, const HeroSave& h)
         {"HP", h.HP},
         {"position", h.position},
         {"sidekicks", h.sidekicks},
-        {"fogs", h.fogs}
+        {"fogs", h.fogs} ,
+        {"startedTurnOnFog", h.startedTurnOnFog}
     };
 }
 
@@ -216,6 +225,8 @@ inline void from_json(const json& j, HeroSave& h)
     j.at("position").get_to(h.position);
     j.at("sidekicks").get_to(h.sidekicks);
     j.at("fogs").get_to(h.fogs);
+    if(j.contains("startedTurnOnFog"))
+        j.at("startedTurnOnFog").get_to(h.startedTurnOnFog);
 }
 // ------------------------------------------------------------------------------------------
 inline void to_json(json& j, const PlayerSave& p)
@@ -272,7 +283,10 @@ inline void to_json(json& j, const PendingSave& p)
         {"maxCards", p.maxCards},
         {"selectedCards", p.selectedCards},
 
-        {"fogIndex", p.fogIndex}
+        {"fogIndex", p.fogIndex},
+        {"restrictedFogIndex", p.restrictedFogIndex},
+        {"excludedFogIndex", p.excludedFogIndex} ,
+        {"emptySpaceOnly", p.emptySpaceOnly}
     };
 }
 
@@ -297,6 +311,12 @@ inline void from_json(const json& j, PendingSave& p)
     j.at("selectedCards").get_to(p.selectedCards);
 
     j.at("fogIndex").get_to(p.fogIndex);
+    if(j.contains("restrictedFogIndex"))
+        j.at("restrictedFogIndex").get_to(p.restrictedFogIndex);
+    if(j.contains("excludedFogIndex"))
+        j.at("excludedFogIndex").get_to(p.excludedFogIndex);
+    if(j.contains("emptySpaceOnly"))
+        j.at("emptySpaceOnly").get_to(p.emptySpaceOnly);
 }
 // ------------------------------------------------------------------------------------------
 inline void to_json(json& j, const PendingSelectionSave& s)
@@ -307,7 +327,9 @@ inline void to_json(json& j, const PendingSelectionSave& s)
         {"destination", s.destination},
         {"showHand", s.showHand},
         {"canFinish", s.canFinish},
-        {"fog", s.fog}
+        {"fog", s.fog},
+        {"effectStage", s.effectStage},
+        {"effectFogIndex", s.effectFogIndex}
     };
 }
 
@@ -319,7 +341,11 @@ inline void from_json(const json& j, PendingSelectionSave& s)
     j.at("showHand").get_to(s.showHand);
     j.at("canFinish").get_to(s.canFinish);
     j.at("fog").get_to(s.fog);
-}
+    if(j.contains("effectStage"))
+        j.at("effectStage").get_to(s.effectStage);
+    if(j.contains("effectFogIndex"))
+        j.at("effectFogIndex").get_to(s.effectFogIndex);
+    }
 // ------------------------------------------------------------------------------------------
 inline void to_json(json& j, const PendingCombatSave& s)
 {

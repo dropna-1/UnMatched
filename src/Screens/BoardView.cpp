@@ -1,6 +1,6 @@
 #include "Screens/BoardView.hpp"
 
-#include "Game/Board/Board.hpp"
+#include "Game/Board/board.hpp"
 #include "Game/Player/player.hpp"
 #include "Game/Characters/Character.hpp"
 #include "Game/Enums/TypeEnums.hpp"

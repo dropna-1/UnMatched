@@ -7,7 +7,7 @@
             "index": -1,
             "player": -1
         },
-        "canBoost": false,
+        "canBoost": true,
         "defenseCardIndex": -1,
         "movement": -1,
         "selected": {
@@ -68,6 +68,7 @@
                 ],
                 "position": 4,
                 "sidekicks": [],
+                "startedTurnOnFog": false,
                 "type": "InvisibleMan"
             },
             "name": "Player 1"
@@ -99,15 +100,15 @@
                     "external/images/cards/dracula/thirst-for-sustenance.png",
                     "external/images/cards/dracula/baptism-of-blood.png",
                     "external/images/cards/dracula/exploit.png",
-                    "external/images/cards/dracula/thirst-for-sustenance.png",
-                    "external/images/cards/dracula/feeding-frenzy.png"
+                    "external/images/cards/dracula/thirst-for-sustenance.png"
                 ],
                 "hand": [
                     "external/images/cards/dracula/mistform.png",
                     "external/images/cards/dracula/feint (1).png",
                     "external/images/cards/dracula/exploit.png",
                     "external/images/cards/dracula/feint (1).png",
-                    "external/images/cards/dracula/mistform.png"
+                    "external/images/cards/dracula/mistform.png",
+                    "external/images/cards/dracula/feeding-frenzy.png"
                 ]
             },
             "hero": {
@@ -119,7 +120,7 @@
                         "HP": 1,
                         "index": 0,
                         "name": "Sister 1",
-                        "position": 17
+                        "position": 7
                     },
                     {
                         "HP": 1,
@@ -134,10 +135,11 @@
                         "position": 16
                     }
                 ],
+                "startedTurnOnFog": false,
                 "type": "Dracula"
             },
             "name": "Player 2"
         }
     ],
-    "remainingAction": 2
+    "remainingAction": 1
 }

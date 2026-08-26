@@ -1,4 +1,4 @@
-#include "Game/Ability/InvisibleManAbility.hpp"
+#include "Game/Ability/InvisiblemanAbility.hpp"
 #include "Game/Characters/InvisibleMan.hpp"
 
 std::string InvisibleManAbility::getName() const
