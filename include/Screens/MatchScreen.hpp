@@ -21,7 +21,7 @@ struct HeroToken {
 
 inline std::vector<HeroToken> getToken(){
     return {
-        {"external/images/Board/draco (3).png", HeroType::Dracula},
+        {"external/images/Board/dractos.png", HeroType::Dracula},
         {"external/images/Board/shero.png", HeroType::Sherlock},
         {"external/images/Board/invo1.png", HeroType::Invisibleman}
     };

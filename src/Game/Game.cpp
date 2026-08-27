@@ -18,15 +18,16 @@ shared_ptr<Hero>& Game::getDracula(){
     return dracula;
 }
 
-InvisibleMan* Game::getInvisibleMan() const{
-    if(player1.getHero() != nullptr){
+InvisibleMan* Game::getInvisibleMan() const 
+{
+    if (player1.getHero() != nullptr) {
         auto* invisible = asInvisible(player1.getHero().get());
-        if(invisible != nullptr)
+        if (invisible != nullptr)
             return invisible;
     }
-    if(player2.getHero() != nullptr){
-        auto* invisible = asInvisible(player1.getHero().get());
-        if(invisible != nullptr)
+    if (player2.getHero() != nullptr) {
+        auto* invisible = asInvisible(player2.getHero().get());
+        if (invisible != nullptr)
             return invisible;
     }
     return nullptr;
@@ -150,11 +151,17 @@ int Game::getRemainingActions() const{
 vector<int> Game::getAvailableMoves(Character* character, 
     const int& spacing)
 {
+    if(character == nullptr)
+        return {};
+    int start = character->getPosition();
+    if(start < 0 || start >= board.size())
+        return {};
+    if(spacing <= 0)
+        return {};
     vector<int> reachable;
     queue<pair<int, int>> q;
     vector<bool> visited(board.size(), false);
 
-    int start = character->getPosition();
     q.push({start, 0});
     visited[start] = true;
 
@@ -173,42 +180,56 @@ vector<int> Game::getAvailableMoves(Character* character,
             for(int secret : board.getSpace(place).secret)
                 neigh.push_back(secret);
 
-        if(auto* inv = asInvisible(character)){
+        if(auto* inv = asInvisible(character))
+        {
+            bool currentSpaceHasFog = false;
             for(const auto& fog : inv->getFogs())
-                if(fog.isPlaced())
-                    neigh.push_back(fog.getPosition());
-        }
+            {
+                if(fog.isPlaced() &&
+                fog.getPosition() == place)
+                {
+                    currentSpaceHasFog = true;
+                    break;
+                }
+            }
+            if(currentSpaceHasFog)
+            {
+                for(const auto& fog : inv->getFogs())
+                {
+                    if(!fog.isPlaced())
+                        continue;
 
+                    if(fog.getPosition() == place)
+                        continue;
+                    neigh.push_back(fog.getPosition());
+                }
+            }
+        }
         for(int next : neigh){
             bool enemy = false;
             bool dom = false;
-
             if(visited[next])
                 continue;
-
             for(Character* c : otherPlayer->getAllCharacters())
                 if(next == c->getPosition()){
                     enemy = true;
                     break;
                 }
-            
             if(enemy)
                 continue;
-
             for(Character* c : currentPlayer->getAllCharacters())
                 if(next == c->getPosition()){
                     dom = true;
                     break;
                 }
-
             visited[next] = true;
             q.push({next, dist+1});
-  
+
             if(!dom)
                 reachable.push_back(next);
         }
     }
-    sort(reachable.begin(), reachable.end());
+    std::sort(reachable.begin(), reachable.end());
     return reachable;
 }
 
@@ -217,11 +238,66 @@ vector<int> Game::getFogMoves(
     const int& spacing,
     bool emptySpaceOnly)
 {
+    if(fog == nullptr)
+        return {};
+
+    int start = fog->getPosition();
+
+    if(start < 0 || start >= board.size())
+        return {};
+
+    auto* invisibleMan = getInvisibleMan();
+
+    if(invisibleMan == nullptr)
+        return {};
+
+    auto isOccupiedByAnotherFog = [&](int space) -> bool
+    {
+        for(const auto& otherFog : invisibleMan->getFogs()){
+            if(&otherFog == fog)
+                continue;
+            if(!otherFog.isPlaced())
+                continue;
+            if(otherFog.getPosition() == space)
+                return true;
+        }
+        return false;
+    };
+
+    auto canUseDestination = [&](int space) -> bool{
+        if(space == start)
+            return false;
+        if(isOccupiedByAnotherFog(space))
+            return false;
+        if(emptySpaceOnly){
+            for(Character* c : currentPlayer->getAllCharacters()){
+                if(c != nullptr && c->getPosition() == space)
+                    return false;
+            }
+
+            for(Character* c : otherPlayer->getAllCharacters()){
+                if(c != nullptr && c->getPosition() == space)
+                    return false;
+            }
+        }
+        return true;
+    };
+
+    if(spacing == -1){
+        vector<int> reachable;
+        for(int space = 0; space < board.size(); ++space){
+            if(canUseDestination(space))
+                reachable.push_back(space);
+        }
+        return reachable;
+    }
+
+    if(spacing <= 0)
+        return {};
+        
     vector<int> reachable;
     queue<pair<int, int>> q;
     vector<bool> visited(board.size(), false);
-
-    int start = fog->getPosition();
 
     q.push({start, 0});
     visited[start] = true;
@@ -244,55 +320,45 @@ vector<int> Game::getFogMoves(
                 neigh.push_back(secret);
         }
 
-        for(int next : neigh)
-        {
+        for(int next : neigh){
+            if(next < 0 || next >= board.size())
+                continue;
+
             if(visited[next])
                 continue;
 
             visited[next] = true;
             q.push({next, dist + 1});
 
-            bool occupied = false;
-            for(Character* c : currentPlayer->getAllCharacters()){
-                if(c->getPosition() == next){
-                    occupied = true;
-                    break;
-                }
-            }
-
-            if(!occupied){
-                for(Character* c : otherPlayer->getAllCharacters()){
-                    if(c->getPosition() == next){
-                        occupied = true;
-                        break;
-                    }
-                }
-            }
-            if(emptySpaceOnly && occupied)
-                continue;
-
-            reachable.push_back(next);
+            if(canUseDestination(next))
+                reachable.push_back(next);
         }
     }
-
     sort(reachable.begin(), reachable.end());
-
     return reachable;
 }
 
 vector<int> Game::getAllSpaces(){
     vector<int> allSpaces;
-    for(int space = 0; space < 32; space++)
+    for(int space = 0; space < board.size() ; space++)
         if(canMove(space))
             allSpaces.push_back(space); 
     return allSpaces;
 }
 
-vector<int> Game::getFreeSpacesNearby(Character* character){
+vector<int> Game::getFreeSpacesNearby(Character* character)
+{
+    if(character == nullptr)
+        return {};
+    int position = character->getPosition();
+    if(position < 0 || position >= board.size())
+        return {};
     vector<int> freeSpaces;
-    for(int neigh : board.getSpace(character->getPosition()).neighbors)
+    for(int neigh : board.getSpace(position).neighbors)
+    {
         if(canMove(neigh))
             freeSpaces.push_back(neigh);
+    }
     return freeSpaces;
 }
 
@@ -350,25 +416,58 @@ void Game::completePendingAction(){
 }
 
 
-int Game::calculateDamage(Card* attack, Card* defense){
+int Game::calculateDamage(Card* attack, Card* defense)
+{
+    if(attack == nullptr)
+        return 0;
     if(defense == nullptr)
         return attack->getValue();
-    if(attack->getValue() > defense->getValue())
-        return attack->getValue() - defense->getValue();
+    int defenseValue = defense->getValue();
+    Character* defender = pendingCombat->option.target;
+    if(defender != nullptr && defender->isHero())
+    {
+        auto hero = dynamic_cast<Hero*>(defender);
+        if(hero != nullptr && hero->getAbility() != nullptr)
+        {
+            defenseValue += hero->getAbility()->getDefenseBonus(
+                defender,
+                pendingCombat->context
+            );
+        }
+    }
+    if(attack->getValue() > defenseValue)
+        return attack->getValue() - defenseValue;
+
     return 0;
 }
 
-
-vector<Character*> Game::getEnemiesNearby(Character* own){
+vector<Character*> Game::getEnemiesNearby(Character* own)
+{
+    if(own == nullptr)
+        return {};
+    int position = own->getPosition();
+    if(position < 0 || position >= board.size())
+        return {};
     vector<Character*> enemies;
-    auto neighboors = board.getSpace(own->getPosition()).neighbors;
-    for(int target : neighboors){
+    auto neighbors = board.getSpace(position).neighbors;
+    for(int target : neighbors)
+    {
         for(auto character : player1.getAllCharacters())
-            if(character->getPosition() == target)
+        {
+            if(character != nullptr &&
+               character->getPosition() == target)
+            {
                 enemies.push_back(character);
+            }
+        }
         for(auto character : player2.getAllCharacters())
-            if(character->getPosition() == target)
+        {
+            if(character != nullptr &&
+               character->getPosition() == target)
+            {
                 enemies.push_back(character);
+            }
+        }
     }
     return enemies;
 }
@@ -447,26 +546,42 @@ vector<int> Game::getSidekickPlacement(Character* character)
     return reachable;
 }
 
-vector<int> Game::getFogPlacement(InvisibleMan* inv){
+vector<int> Game::getFogPlacement(InvisibleMan* inv)
+{
+    if(inv == nullptr)
+        return {};
+    int invisiblePosition = inv->getPosition();
+    if(invisiblePosition < 0 || invisiblePosition >= board.size())
+        return {};
     vector<int> reachable;
-    for(int zone : board.getSpace(inv->getPosition()).zone)
-        for(int i = 0; i < 32; i++)
+    for(int zone : board.getSpace(invisiblePosition).zone)
+    {
+        for(int i = 0; i < board.size(); i++)
         {
-            if(i == invisible->getPosition())
+            if(i == invisiblePosition)
                 continue;
-                
-            bool cant = true;
+            bool occupiedByFog = false;
             for(const auto& fog : inv->getFogs())
-                if(fog.getPosition() == i){
-                    cant = false;
+            {
+                if(fog.isPlaced() &&
+                   fog.getPosition() == i)
+                {
+                    occupiedByFog = true;
                     break;
                 }
-            if(!cant) continue;
-
+            }
+            if(occupiedByFog)
+                continue;
             vector<int> zones = board.getSpace(i).zone;
             if(find(zones.begin(), zones.end(), zone) != zones.end())
                 reachable.push_back(i);
         }
+    }
+    sort(reachable.begin(), reachable.end());
+    reachable.erase(
+        unique(reachable.begin(), reachable.end()),
+        reachable.end()
+    );
     return reachable;
 }
 
@@ -905,27 +1020,49 @@ std::vector<PendingSave> Game::createPendingSave() const
         case RequestType::FogST1:
         case RequestType::FogST2:
         {
-            auto* fogAction = dynamic_cast<FogMoveAction*>(action);
+            auto* fogAction =
+                dynamic_cast<FogMoveAction*>(action);
+
             if(fogAction == nullptr)
                 break;
 
             save.stage = fogAction->getStage();
             save.range = fogAction->getRange();
 
-            if(fogAction->getSelected() != nullptr){
-                auto* inv = getInvisibleMan();
-                if(inv != nullptr){
-                    for(int i = 0; i < inv->getFogs().size(); ++i){
-                        if(&inv->getFogs()[i] == fogAction->getSelected()){
-                            save.fogIndex = i;
-                            break;
-                        }
+            save.emptySpaceOnly =
+                fogAction->getEmptySpaceOnly();
+
+            auto* inv = getInvisibleMan();
+
+            if(inv != nullptr)
+            {
+                for(int i = 0;
+                    i < static_cast<int>(inv->getFogs().size());
+                    ++i)
+                {
+                    if(&inv->getFogs()[i] ==
+                    fogAction->getSelected())
+                    {
+                        save.fogIndex = i;
+                    }
+
+                    if(&inv->getFogs()[i] ==
+                    fogAction->getRestricted())
+                    {
+                        save.restrictedFogIndex = i;
+                    }
+
+                    if(&inv->getFogs()[i] ==
+                    fogAction->getExcluded())
+                    {
+                        save.excludedFogIndex = i;
                     }
                 }
             }
+
             break;
         }
-        case RequestType::LurST1:
+                case RequestType::LurST1:
         case RequestType::LurST2:
         {
             auto* fogAction = dynamic_cast<LurkingAction*>(action);
@@ -977,6 +1114,8 @@ std::optional<PendingCombatSave> Game::createPendingCombatSave() const
     save.selection.destination = pendingCombat->selection.destination;
     save.selection.showHand = pendingCombat->selection.showHand;
     save.selection.canFinish = pendingCombat->selection.canFinish;
+    save.selection.effectStage = pendingCombat->selection.effectStage;
+    save.selection.effectFogIndex = pendingCombat->selection.effectFogIndex;
     if(pendingCombat->selection.fog != nullptr){
         auto* inv = getInvisibleMan();
         if(inv != nullptr){
@@ -1173,17 +1312,56 @@ std::unique_ptr<PendingAction> Game::restorePendingAction(const PendingSave& sav
         case RequestType::FogST1:
         case RequestType::FogST2:
         {
-            auto action = std::make_unique<FogMoveAction>(save.range);
-            if(save.fogIndex >= 0){
-                auto* inv = getInvisibleMan();
-                if(inv == nullptr || save.fogIndex >= inv->getFogs().size())
+            auto* inv = getInvisibleMan();
+
+            if(inv == nullptr)
+                return nullptr;
+
+            Fog* restricted = nullptr;
+            Fog* excluded = nullptr;
+
+            if(save.restrictedFogIndex >= 0)
+            {
+                if(save.restrictedFogIndex >=
+                static_cast<int>(inv->getFogs().size()))
+                    return nullptr;
+
+                restricted =
+                    &inv->getFogs()[save.restrictedFogIndex];
+            }
+
+            if(save.excludedFogIndex >= 0)
+            {
+                if(save.excludedFogIndex >=
+                static_cast<int>(inv->getFogs().size()))
+                    return nullptr;
+
+                excluded =
+                    &inv->getFogs()[save.excludedFogIndex];
+            }
+
+            auto action =
+                std::make_unique<FogMoveAction>(
+                    save.range,
+                    save.emptySpaceOnly,
+                    restricted,
+                    excluded
+                );
+
+            if(save.fogIndex >= 0)
+            {
+                if(save.fogIndex >=
+                static_cast<int>(inv->getFogs().size()))
                     return nullptr;
 
                 action->restoreState(
                     inv->getFogs()[save.fogIndex],
-                    save.stage
+                    save.stage,
+                    restricted,
+                    excluded
                 );
             }
+
             return action;
         }
         case RequestType::LurST1:
@@ -1288,6 +1466,8 @@ std::unique_ptr<PendingCombat> Game::restorePendingCombat(const PendingCombatSav
     combat->selection.destination = save.selection.destination;
     combat->selection.showHand = save.selection.showHand;
     combat->selection.canFinish = save.selection.canFinish;
+    combat->selection.effectStage = save.selection.effectStage;
+    combat->selection.effectFogIndex = save.selection.effectFogIndex;
     if(save.selection.fog >= 0){
         auto* inv = getInvisibleMan();
         if(inv != nullptr && save.selection.fog < inv->getFogs().size())
@@ -1332,7 +1512,7 @@ bool Game::LoadGame(int slot)
     // ----------------------------------------------------------------
     auto restoreHero =
         [&](std::shared_ptr<Hero> hero,
-           const HeroSave& saveData)
+            const HeroSave& saveData)
     {
         if(hero == nullptr)
             return;
@@ -1340,20 +1520,37 @@ bool Game::LoadGame(int slot)
         hero->setHP(saveData.HP);
         hero->setPosition(saveData.position);
 
-        auto& sidekicks = hero->getSidekicks();
-        if(!sidekicks.empty())
+        if(auto* inv = asInvisible(hero.get()))
+        {
+            inv->startedTurnOnFogFlag =
+                saveData.startedTurnOnFog;
+
+            for(int i = 0;
+                i < static_cast<int>(saveData.fogs.size()) &&
+                i < static_cast<int>(inv->getFogs().size());
+                ++i)
+            {
+                inv->getFogs()[i].setPosition(
+                    saveData.fogs[i].position
+                );
+            }
+        }
+        else
+        {
+            auto& sidekicks = hero->getSidekicks();
+
             for(const auto& savedSidekick : saveData.sidekicks)
             {
-                if(savedSidekick.index < 0 || savedSidekick.index >= sidekicks.size())
+                if(savedSidekick.index < 0 ||
+                savedSidekick.index >=
+                    static_cast<int>(sidekicks.size()))
                     continue;
 
-                auto& sidekick = sidekicks[savedSidekick.index];
+                auto& sidekick =
+                    sidekicks[savedSidekick.index];
+
                 sidekick->setHP(savedSidekick.HP);
                 sidekick->setPosition(savedSidekick.position);
-            }
-        else if(auto inv = asInvisible(hero.get())){
-            for(int i = 0; i < saveData.fogs.size(); i++){
-                inv->getFogs()[i].setPosition(saveData.fogs[i].position);
             }
         }
     };

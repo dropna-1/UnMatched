@@ -440,83 +440,6 @@ shared_ptr<Deck> CardFactory::createInvisibleManDeck()
 {
     auto deck = make_shared<Deck>();
 
-    // =========================================================
-    // 1. Slip Away
-    // 3x Attack - 3 - Boost 2
-    // =========================================================
-
-    auto SlipAway = createCard(
-        "Slip Away",
-        CardType::Attack,
-        FighterType::Hero,
-        TriggerType::AfterCombat,
-        3,
-        2,
-        "AFTER COMBAT: Move 1 fog token to a space without a fighter, "
-        "then place Invisible Man on that space.",
-        "external/images/cards/InvisibleMan/slip-away.png"
-    );
-    SlipAway->addEffect(
-        TriggerType::AfterCombat,
-        EffectTarget::None,
-        nullptr,
-        make_shared<SlipAwayEffect>()
-    );
-    addCopies(deck, 3, SlipAway);
-
-
-    // =========================================================
-    // 2. Surprise Attack
-    // 2x Attack - 5 - Boost 1
-    // =========================================================
-
-    /*auto SurpriseAttack = createCard(
-        "Surprise Attack",
-        CardType::Attack,
-        FighterType::Hero,
-        TriggerType::Immediately,
-        5,
-        1,
-        "IMMEDIATELY: Cancel all effects on your opponent's card. "
-        "AFTER COMBAT: If Invisible Man is on a space with a fog token, "
-        "move that fog token to another space.",
-        "external/images/cards/InvisibleMan/surprise-attack.png"
-    );
-
-    addCopies(deck, 2, SurpriseAttack);*/
-
-
-    // =========================================================
-    // 3. Emerge From Mist
-    // 2x Attack - 3 - Boost 2
-    // =========================================================
-
-    auto EmergeFromMist = createCard(
-        "Emerge From Mist",
-        CardType::Attack,
-        FighterType::Hero,
-        TriggerType::DuringCombat,
-        3,
-        2,
-        "DURING COMBAT: If Invisible Man started this turn on "
-        "a space with a fog token, this card's value is 5 instead.",
-        "external/images/cards/InvisibleMan/emerge-from-mist.png"
-    );
-    EmergeFromMist->addEffect(
-        TriggerType::DuringCombat,
-        EffectTarget::None,
-        nullptr,
-        make_shared<EmergeFromMistEffect>()
-    );
-    addCopies(deck, 2, EmergeFromMist);
-
-
-
-    // =========================================================
-    // 4. Coded Notes
-    // 2x Defense - 3 - Boost 2
-    // =========================================================
-
     auto CodedNotes = createCard(
         "Coded Notes",
         CardType::Defend,
@@ -524,171 +447,44 @@ shared_ptr<Deck> CardFactory::createInvisibleManDeck()
         TriggerType::AfterCombat,
         3,
         2,
-        "AFTER COMBAT: Draw 3 cards, then choose 2 cards from "
-        "your hand and put them on top of your deck in any order.",
+        "AFTER COMBAT: Draw 3 cards, then choose 2 cards from your hand "
+        "and put them on top of your deck in any order.",
         "external/images/cards/InvisibleMan/coded-notes.png"
+    );
+
+    CodedNotes->addEffect(
+        TriggerType::AfterCombat,
+        EffectTarget::CardOwner,
+        nullptr,
+        make_shared<CodedNotesEffect>()
     );
 
     addCopies(deck, 2, CodedNotes);
 
 
-    // =========================================================
-    // 5. Into Thin Air
-    // 2x Defense - 4 - Boost 1
-    // =========================================================
-
-    auto IntoThinAir = createCard(
-        "Into Thin Air",
-        CardType::Defend,
+    auto Confound = createCard(
+        "Confound",
+        CardType::Versalite,
         FighterType::Hero,
         TriggerType::AfterCombat,
-        4,
-        1,
-        "AFTER COMBAT: Move Invisible Man up to 1 space. "
-        "Your opponent then moves a fog token up to 3 spaces.",
-        "external/images/cards/InvisibleMan/into-thin-air.png"
-    );
-    IntoThinAir->addEffect(
-        TriggerType::AfterCombat,
-        EffectTarget::None,
-        nullptr,
-        make_shared<IntoThinAirEffect>()
-    );
-    addCopies(deck, 2, IntoThinAir);
-
-
-    // =========================================================
-    // 6. Lurking
-    // 2x Defense - 2 - Boost 2
-    // =========================================================
-
-    auto Lurking = createCard(
-        "Lurking",
-        CardType::Defend,
-        FighterType::Hero,
-        TriggerType::AfterCombat,
-        2,
-        2,
-        "AFTER COMBAT: Draw 1 card and choose 1 effect: "
-        "move Invisible Man to a space with a fog token, "
-        "or move 1 fog token up to 3 spaces.",
-        "external/images/cards/InvisibleMan/lurking.png"
-    );
-    Lurking->addEffect(
-        TriggerType::AfterCombat,
-        EffectTarget::None,
-        nullptr,
-        make_shared<LurkingEffect>()
-    );
-    addCopies(deck, 2, Lurking);
-
-
-    // =========================================================
-    // 7. Rolling Fog
-    // 2x Scheme - Boost 1
-    // =========================================================
-
-    auto RollingFog = createCard(
-        "Rolling Fog",
-        CardType::Scheme,
-        FighterType::Hero,
-        TriggerType::None,
-        0,
-        1,
-        "Move 1 fog token to another space. Gain 1 action.",
-        "external/images/cards/InvisibleMan/rolling-fog.png"
-    );
-    RollingFog->addEffect(
-        TriggerType::None,
-        EffectTarget::None,
-        nullptr,
-        make_shared<RollingFogEffect>()
-    );
-
-    addCopies(deck, 2, RollingFog);
-
-
-    // =========================================================
-    // 8. Reign of Terror
-    // 2x Scheme - Boost 1
-    // =========================================================
-
-    auto ReignOfTerror = createCard(
-        "Reign of Terror",
-        CardType::Scheme,
-        FighterType::Hero,
-        TriggerType::None,
-        0,
-        1,
-        "If Invisible Man is on a space with a fog token, "
-        "deal 2 damage to any one opposing fighter.",
-        "external/images/cards/InvisibleMan/reign-of-terror.png"
-    );
-
-    ReignOfTerror->addEffect(
-        TriggerType::None,
-        EffectTarget::None,
-        nullptr,
-        make_shared<ReignOfTerrorEffect>()
-    );
-
-    addCopies(deck, 2, ReignOfTerror);
-
-
-    // =========================================================
-    // 9. Vanish
-    // 2x Scheme - Boost 3
-    // =========================================================
-
-    /*auto Vanish = createCard(
-        "Vanish",
-        CardType::Scheme,
-        FighterType::Hero,
-        TriggerType::None,
-        0,
         3,
-        "Recover 1 health. Remove Invisible Man from the board. "
-        "At the start of your next turn, place Invisible Man in any space. "
-        "(If you played this as your first action, end your turn.)",
-        "external/images/cards/InvisibleMan/vanish.png"
+        2,
+        "AFTER COMBAT: Your opponent may choose to discard 1 card. "
+        "If they do not, you may move each fog token to any other space.",
+        "external/images/cards/InvisibleMan/confound.png"
     );
 
-    addCopies(deck, 2, Vanish);*/
-
-
-    // =========================================================
-    // 10. Step Lightly
-    // 2x Scheme - Boost 1
-    // =========================================================
-
-    auto StepLightly = createCard(
-        "Step Lightly",
-        CardType::Scheme,
-        FighterType::Hero,
-        TriggerType::None,
-        0,
-        1,
-        "Deal 1 damage to one adjacent fighter. "
-        "If Invisible Man is on a space with a fog token, "
-        "deal 3 damage instead. "
-        "Your opponent then moves a fog token up to 2 spaces.",
-        "external/images/cards/InvisibleMan/step-lightly.png"
-    );
-    StepLightly->addEffect(
-        TriggerType::None,
-        EffectTarget::None,
+    Confound->addEffect(
+        TriggerType::AfterCombat,
+        EffectTarget::CardOwner,
         nullptr,
-        make_shared<StepLightlyEffect>()
+        make_shared<ConfoundEffect>()
     );
-    addCopies(deck, 2, StepLightly);
+
+    addCopies(deck, 2, Confound);
 
 
-    // =========================================================
-    // 11. Covert Preparation
-    // 3x Versatile - 2 - Boost 1
-    // =========================================================
-
-    /*auto CovertPreparation = createCard(
+    auto CovertPreparation = createCard(
         "Covert Preparation",
         CardType::Versalite,
         FighterType::Hero,
@@ -700,13 +496,59 @@ shared_ptr<Deck> CardFactory::createInvisibleManDeck()
         "external/images/cards/InvisibleMan/covert-preparation.png"
     );
 
-    addCopies(deck, 3, CovertPreparation);*/
+    CovertPreparation->addEffect(
+        TriggerType::AfterCombat,
+        EffectTarget::CardOwner,
+        nullptr,
+        make_shared<CovertPreparationEffect>()
+    );
+
+    addCopies(deck, 3, CovertPreparation);
 
 
-    // =========================================================
-    // 12. Impossible to See
-    // 2x Versatile - 2 - Boost 2
-    // =========================================================
+    auto DreamingOfRevenge = createCard(
+        "Dreaming of Revenge",
+        CardType::Versalite,
+        FighterType::Hero,
+        TriggerType::AfterCombat,
+        3,
+        1,
+        "AFTER COMBAT: If Invisible Man is on a space with a fog token, "
+        "all opposing fighters on spaces with fog tokens take 1 damage.",
+        "external/images/cards/InvisibleMan/dreaming-of-revenge.png"
+    );
+
+    DreamingOfRevenge->addEffect(
+        TriggerType::AfterCombat,
+        EffectTarget::CardOwner,
+        nullptr,
+        make_shared<DreamingOfRevengeEffect>()
+    );
+
+    addCopies(deck, 2, DreamingOfRevenge);
+
+
+    auto EmergeFromMist = createCard(
+        "Emerge From Mist",
+        CardType::Attack,
+        FighterType::Hero,
+        TriggerType::DuringCombat,
+        3,
+        2,
+        "DURING COMBAT: If Invisible Man started this turn on a space "
+        "with a fog token, this card's value is 5 instead.",
+        "external/images/cards/InvisibleMan/emerge-from-mist.png"
+    );
+
+    EmergeFromMist->addEffect(
+        TriggerType::DuringCombat,
+        EffectTarget::CardOwner,
+        nullptr,
+        make_shared<EmergeFromMistEffect>()
+    );
+
+    addCopies(deck, 2, EmergeFromMist);
+
 
     auto ImpossibleToSee = createCard(
         "Impossible to See",
@@ -723,7 +565,7 @@ shared_ptr<Deck> CardFactory::createInvisibleManDeck()
 
     ImpossibleToSee->addEffect(
         TriggerType::Immediately,
-        EffectTarget::None,
+        EffectTarget::CardOpponent,
         nullptr,
         make_shared<ImpossibleToSeeEffect>()
     );
@@ -731,57 +573,141 @@ shared_ptr<Deck> CardFactory::createInvisibleManDeck()
     addCopies(deck, 2, ImpossibleToSee);
 
 
-    // =========================================================
-    // 13. Confound
-    // 2x Versatile - 3 - Boost 2
-    // =========================================================
+    auto IntoThinAir = createCard(
+        "Into Thin Air",
+        CardType::Defend,
+        FighterType::Hero,
+        TriggerType::AfterCombat,
+        4,
+        1,
+        "AFTER COMBAT: Move Invisible Man up to 1 space. "
+        "Your opponent then moves a fog token up to 3 spaces.",
+        "external/images/cards/InvisibleMan/into-thin-air.png"
+    );
 
-    /*auto Confound = createCard(
-        "Confound",
-        CardType::Versalite,
+    IntoThinAir->addEffect(
+        TriggerType::AfterCombat,
+        EffectTarget::CardOwner,
+        nullptr,
+        make_shared<IntoThinAirEffect>()
+    );
+
+    addCopies(deck, 2, IntoThinAir);
+
+
+    auto Lurking = createCard(
+        "Lurking",
+        CardType::Defend,
+        FighterType::Hero,
+        TriggerType::AfterCombat,
+        2,
+        2,
+        "AFTER COMBAT: Draw 1 card and choose 1 effect: "
+        "move Invisible Man to a space with a fog token, "
+        "or move 1 fog token up to 3 spaces.",
+        "external/images/cards/InvisibleMan/lurking.png"
+    );
+
+    Lurking->addEffect(
+        TriggerType::AfterCombat,
+        EffectTarget::CardOwner,
+        nullptr,
+        make_shared<LurkingEffect>()
+    );
+
+    addCopies(deck, 2, Lurking);
+
+
+    auto ReignOfTerror = createCard(
+        "Reign of Terror",
+        CardType::Scheme,
+        FighterType::Hero,
+        TriggerType::None,
+        0,
+        1,
+        "If Invisible Man is on a space with a fog token, "
+        "deal 2 damage to each opposing fighter on a space with a fog token.",
+        "external/images/cards/InvisibleMan/reign-of-terror.png"
+    );
+
+    ReignOfTerror->addEffect(
+        TriggerType::None,
+        EffectTarget::CardOwner,
+        nullptr,
+        make_shared<ReignOfTerrorEffect>()
+    );
+
+    addCopies(deck, 2, ReignOfTerror);
+
+
+    auto RollingFog = createCard(
+        "Rolling Fog",
+        CardType::Scheme,
+        FighterType::Hero,
+        TriggerType::None,
+        0,
+        1,
+        "Move 1 fog token to another space. Gain 1 action.",
+        "external/images/cards/InvisibleMan/rolling-fog.png"
+    );
+
+    RollingFog->addEffect(
+        TriggerType::None,
+        EffectTarget::CardOwner,
+        nullptr,
+        make_shared<RollingFogEffect>()
+    );
+
+    addCopies(deck, 2, RollingFog);
+
+
+    auto SlipAway = createCard(
+        "Slip Away",
+        CardType::Attack,
         FighterType::Hero,
         TriggerType::AfterCombat,
         3,
         2,
-        "AFTER COMBAT: Your opponent may choose to discard 1 card. "
-        "If they do not, you may move each fog token to any other space.",
-        "external/images/cards/InvisibleMan/confound.png"
+        "AFTER COMBAT: Move 1 fog token to a space without a fighter, "
+        "then place Invisible Man on that space.",
+        "external/images/cards/InvisibleMan/slip-away.png"
     );
 
-    addCopies(deck, 2, Confound);*/
-
-
-    // =========================================================
-    // 14. Dreaming of Revenge
-    // 2x Versatile - 3 - Boost 1
-    // =========================================================
-
-    auto DreamingOfRevenge = createCard(
-        "Dreaming of Revenge",
-        CardType::Versalite,
-        FighterType::Hero,
+    SlipAway->addEffect(
         TriggerType::AfterCombat,
-        3,
-        1,
-        "AFTER COMBAT: If Invisible Man is on a space with a fog token, "
-        "all opposing fighters on spaces with fog tokens take 1 damage.",
-        "external/images/cards/InvisibleMan/dreaming-of-revenge.png"
-    );
-
-    DreamingOfRevenge->addEffect(
-        TriggerType::AfterCombat,
-        EffectTarget::None,
+        EffectTarget::CardOwner,
         nullptr,
-        make_shared<DreamingOfRevengeEffect>()
+        make_shared<SlipAwayEffect>()
     );
 
-    addCopies(deck, 2, DreamingOfRevenge);
+    addCopies(deck, 3, SlipAway);
 
 
-    // =========================================================
-    // Shuffle
-    // =========================================================
+    auto StepLightly = createCard(
+        "Step Lightly",
+        CardType::Scheme,
+        FighterType::Hero,
+        TriggerType::None,
+        0,
+        1,
+        "Deal 1 damage to one adjacent fighter. "
+        "If Invisible Man is on a space with a fog token, "
+        "deal 3 damage instead. "
+        "Your opponent then moves a fog token up to 2 spaces.",
+        "external/images/cards/InvisibleMan/step-lightly.png"
+    );
+
+    StepLightly->addEffect(
+        TriggerType::None,
+        EffectTarget::CardOwner,
+        nullptr,
+        make_shared<StepLightlyEffect>()
+    );
+
+    addCopies(deck, 2, StepLightly);
+
 
     deck->shuffleDeck();
+
     return deck;
 }

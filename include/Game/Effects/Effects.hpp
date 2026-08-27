@@ -411,9 +411,6 @@ public:
 
 class IntoThinAirEffect : public IEffect
 {
-private:
-    int stage = 0;
-
 public:
     void execute(
         GameContext& context,
@@ -429,9 +426,6 @@ public:
 
 class SlipAwayEffect : public IEffect
 {
-private:
-    bool waitingForFog = true;
-
 public:
     void execute(
         GameContext& context,
@@ -447,9 +441,6 @@ public:
 
 class LurkingEffect : public IEffect
 {
-private:
-    int stage = 0;
-
 public:
     void execute(
         GameContext& context,
@@ -465,9 +456,6 @@ public:
 
 class StepLightlyEffect : public IEffect
 {
-private:
-    int stage = 0;
-
 public:
     void execute(
         GameContext& context,
@@ -483,10 +471,6 @@ public:
 
 class CodedNotesEffect : public IEffect
 {
-private:
-    int stage = 0;
-    std::vector<int> selectedCards;
-
 public:
     void execute(
         GameContext& context,
@@ -496,5 +480,34 @@ public:
     std::shared_ptr<IEffect> clone() const override
     {
         return std::make_shared<CodedNotesEffect>(*this);
+    }
+};
+
+class ConfoundEffect : public IEffect
+{
+public:
+    void execute(
+        GameContext& context,
+        const vector<Character*>& targets
+    ) override;
+
+    std::shared_ptr<IEffect> clone() const override
+    {
+        return std::make_shared<ConfoundEffect>(*this);
+    }
+};
+
+
+class CovertPreparationEffect : public IEffect
+{
+public:
+    void execute(
+        GameContext& context,
+        const vector<Character*>& targets
+    ) override;
+
+    std::shared_ptr<IEffect> clone() const override
+    {
+        return std::make_shared<CovertPreparationEffect>(*this);
     }
 };

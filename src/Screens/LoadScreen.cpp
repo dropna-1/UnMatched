@@ -54,9 +54,9 @@ void LoadScreen::Draw() {
             Rectangle DeleteSave = {StartX, 280, 118, 50};
             StartX += 138;
             std::string text = "Save " + std::to_string(i);
-            if(GuiButton(Save, text.c_str())){
-                manager->GetGame().LoadGame(i);
-                canLoad = true;
+            if(GuiButton(Save, text.c_str()))
+            {
+                canLoad = manager->GetGame().LoadGame(i);
             }
             if(GuiButton(DeleteSave, "X")){
                 SaveManager::deleteSlot(i);

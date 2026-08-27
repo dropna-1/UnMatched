@@ -27,4 +27,8 @@ class IAbility
         }
         virtual std::string getName() const = 0;
         virtual std::string getDescription() const = 0;
+        virtual int getDefenseBonus(Character* defender, GameContext& context)
+        {
+            return 0;
+        }
 };

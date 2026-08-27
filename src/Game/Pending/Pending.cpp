@@ -197,17 +197,28 @@ std::vector<int> ChooseCharacterAction::getOption(Game& game)
 
     if(mode == SelectionMode::Neighboors)
     {
-        for(auto ch : game.getEnemiesNearby(pc))
-            characterPositions.push_back(ch->getPosition());
+        for(Character* character : game.getEnemiesNearby(pc))
+        {
+            if(character == nullptr)
+                continue;
+
+            characters.push_back(character);
+            characterPositions.push_back(character->getPosition());
+        }
 
         return characterPositions;
     }
 
-    if(mode == SelectionMode::Current || mode == SelectionMode::All)
+    if(mode == SelectionMode::Current ||
+       mode == SelectionMode::All)
     {
-        for(Character* c : game.getCurrentPlayer()->getAllCharacters())
+        for(Character* c :
+            game.getCurrentPlayer()->getAllCharacters())
         {
-            if(pc != nullptr && c->getPosition() == pc->getPosition())
+            if(c == nullptr)
+                continue;
+
+            if(pc != nullptr &&c->getPosition() == pc->getPosition())
                 continue;
 
             characters.push_back(c);
@@ -215,13 +226,17 @@ std::vector<int> ChooseCharacterAction::getOption(Game& game)
         }
     }
 
-    if(mode == SelectionMode::Other || mode == SelectionMode::All)
+    if(mode == SelectionMode::Other ||
+       mode == SelectionMode::All)
     {
-        for(Character* c : game.getOtherPlayer()->getAllCharacters())
+        for(Character* c :
+            game.getOtherPlayer()->getAllCharacters())
         {
-            if(pc != nullptr && c->getPosition() == pc->getPosition())
+            if(c == nullptr)
                 continue;
 
+            if(pc != nullptr &&c->getPosition() == pc->getPosition())
+                continue;
             characters.push_back(c);
             characterPositions.push_back(c->getPosition());
         }
@@ -291,23 +306,37 @@ void DraculaAction::submit(Game& game, int choice){
     game.completePendingAction();
 }
 /*-----------------------------------------------------------------*/
-FogMoveAction::FogMoveAction( const int& range, bool emptySpaceOnly)
-    : range(range), emptySpaceOnly(emptySpaceOnly)
+FogMoveAction::FogMoveAction( const int& range, bool emptySpaceOnly, Fog* restricted, Fog* excluded)
+    : restricted(restricted), excluded(excluded), range(range), emptySpaceOnly(emptySpaceOnly)
 {
     type = RequestType::FogST1;
 }
 
 std::vector<int> FogMoveAction::getOption(Game& game)
 {
+    InvisibleMan* inv = game.getInvisibleMan();
+    if(inv == nullptr)
+        return {};
     if(stage == 0){
+        if(restricted != nullptr){
+            if(!restricted->isPlaced() ||
+               restricted == excluded)
+                return {};
+            return { restricted->getPosition() };
+        }
         std::vector<int> fogs;
-        for(auto& fog : game.getInvisibleMan()->getFogs()){
+        for(auto& fog : inv->getFogs()){
             if(!fog.isPlaced())
+                continue;
+            if(&fog == excluded)
                 continue;
             fogs.push_back(fog.getPosition());
         }
         return fogs;
     }
+
+    if(selected == nullptr)
+        return {};
 
     return game.getFogMoves(
         selected,
@@ -315,53 +344,110 @@ std::vector<int> FogMoveAction::getOption(Game& game)
         emptySpaceOnly
     );
 }
-void FogMoveAction::submit(Game& game, int choice){
-    if(stage == 0){
-        for(auto& fog : game.getInvisibleMan()->getFogs())
-            if(choice == fog.getPosition())
-                selected = &fog;
+
+void FogMoveAction::submit(Game& game, int choice)
+{
+    if(stage == 0)
+    {
+        if(restricted != nullptr)
+        {
+            if(choice != restricted->getPosition() ||
+               restricted == excluded)
+                return;
+
+            selected = restricted;
+        }
+        else
+        {
+            for(auto& fog :
+                game.getInvisibleMan()->getFogs())
+            {
+                if(choice == fog.getPosition() &&
+                   &fog != excluded)
+                {
+                    selected = &fog;
+                    break;
+                }
+            }
+        }
+
+        if(selected == nullptr)
+            return;
+
         stage = 1;
         type = RequestType::FogST2;
+
+        return;
     }
-    else{
-        game.getPendingCombat().get()->selection.fog = selected;
-        game.getPendingCombat().get()->selection.destination = choice;
-        game.completePendingAction();
-    }
+    game.getPendingCombat()->selection.fog = selected;
+    game.getPendingCombat()->selection.destination = choice;
+    game.completePendingAction();
 }
 
 Fog* FogMoveAction::getSelected() const{return selected;}
 int FogMoveAction::getRange() const{return range;}
 int FogMoveAction::getStage() const{return stage;}
-void FogMoveAction::restoreState(Fog& fog, const int& stage){
+//added recently
+Fog* FogMoveAction::getRestricted() const{return restricted;}
+Fog* FogMoveAction::getExcluded() const{return excluded;}
+bool FogMoveAction::getEmptySpaceOnly() const{return emptySpaceOnly;}
+void FogMoveAction::restoreState( Fog& fog, const int& stage, Fog* restricted, Fog* excluded)
+{
     selected = &fog;
     this->stage = stage;
+    this->restricted = restricted;
+    this->excluded = excluded;
+    if(stage == 0)
+        type = RequestType::FogST1;
+    else
+        type = RequestType::FogST2;
 }
 /*-----------------------------------------------------------------*/
 LurkingAction::LurkingAction(){type = RequestType::LurST1;}
 
-vector<int> LurkingAction::getOption(Game& game){
+vector<int> LurkingAction::getOption(Game& game)
+{
     InvisibleMan* inv = game.getInvisibleMan();
+    if(inv == nullptr)
+        return {};
     std::vector<int> fogs;
-    for(auto& fog : inv->getFogs()){
+    for(auto& fog : inv->getFogs())
+    {
+        if(!fog.isPlaced())
+            continue;
         bool canPlace = true;
         for(auto c : game.getOtherPlayer()->getAllCharacters())
-            if(c->getPosition() == fog.getPosition())
+        {
+            if(c != nullptr &&
+               c->getPosition() == fog.getPosition())
+            {
                 canPlace = false;
+                break;
+            }
+        }
         if(canPlace)
             fogs.push_back(fog.getPosition());
     }
-    if(stage == 0){
+    if(stage == 0)
+    {
         std::vector<int> all;
         if(!fogs.empty())
             all.push_back(inv->getPosition());
         for(auto& fog : inv->getFogs())
-            all.push_back(fog.getPosition());
+        {
+            if(fog.isPlaced())
+                all.push_back(fog.getPosition());
+        }
         return all;
     }
     if(selectedInv != nullptr)
         return fogs;
-    return game.getFogMoves(selectedFog, 3);
+    if(selectedFog == nullptr)
+        return {};
+    return game.getFogMoves(
+        selectedFog,
+        3
+    );
 }
 
 void LurkingAction::submit(Game& game, int choice){

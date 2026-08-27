@@ -89,9 +89,12 @@ shared_ptr<Card> Deck::playCard(int handIndex)
 
 }
 
-Card* Deck::previewCard(int index) const 
+Card* Deck::previewCard(int index) const
 {
-    return hand[index].get() ;
+    if(index < 0 || index >= static_cast<int>(hand.size()))
+        return nullptr;
+
+    return hand[index].get();
 }
 
 void Deck::restore(
@@ -117,8 +120,6 @@ void Deck::putCardsOnTop(
         if(it != hand.end())
             hand.erase(it);
     }
-
-    // drawPile.back() is the top of the deck.
     for(auto it = cards.rbegin(); it != cards.rend(); ++it)
     {
         drawPile.push_back(*it);

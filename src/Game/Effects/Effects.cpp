@@ -321,14 +321,38 @@ void ReviveSister::execute(GameContext& context, const vector<Character*>& targe
 
 void AmbushEffect::execute(GameContext& context ,  const vector<Character*>& targets)
 {
-    if(context.getEnemyPlayer()->getHero()->getDeck()->getHandSize() == 0)
-    {
-        return ; 
-    }
-    int randomindex = (rand())%(context.getEnemyPlayer()->getHero()->getDeck()->getHandSize());
-    Card* randomcard = context.getEnemyPlayer()->getHero()->getDeck()->previewCard(randomindex);
-    context.getCurrentCard()->setValue(context.getCurrentCard()->getValue() + randomcard->getBoost()) ;
-    context.getEnemyPlayer()->getHero()->getDeck()->discardFromHand(randomindex);
+    int handSize =
+        context.getEnemyPlayer()
+            ->getHero()
+            ->getDeck()
+            ->getHandSize();
+
+    if(handSize <= 0)
+        return;
+
+    int randomindex = rand() % handSize;
+
+    Card* randomcard =
+        context.getEnemyPlayer()
+            ->getHero()
+            ->getDeck()
+            ->previewCard(randomindex);
+
+    if(randomcard == nullptr)
+        return;
+
+    Card* currentCard = context.getCurrentCard();
+
+    if(currentCard == nullptr)
+        return;
+
+    currentCard->setValue(
+        currentCard->getValue() + randomcard->getBoost()
+    );
+    context.getEnemyPlayer()
+        ->getHero()
+        ->getDeck()
+        ->discardFromHand(randomindex);
 }
 
 void GainActionEffect::execute(GameContext& context ,  const vector<Character*>& targets)
@@ -518,43 +542,52 @@ void DreamingOfRevengeEffect::execute(
     GameContext& context,
     const vector<Character*>& targets)
 {
-    auto* invisibleMan = context.getGame()->getInvisibleMan();
+    auto* invisibleMan =
+        context.getGame()->getInvisibleMan();
 
-    if(invisibleMan == nullptr)
+    if(invisibleMan == nullptr ||
+       !invisibleMan->isOnFog() ||
+       targets.empty() ||
+       targets.front() == nullptr)
         return;
 
-    if(!invisibleMan->isOnFog())
-        return;
+    Character* owner =
+        targets.front();
 
-    auto* enemyPlayer = context.getEnemyPlayer();
+    Player* opponentPlayer = nullptr;
 
-    if(enemyPlayer == nullptr)
-        return;
-
-    for(Character* character : enemyPlayer->getAllCharacters())
+    if(owner == context.getCurrentPlayer()->getHero().get())
     {
-        if(character == nullptr)
+        opponentPlayer =
+            context.getEnemyPlayer();
+    }
+    else if(owner == context.getEnemyPlayer()->getHero().get())
+    {
+        opponentPlayer =
+            context.getCurrentPlayer();
+    }
+
+    if(opponentPlayer == nullptr)
+        return;
+
+    for(Character* character :
+        opponentPlayer->getAllCharacters())
+    {
+        if(character == nullptr ||
+           !character->isAlive())
             continue;
 
-        if(!character->isAlive())
-            continue;
-
-        bool onFog = false;
-
-        for(const Fog& fog : invisibleMan->getFogs())
+        for(const Fog& fog :
+            invisibleMan->getFogs())
         {
-            if(!fog.isPlaced())
-                continue;
-
-            if(fog.getPosition() == character->getPosition())
+            if(fog.isPlaced() &&
+               fog.getPosition() ==
+                   character->getPosition())
             {
-                onFog = true;
+                character->takeDamage(1);
                 break;
             }
         }
-
-        if(onFog)
-            character->takeDamage(1);
     }
 }
 
@@ -590,11 +623,14 @@ void RollingFogEffect::execute(
     const vector<Character*>& targets)
 {
     auto* game = context.getGame();
+
+    if(game == nullptr || game->getPendingCombat() == nullptr)
+        return;
+
     auto& selection = game->getPendingCombat()->selection;
 
-    // First execution:
-    // ask the player to choose a fog and its destination.
-    if(selection.fog == nullptr || selection.destination == -1)
+    if(selection.fog == nullptr ||
+       selection.destination == -1)
     {
         game->requestAction(
             make_unique<FogMoveAction>(-1)
@@ -603,15 +639,11 @@ void RollingFogEffect::execute(
         return;
     }
 
-    // Resumed execution:
-    // move the selected fog.
     selection.fog->setPosition(selection.destination);
 
-    // Clear the temporary selection so it cannot affect later effects.
     selection.fog = nullptr;
     selection.destination = -1;
 
-    // Gain 1 action.
     game->addAction();
 }
 
@@ -622,30 +654,26 @@ void ReignOfTerrorEffect::execute(
     auto* game = context.getGame();
     auto* invisibleMan = game->getInvisibleMan();
 
-    // Reign of Terror only works while Invisible Man is on a fog.
-    if(invisibleMan == nullptr || !invisibleMan->isOnFog())
+    if(invisibleMan == nullptr ||
+       !invisibleMan->isOnFog())
         return;
 
-    auto& selection = game->getPendingCombat()->selection;
-
-    // First execution: ask the player to choose one opposing fighter.
-    if(selection.character == nullptr)
+    for(Character* character :
+        game->getOtherPlayer()->getAllCharacters())
     {
-        game->requestAction(
-            make_unique<ChooseCharacterAction>(
-                SelectionMode::Other,
-                nullptr
-            )
-        );
+        if(character == nullptr || !character->isAlive())
+            continue;
 
-        return;
+        for(const Fog& fog : invisibleMan->getFogs())
+        {
+            if(fog.isPlaced() &&
+               fog.getPosition() == character->getPosition())
+            {
+                character->takeDamage(2);
+                break;
+            }
+        }
     }
-
-    // Resumed execution: deal 2 damage to the selected fighter.
-    selection.character->takeDamage(2);
-
-    // Clear the temporary selection.
-    selection.character = nullptr;
 }
 
 void IntoThinAirEffect::execute(
@@ -655,16 +683,13 @@ void IntoThinAirEffect::execute(
     auto* game = context.getGame();
     auto* invisibleMan = game->getInvisibleMan();
 
-    if(invisibleMan == nullptr)
+    if(invisibleMan == nullptr ||
+       game->getPendingCombat() == nullptr)
         return;
 
     auto& selection = game->getPendingCombat()->selection;
 
-    // ---------------------------------------------------------
-    // Stage 0:
-    // Move Invisible Man up to 1 space.
-    // ---------------------------------------------------------
-    if(stage == 0)
+    if(selection.effectStage == 0)
     {
         game->requestAction(
             make_unique<MoveAction>(
@@ -675,34 +700,35 @@ void IntoThinAirEffect::execute(
             )
         );
 
-        stage = 1;
+        selection.effectStage = 1;
         return;
     }
 
-    // ---------------------------------------------------------
-    // Stage 1:
-    // Invisible Man has moved.
-    // Now the opponent moves a fog up to 3 spaces.
-    // ---------------------------------------------------------
-    if(stage == 1)
+    if(selection.effectStage == 1)
     {
-        // The destination used by MoveAction belongs only
-        // to the first movement. Clear it before FogMoveAction.
         selection.destination = -1;
+        selection.effectStage = 2;
 
         game->requestAction(
             make_unique<FogMoveAction>(3)
         );
 
-        stage = 2;
         return;
     }
 
-    // ---------------------------------------------------------
-    // Stage 2:
-    // Fog movement has completed.
-    // Nothing else is required.
-    // ---------------------------------------------------------
+    if(selection.effectStage == 2)
+    {
+        if(selection.fog == nullptr ||
+           selection.destination == -1)
+            return;
+
+        selection.fog->setPosition(selection.destination);
+
+        selection.fog = nullptr;
+        selection.destination = -1;
+
+        selection.effectStage = 0;
+    }
 }
 
 void SlipAwayEffect::execute(
@@ -712,18 +738,16 @@ void SlipAwayEffect::execute(
     auto* game = context.getGame();
     auto* invisibleMan = game->getInvisibleMan();
 
-    if(invisibleMan == nullptr)
+    if(invisibleMan == nullptr ||
+       game->getPendingCombat() == nullptr)
         return;
 
     auto& selection = game->getPendingCombat()->selection;
 
-    // ---------------------------------------------------------
-    // First execution:
-    // Choose a fog and move it up to 3 spaces,
-    // but only to a space without a fighter.
-    // ---------------------------------------------------------
-    if(waitingForFog)
+    if(selection.effectStage == 0)
     {
+        selection.effectStage = 1;
+
         game->requestAction(
             make_unique<FogMoveAction>(
                 3,
@@ -731,25 +755,21 @@ void SlipAwayEffect::execute(
             )
         );
 
-        waitingForFog = false;
         return;
     }
 
-    // ---------------------------------------------------------
-    // Resumed execution:
-    // FogMoveAction has already selected the fog and destination.
-    // Move the fog first, then place Invisible Man there.
-    // ---------------------------------------------------------
-    if(selection.fog == nullptr || selection.destination == -1)
+    if(selection.fog == nullptr ||
+       selection.destination == -1)
         return;
 
     selection.fog->setPosition(selection.destination);
 
     invisibleMan->setPosition(selection.destination);
 
-    // Clear temporary selection.
     selection.fog = nullptr;
     selection.destination = -1;
+
+    selection.effectStage = 0;
 }
 
 void LurkingEffect::execute(
@@ -759,64 +779,87 @@ void LurkingEffect::execute(
     auto* game = context.getGame();
     auto* invisibleMan = game->getInvisibleMan();
 
-    if(invisibleMan == nullptr)
+    if(game == nullptr ||
+       invisibleMan == nullptr ||
+       game->getPendingCombat() == nullptr ||
+       targets.empty() ||
+       targets.front() == nullptr)
         return;
 
-    auto& selection = game->getPendingCombat()->selection;
+    Character* owner =
+        targets.front();
 
-    // ---------------------------------------------------------
-    // Stage 0:
-    // Draw 1 card, then ask the player to choose the effect.
-    // ---------------------------------------------------------
-    if(stage == 0)
+    Player* ownerPlayer = nullptr;
+
+    if(owner == context.getCurrentPlayer()->getHero().get())
     {
-        game->getCurrentPlayer()
+        ownerPlayer =
+            context.getCurrentPlayer();
+    }
+    else if(owner == context.getEnemyPlayer()->getHero().get())
+    {
+        ownerPlayer =
+            context.getEnemyPlayer();
+    }
+
+    if(ownerPlayer == nullptr ||
+       ownerPlayer->getHero() == nullptr)
+        return;
+
+    auto& selection =
+        game->getPendingCombat()->selection;
+
+    // Draw 1 card from the CARD OWNER's deck.
+    if(selection.effectStage == 0)
+    {
+        ownerPlayer
             ->getHero()
             ->getDeck()
             ->drawCard();
+
+        selection.character = nullptr;
+        selection.fog = nullptr;
+        selection.destination = -1;
+
+        selection.effectStage = 1;
 
         game->requestAction(
             make_unique<LurkingAction>()
         );
 
-        stage = 1;
         return;
     }
 
-    // ---------------------------------------------------------
-    // Stage 1:
-    // LurkingAction has completed.
-    // Determine which effect was selected.
-    // ---------------------------------------------------------
-
-    // Option 1:
-    // Move Invisible Man to the selected fog.
+    // Move Invisible Man to the selected fog space.
     if(selection.character == invisibleMan)
     {
-        if(selection.destination != -1)
-        {
-            invisibleMan->setPosition(selection.destination);
-        }
+        if(selection.destination == -1)
+            return;
+
+        invisibleMan->setPosition(
+            selection.destination
+        );
 
         selection.character = nullptr;
         selection.destination = -1;
+        selection.effectStage = 0;
 
         return;
     }
 
-    // Option 2:
     // Move the selected fog.
     if(selection.fog != nullptr)
     {
-        if(selection.destination != -1)
-        {
-            selection.fog->setPosition(selection.destination);
-        }
+        if(selection.destination == -1)
+            return;
+
+        selection.fog->setPosition(
+            selection.destination
+        );
 
         selection.fog = nullptr;
         selection.destination = -1;
-
-        return;
+        selection.effectStage = 0;
     }
 }
 
@@ -827,16 +870,13 @@ void StepLightlyEffect::execute(
     auto* game = context.getGame();
     auto* invisibleMan = game->getInvisibleMan();
 
-    if(invisibleMan == nullptr)
+    if(invisibleMan == nullptr ||
+       game->getPendingCombat() == nullptr)
         return;
 
     auto& selection = game->getPendingCombat()->selection;
 
-    // ---------------------------------------------------------
-    // Stage 0:
-    // Choose one adjacent fighter.
-    // ---------------------------------------------------------
-    if(stage == 0)
+    if(selection.effectStage == 0)
     {
         game->requestAction(
             make_unique<ChooseCharacterAction>(
@@ -845,43 +885,44 @@ void StepLightlyEffect::execute(
             )
         );
 
-        stage = 1;
+        selection.effectStage = 1;
         return;
     }
 
-    // ---------------------------------------------------------
-    // Stage 1:
-    // Deal damage to the selected fighter.
-    // ---------------------------------------------------------
-    if(stage == 1)
+    if(selection.effectStage == 1)
     {
         if(selection.character == nullptr)
             return;
 
-        int damage = 1;
-
-        if(invisibleMan->isOnFog())
-            damage = 3;
+        const int damage =
+            invisibleMan->isOnFog() ? 3 : 1;
 
         selection.character->takeDamage(damage);
 
-        // The character selection is no longer needed.
         selection.character = nullptr;
 
-        // Now the opponent moves a fog.
+        selection.effectStage = 2;
+
         game->requestAction(
             make_unique<FogMoveAction>(2)
         );
 
-        stage = 2;
         return;
     }
 
-    // ---------------------------------------------------------
-    // Stage 2:
-    // FogMoveAction has completed.
-    // Nothing else is required.
-    // ---------------------------------------------------------
+    if(selection.effectStage == 2)
+    {
+        if(selection.fog == nullptr ||
+           selection.destination == -1)
+            return;
+
+        selection.fog->setPosition(selection.destination);
+
+        selection.fog = nullptr;
+        selection.destination = -1;
+
+        selection.effectStage = 0;
+    }
 }
 
 void CodedNotesEffect::execute(
@@ -889,27 +930,55 @@ void CodedNotesEffect::execute(
     const vector<Character*>& targets)
 {
     auto* game = context.getGame();
-    auto* player = context.getCurrentPlayer();
-    auto* deck = player->getHero()->getDeck().get();
 
-    auto& selection = game->getPendingCombat()->selection;
+    if(game == nullptr ||
+       game->getPendingCombat() == nullptr ||
+       targets.empty() ||
+       targets.front() == nullptr)
+        return;
 
-    // ---------------------------------------------------------
-    // Stage 0:
-    // Draw 3 cards.
-    // ---------------------------------------------------------
-    if(stage == 0)
+    Character* owner =
+        targets.front();
+
+    Player* ownerPlayer = nullptr;
+
+    if(owner == context.getCurrentPlayer()->getHero().get())
+    {
+        ownerPlayer =
+            context.getCurrentPlayer();
+    }
+    else if(owner == context.getEnemyPlayer()->getHero().get())
+    {
+        ownerPlayer =
+            context.getEnemyPlayer();
+    }
+
+    if(ownerPlayer == nullptr ||
+       ownerPlayer->getHero() == nullptr)
+        return;
+
+    auto* deck =
+        ownerPlayer->getHero()->getDeck().get();
+
+    auto& selection =
+        game->getPendingCombat()->selection;
+
+    if(selection.effectStage == 0)
     {
         for(int i = 0; i < 3; ++i)
             deck->drawCard();
 
-        stage = 1;
+        selection.cards.clear();
+        selection.showHand = false;
+        selection.canFinish = false;
+
+        selection.effectStage = 1;
 
         game->requestAction(
             make_unique<ChooseCardAction>(
-                player,
-                1,
-                1,
+                ownerPlayer,
+                2,
+                2,
                 *game
             )
         );
@@ -917,67 +986,284 @@ void CodedNotesEffect::execute(
         return;
     }
 
-    // ---------------------------------------------------------
-    // Stage 1:
-    // First card selected.
-    // ---------------------------------------------------------
-    if(stage == 1)
+    if(selection.effectStage == 1)
     {
-        if(selection.cards.empty())
+        if(selection.cards.size() != 2)
             return;
 
-        selectedCards.push_back(selection.cards[0]);
-
-        selection.cards.clear();
-        selection.showHand = false;
-
-        stage = 2;
-
-        game->requestAction(
-            make_unique<ChooseCardAction>(
-                player,
-                1,
-                1,
-                *game
-            )
-        );
-
-        return;
-    }
-
-    // ---------------------------------------------------------
-    // Stage 2:
-    // Second card selected.
-    // ---------------------------------------------------------
-    if(stage == 2)
-    {
-        if(selection.cards.empty())
-            return;
-
-        selectedCards.push_back(selection.cards[0]);
-
-        selection.cards.clear();
-        selection.showHand = false;
-
-        // Get the actual cards before removing them from the hand.
         vector<shared_ptr<Card>> cardsToMove;
 
-        for(int index : selectedCards)
-        {
-            const auto& hand = deck->getHand();
+        const auto& hand =
+            deck->getHand();
 
-            if(index >= 0 && index < static_cast<int>(hand.size()))
-                cardsToMove.push_back(hand[index]);
+        for(int index : selection.cards)
+        {
+            if(index < 0 ||
+               index >= static_cast<int>(hand.size()))
+                return;
+
+            cardsToMove.push_back(
+                hand[index]
+            );
         }
 
-        if(cardsToMove.size() != 2)
+        deck->putCardsOnTop(
+            cardsToMove
+        );
+
+        selection.cards.clear();
+        selection.showHand = false;
+        selection.canFinish = false;
+
+        selection.effectStage = 0;
+    }
+}
+
+void ConfoundEffect::execute(
+    GameContext& context,
+    const vector<Character*>& targets)
+{
+    auto* game = context.getGame();
+    auto* invisibleMan = game->getInvisibleMan();
+
+    if(game == nullptr ||
+       invisibleMan == nullptr ||
+       game->getPendingCombat() == nullptr ||
+       targets.empty() ||
+       targets.front() == nullptr)
+        return;
+
+    Character* owner =
+        targets.front();
+
+    Player* ownerPlayer = nullptr;
+    Player* opponentPlayer = nullptr;
+
+    if(owner == context.getCurrentPlayer()->getHero().get())
+    {
+        ownerPlayer =
+            context.getCurrentPlayer();
+
+        opponentPlayer =
+            context.getEnemyPlayer();
+    }
+    else if(owner == context.getEnemyPlayer()->getHero().get())
+    {
+        ownerPlayer =
+            context.getEnemyPlayer();
+
+        opponentPlayer =
+            context.getCurrentPlayer();
+    }
+
+    if(ownerPlayer == nullptr ||
+       opponentPlayer == nullptr)
+        return;
+
+    auto& selection =
+        game->getPendingCombat()->selection;
+
+    if(selection.effectStage == 0)
+    {
+        selection.cards.clear();
+        selection.showHand = false;
+        selection.canFinish = false;
+
+        selection.fog = nullptr;
+        selection.destination = -1;
+        selection.effectFogIndex = 0;
+
+        selection.effectStage = 1;
+
+        game->requestAction(
+            make_unique<ChooseCardAction>(
+                opponentPlayer,
+                0,
+                1,
+                *game
+            )
+        );
+
+        return;
+    }
+
+    if(selection.effectStage != 1)
+        return;
+
+    // Opponent chose to discard a card.
+    if(!selection.cards.empty())
+    {
+        int index =
+            selection.cards.front();
+
+        opponentPlayer
+            ->getHero()
+            ->getDeck()
+            ->discardFromHand(index);
+
+        selection.cards.clear();
+        selection.showHand = false;
+        selection.canFinish = false;
+
+        selection.effectFogIndex = 0;
+        selection.fog = nullptr;
+        selection.destination = -1;
+
+        selection.effectStage = 0;
+
+        return;
+    }
+
+    // Opponent did not discard.
+    // Card owner may now move every placed fog token.
+    while(
+        selection.effectFogIndex <
+        static_cast<int>(
+            invisibleMan->getFogs().size()
+        )
+    )
+    {
+        Fog& fog =
+            invisibleMan->getFogs()
+                [selection.effectFogIndex];
+
+        if(!fog.isPlaced())
+        {
+            ++selection.effectFogIndex;
+            continue;
+        }
+
+        if(selection.fog != &fog ||
+           selection.destination == -1)
+        {
+            game->requestAction(
+                make_unique<FogMoveAction>(
+                    -1,
+                    false,
+                    &fog
+                )
+            );
+
+            return;
+        }
+
+        fog.setPosition(
+            selection.destination
+        );
+
+        selection.fog = nullptr;
+        selection.destination = -1;
+
+        ++selection.effectFogIndex;
+    }
+
+    selection.effectStage = 0;
+    selection.effectFogIndex = 0;
+    selection.fog = nullptr;
+    selection.destination = -1;
+}
+
+void CovertPreparationEffect::execute(
+    GameContext& context,
+    const vector<Character*>& targets)
+{
+    auto* game = context.getGame();
+    auto* invisibleMan = game->getInvisibleMan();
+
+    if(game == nullptr ||
+       invisibleMan == nullptr ||
+       game->getPendingCombat() == nullptr ||
+       targets.empty() ||
+       targets.front() == nullptr)
+        return;
+
+    Character* owner =
+        targets.front();
+
+    Player* ownerPlayer = nullptr;
+
+    if(owner == context.getCurrentPlayer()->getHero().get())
+    {
+        ownerPlayer =
+            context.getCurrentPlayer();
+    }
+    else if(owner == context.getEnemyPlayer()->getHero().get())
+    {
+        ownerPlayer =
+            context.getEnemyPlayer();
+    }
+
+    if(ownerPlayer == nullptr ||
+       ownerPlayer->getHero() == nullptr)
+        return;
+
+    auto& selection =
+        game->getPendingCombat()->selection;
+
+    //stage0
+    if(selection.effectStage == 0)
+    {
+        ownerPlayer
+            ->getHero()
+            ->getDeck()
+            ->drawCard();
+
+        selection.fog = nullptr;
+        selection.destination = -1;
+
+        selection.effectStage = 1;
+
+        game->requestAction(
+            make_unique<FogMoveAction>(2)
+        );
+
+        return;
+    }
+    //stage 1
+    if(selection.effectStage == 1)
+    {
+        if(selection.fog == nullptr ||
+           selection.destination == -1)
             return;
 
-        deck->putCardsOnTop(cardsToMove);
+        Fog* firstFog =
+            selection.fog;
 
-        selectedCards.clear();
+        firstFog->setPosition(
+            selection.destination
+        );
 
-        stage = 3;
+        selection.fog = nullptr;
+        selection.destination = -1;
+
+        selection.effectStage = 2;
+
+        // The second fog must be different from the first.
+        game->requestAction(
+            make_unique<FogMoveAction>(
+                2,
+                false,
+                nullptr,
+                firstFog
+            )
+        );
+
         return;
+    }
+    //stage2
+    if(selection.effectStage == 2)
+    {
+        if(selection.fog == nullptr ||
+           selection.destination == -1)
+            return;
+
+        selection.fog->setPosition(
+            selection.destination
+        );
+
+        selection.fog = nullptr;
+        selection.destination = -1;
+
+        selection.effectStage = 0;
     }
 }
