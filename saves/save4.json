@@ -1,0 +1,150 @@
+{
+    "canUseAbility": false,
+    "currentPlayer": 1,
+    "matchScreen": {
+        "attackCardIndex": -1,
+        "attacker": {
+            "index": -1,
+            "player": -1
+        },
+        "canBoost": false,
+        "defenseCardIndex": -1,
+        "movement": -1,
+        "selected": {
+            "index": -1,
+            "player": -1
+        },
+        "stage": 1,
+        "target": {
+            "index": -1,
+            "player": -1
+        }
+    },
+    "pendingActions": [],
+    "pendingCombat": null,
+    "players": [
+        {
+            "age": 18,
+            "deck": {
+                "discardPile": [],
+                "drawPile": [
+                    "external/images/cards/InvisibleMan/confound.png",
+                    "external/images/cards/InvisibleMan/covert-preparation.png",
+                    "external/images/cards/InvisibleMan/reign-of-terror.png",
+                    "external/images/cards/InvisibleMan/lurking.png",
+                    "external/images/cards/InvisibleMan/impossible-to-see.png",
+                    "external/images/cards/InvisibleMan/slip-away.png",
+                    "external/images/cards/InvisibleMan/dreaming-of-revenge.png",
+                    "external/images/cards/InvisibleMan/emerge-from-mist.png",
+                    "external/images/cards/InvisibleMan/slip-away.png",
+                    "external/images/cards/InvisibleMan/into-thin-air.png",
+                    "external/images/cards/InvisibleMan/rolling-fog.png",
+                    "external/images/cards/InvisibleMan/emerge-from-mist.png",
+                    "external/images/cards/InvisibleMan/coded-notes.png",
+                    "external/images/cards/InvisibleMan/lurking.png",
+                    "external/images/cards/InvisibleMan/covert-preparation.png",
+                    "external/images/cards/InvisibleMan/impossible-to-see.png",
+                    "external/images/cards/InvisibleMan/confound.png",
+                    "external/images/cards/InvisibleMan/coded-notes.png",
+                    "external/images/cards/InvisibleMan/rolling-fog.png",
+                    "external/images/cards/InvisibleMan/step-lightly.png",
+                    "external/images/cards/InvisibleMan/covert-preparation.png"
+                ],
+                "hand": [
+                    "external/images/cards/InvisibleMan/into-thin-air.png",
+                    "external/images/cards/InvisibleMan/step-lightly.png",
+                    "external/images/cards/InvisibleMan/dreaming-of-revenge.png",
+                    "external/images/cards/InvisibleMan/slip-away.png",
+                    "external/images/cards/InvisibleMan/reign-of-terror.png"
+                ]
+            },
+            "hero": {
+                "HP": 15,
+                "fogs": [
+                    {
+                        "position": 17
+                    },
+                    {
+                        "position": 15
+                    },
+                    {
+                        "position": 16
+                    }
+                ],
+                "position": 18,
+                "sidekicks": [],
+                "startedTurnOnFog": false,
+                "type": "InvisibleMan"
+            },
+            "name": "Player 1"
+        },
+        {
+            "age": 18,
+            "deck": {
+                "discardPile": [],
+                "drawPile": [
+                    "external/images/cards/dracula/baptism-of-blood.png",
+                    "external/images/cards/dracula/baptism-of-blood.png",
+                    "external/images/cards/dracula/look-into-my-eyes.png",
+                    "external/images/cards/dracula/exploit.png",
+                    "external/images/cards/dracula/prey-upon.png",
+                    "external/images/cards/dracula/dash.png",
+                    "external/images/cards/dracula/exploit.png",
+                    "external/images/cards/dracula/thirst-for-sustenance.png",
+                    "external/images/cards/dracula/feeding-frenzy.png",
+                    "external/images/cards/dracula/ambush.png",
+                    "external/images/cards/dracula/feint (1).png",
+                    "external/images/cards/dracula/thirst-for-sustenance.png",
+                    "external/images/cards/dracula/beastform.png",
+                    "external/images/cards/dracula/prey-upon.png",
+                    "external/images/cards/dracula/ravening-seduction.png",
+                    "external/images/cards/dracula/feint (1).png",
+                    "external/images/cards/dracula/dash.png",
+                    "external/images/cards/dracula/ravening-seduction.png",
+                    "external/images/cards/dracula/thirst-for-sustenance.png",
+                    "external/images/cards/dracula/mistform.png",
+                    "external/images/cards/dracula/ambush.png",
+                    "external/images/cards/dracula/look-into-my-eyes.png",
+                    "external/images/cards/dracula/exploit.png",
+                    "external/images/cards/dracula/feeding-frenzy.png"
+                ],
+                "hand": [
+                    "external/images/cards/dracula/look-into-my-eyes.png",
+                    "external/images/cards/dracula/mistform.png",
+                    "external/images/cards/dracula/beastform.png",
+                    "external/images/cards/dracula/feint (1).png",
+                    "external/images/cards/dracula/ravening-seduction.png"
+                ]
+            },
+            "hero": {
+                "HP": 13,
+                "fogs": [],
+                "position": 4,
+                "sidekicks": [
+                    {
+                        "HP": 1,
+                        "index": 0,
+                        "name": "Sister 1",
+                        "position": 8
+                    },
+                    {
+                        "HP": 1,
+                        "index": 1,
+                        "name": "Sister 2",
+                        "position": -1
+                    },
+                    {
+                        "HP": 1,
+                        "index": 2,
+                        "name": "Sister 3",
+                        "position": -1
+                    }
+                ],
+                "startedTurnOnFog": false,
+                "type": "Dracula"
+            },
+            "name": "Player 2"
+        }
+    ],
+    "remainingAction": 2
+}

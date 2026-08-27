@@ -197,17 +197,28 @@ std::vector<int> ChooseCharacterAction::getOption(Game& game)
 
     if(mode == SelectionMode::Neighboors)
     {
-        for(auto ch : game.getEnemiesNearby(pc))
-            characterPositions.push_back(ch->getPosition());
+        for(Character* character : game.getEnemiesNearby(pc))
+        {
+            if(character == nullptr)
+                continue;
+
+            characters.push_back(character);
+            characterPositions.push_back(character->getPosition());
+        }
 
         return characterPositions;
     }
 
-    if(mode == SelectionMode::Current || mode == SelectionMode::All)
+    if(mode == SelectionMode::Current ||
+       mode == SelectionMode::All)
     {
-        for(Character* c : game.getCurrentPlayer()->getAllCharacters())
+        for(Character* c :
+            game.getCurrentPlayer()->getAllCharacters())
         {
-            if(pc != nullptr && c->getPosition() == pc->getPosition())
+            if(c == nullptr)
+                continue;
+
+            if(pc != nullptr &&c->getPosition() == pc->getPosition())
                 continue;
 
             characters.push_back(c);
@@ -215,13 +226,17 @@ std::vector<int> ChooseCharacterAction::getOption(Game& game)
         }
     }
 
-    if(mode == SelectionMode::Other || mode == SelectionMode::All)
+    if(mode == SelectionMode::Other ||
+       mode == SelectionMode::All)
     {
-        for(Character* c : game.getOtherPlayer()->getAllCharacters())
+        for(Character* c :
+            game.getOtherPlayer()->getAllCharacters())
         {
-            if(pc != nullptr && c->getPosition() == pc->getPosition())
+            if(c == nullptr)
                 continue;
 
+            if(pc != nullptr &&c->getPosition() == pc->getPosition())
+                continue;
             characters.push_back(c);
             characterPositions.push_back(c->getPosition());
         }
