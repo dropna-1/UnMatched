@@ -239,8 +239,7 @@ vector<int> Game::getFogMoves(
 
         vector<int> neigh = board.getSpace(place).neighbors;
 
-        if(!board.getSpace(place).secret.empty())
-        {
+        if(!board.getSpace(place).secret.empty()){
             for(int secret : board.getSpace(place).secret)
                 neigh.push_back(secret);
         }
@@ -254,29 +253,21 @@ vector<int> Game::getFogMoves(
             q.push({next, dist + 1});
 
             bool occupied = false;
-
-            for(Character* c : currentPlayer->getAllCharacters())
-            {
-                if(c->getPosition() == next)
-                {
+            for(Character* c : currentPlayer->getAllCharacters()){
+                if(c->getPosition() == next){
                     occupied = true;
                     break;
                 }
             }
 
-            if(!occupied)
-            {
-                for(Character* c : otherPlayer->getAllCharacters())
-                {
-                    if(c->getPosition() == next)
-                    {
+            if(!occupied){
+                for(Character* c : otherPlayer->getAllCharacters()){
+                    if(c->getPosition() == next){
                         occupied = true;
                         break;
                     }
                 }
             }
-
-            // For Slip Away, only the destination must be empty.
             if(emptySpaceOnly && occupied)
                 continue;
 

@@ -299,18 +299,13 @@ FogMoveAction::FogMoveAction( const int& range, bool emptySpaceOnly)
 
 std::vector<int> FogMoveAction::getOption(Game& game)
 {
-    if(stage == 0)
-    {
+    if(stage == 0){
         std::vector<int> fogs;
-
-        for(auto& fog : game.getInvisibleMan()->getFogs())
-        {
+        for(auto& fog : game.getInvisibleMan()->getFogs()){
             if(!fog.isPlaced())
                 continue;
-
             fogs.push_back(fog.getPosition());
         }
-
         return fogs;
     }
 
